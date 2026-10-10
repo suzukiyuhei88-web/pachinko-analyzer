@@ -1,35 +1,14 @@
-import matplotlib.pyplot as plt
-import numpy as np
+import math
 import streamlit as st
 
-# ページ全体のレイアウト設定（スマホ向けにすっきりと）
+# ページの基本設定（スマホ幅を意識）
 st.set_page_config(
-    page_title="パチンコ確率診断", page_icon="🎯", layout="centered"
+    page_title="パチンコ確率診断", page_icon="🎰", layout="centered"
 )
 
-# --- スタイルの調整（ラフ画のようなすっきり感） ---
-st.markdown(
-    """
-    <style>
-    .main {
-        background-color: #fafafa;
-    }
-    h3 {
-        color: #333333;
-        font-weight: bold;
-    }
-    </style>
-""",
-    unsafe_allow_html=True,
-)
+# --- 1. タイトルと選択エリア ---
+st.markdown("### 🎰 パチンコ確率診断")
 
-# --- タイトル ---
-st.markdown(
-    "<h3 style='text-align: center; margin-bottom: 20px;'>パチンコはまり確率</h3>",
-    unsafe_allow_html=True,
-)
-
-# --- 1. スペック選択（ラフ画風の横並びボタン形式 ＋ カスタム対応） ---
 spec_options = {
     "甘デジ (1/99)": 99.9,
     "ライトミドル (1/199)": 199.8,
@@ -45,7 +24,7 @@ selected_spec_name = st.radio(
     horizontal=True,
 )
 
-# スペックの決定とエラーチェック
+# スペックの決定とカスタム入力・エラーハンドリング
 if selected_spec_name == "カスタム":
   p_denom = st.number_input(
       "大当り確率の分母を入力 (例: 319.6)",
@@ -55,92 +34,78 @@ if selected_spec_name == "カスタム":
       step=0.1,
   )
 
-  # --- 異常値のチェック ---
+  # 異常値のチェック
   if p_denom <= 1.0:
     st.error(
         "⚠️ エラー: 確率の分母は「1.0」より大きい数値を入力してください。"
     )
-    st.stop()  # ここで以後の処理をストップし、画面の崩れを防ぐ
+    st.stop()  # 処理をここでストップしてアプリのクラッシュを防ぐ
   elif p_denom > 5000.0:
     st.warning("⚠️ 注意: 少し大きすぎる数値が入力されています。")
 else:
   p_denom = spec_options[selected_spec_name]
 
-# --- 2. 現在の回転数入力 ---
-current_spin = st.slider(
-    "現在の回転数（ハマり回転数）",
-    min_value=10,
-    max_value=int(p_denom * 3),
-    value=int(p_denom * 1.5),
-    step=10,
-)
+# 現在の回転数入力
+current_rotation = st.slider("現在の回転数", 0, 2000, 500, step=10)
 
-# --- 3. 確率の計算 ---
-prob = (1.0 - (1.0 / p_denom)) ** current_spin
-hit_prob_percent = (1 - prob) * 100  # 当たる確率（累積確率）
-hamari_prob_percent = prob * 100  # はまり確率（残り確率）
+# --- 2. 計算ロジック（幾何分布のハマり確率） ---
+p = 1.0 / p_denom if p_denom > 0 else 0
+prob_ハマり = ((1.0 - p) ** current_rotation) * 100  # パーセンテージ
 
-# --- 4. ラフ画の「ネタ・コメント」カード ---
-if hit_prob_percent >= 99:
-    comment_title = "🔥 【奇跡の領域】そろそろ当たるはず…！"
-    comment_desc = "ここから当たらなかったら、逆に持っています。"
-elif hit_prob_percent >= 90:
-    comment_title = "⚡ 【大ハマり】9割がすでに通過したライン"
-    comment_desc = "なかなかのレア体験ゾーンに突入しています。"
-elif hit_prob_percent >= 50:
-    comment_title = "🌊 【平常運転】およそ平均的なハマり"
-    comment_desc = "確率の壁のちょうど折り返し地点です。"
+# --- 3. ラフ画風：コメントカード ＆ ビジュアルフレーム ---
+st.markdown("---")
+
+# 上部：現在の選択状況を示すカード
+with st.container():
+  st.markdown(
+      f"""
+        <div style="
+            background-color: #f0f2f6; 
+            padding: 15px; 
+            border-radius: 10px; 
+            text-align: center;
+            margin-bottom: 10px;
+        ">
+            <span style="font-size: 14px; color: #555;">選択スペック: <b>1 / {p_denom}</b> ／ 現在: <b>{current_rotation}回転</b></span>
+        </div>
+        """,
+      unsafe_allow_html=True,
+  )
+
+# 確率に応じた絵文字とコメントの切り替え
+if prob_ハマり > 50:
+  status_emoji = "🌱"
+  comment = "まだまだ序盤！ここからの巻き返しが勝負の分かれ道です。"
+elif prob_ハマり > 20:
+  status_emoji = "⚠️"
+  comment = (
+      "おやおや…？ なかなかの深みにハマってきましたね。深呼吸しましょう。"
+  )
+elif prob_ハマり > 5:
+  status_emoji = "🔥"
+  comment = (
+      "領域展開レベルのハマりです。周囲の視線が少し気になり始める頃。"
+  )
 else:
-    comment_title = "🌱 【序盤】まだまだこれから！"
-    comment_desc = "落ち着いて深呼吸していきましょう。"
+  status_emoji = "⚡"
+  comment = "【超レア体験】もはや都市伝説レベルのハマりデス…。"
 
-# ラフ画のカード風デザイン（グレーのボックス）
+# 下部：メインの結果表示カード（イラスト・枠組み風）
 st.markdown(
     f"""
-    <div style="background-color: #f1f3f4; border: 1px solid #dadce0; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-        <h4 style="margin: 0 0 8px 0; color: #202124; font-size: 18px;">{comment_title}</h4>
-        <p style="margin: 0; color: #5f6368; font-size: 14px;">{comment_desc}</p>
-        <hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
-        <div style="display: flex; justify-content: space-around; align-items: center;">
-            <div style="font-size: 14px; color: #5f6368;">はまり確率</div>
-            <div style="font-size: 24px; font-weight: bold; color: #137333;">{hamari_prob_percent:.1f}%</div>
-        </div>
+    <div style="
+        border: 2px solid #ff4b4b; 
+        background-color: #fff5f5; 
+        padding: 25px 20px; 
+        border-radius: 15px; 
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    ">
+        <div style="font-size: 45px; margin-bottom: 5px;">{status_emoji}</div>
+        <div style="font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px;">ハマり継続率</div>
+        <h2 style="color: #ff4b4b; margin: 5px 0 15px 0; font-size: 32px;">{prob_ハマり:.2f}%</h2>
+        <p style="font-size: 15px; color: #333; font-weight: bold; line-height: 1.4;">{comment}</p>
     </div>
     """,
     unsafe_allow_html=True,
 )
-
-# --- 5. ラフ画のイメージに合わせたシンプル＆スタイリッシュなグラフ ---
-fig, ax = plt.subplots(figsize=(8, 3.5))
-
-spins_range = np.linspace(10, int(p_denom * 3), 100)
-hamari_rates = ((1.0 - (1.0 / p_denom)) ** spins_range) * 100
-
-# グラフの線を綺麗に描画
-ax.plot(
-    spins_range, hamari_rates, color="#5f6368", linewidth=2, linestyle="-"
-)
-ax.axvline(
-    x=current_spin, color="#d93025", linestyle="--", linewidth=1.5, alpha=0.7
-)
-ax.scatter(
-    [current_spin],
-    [hamari_prob_percent],
-    color="#d93025",
-    zorder=5,
-    s=70,
-    label="現在地",
-)
-
-# 軸や余分な装飾を削ってラフ画のようにミニマルにする
-ax.spines["top"].set_visible(False)
-ax.spines["right"].set_visible(False)
-ax.spines["left"].set_color("#888888")
-ax.spines["bottom"].set_color("#888888")
-ax.xaxis.set_tick_params(color="#888888", labelcolor="#5f6368")
-ax.yaxis.set_tick_params(color="#888888", labelcolor="#5f6368")
-
-ax.set_title("はまり確率の推移イメージ", fontsize=11, color="#333333", pad=10)
-ax.grid(True, linestyle=":", alpha=0.4)
-
-st.pyplot(fig)
