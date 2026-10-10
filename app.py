@@ -28,7 +28,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ネタ帳データ ---
+# --- 2. ゾーンごとのデータ定義（タイトル、メッセージ、比較、HP残量をすべてここに一元管理） ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -52,6 +52,9 @@ ZONE_MESSAGES = {
         ),
         "hp_percent": 100,
         "hp_status": "NORMAL (元気)",
+        "card_bg": "#1e293b",
+        "border_color": "#475569",
+        "text_color": "#e2e8f0",
     },
     "caution": {
         "title": "ざわ… ざわ… ゾーン",
@@ -75,6 +78,9 @@ ZONE_MESSAGES = {
         ),
         "hp_percent": 60,
         "hp_status": "CAUTION (注意)",
+        "card_bg": "#1e293b",
+        "border_color": "#64748b",
+        "text_color": "#cbd5e1",
     },
     "deep": {
         "title": "領域展開（深海トラウマ）",
@@ -100,8 +106,11 @@ ZONE_MESSAGES = {
         "image": (
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
         ),
-        "hp_percent": 25,
+        "hp_percent": 30,
         "hp_status": "WARNING (警告)",
+        "card_bg": "#431407",
+        "border_color": "#ea580c",
+        "text_color": "#ffedd5",
     },
     "yutime_ghost": {
         "title": "【幻の遊タイム】非搭載ゾーン",
@@ -120,8 +129,11 @@ ZONE_MESSAGES = {
         "image": (
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
         ),
-        "hp_percent": 5,
+        "hp_percent": 10,
         "hp_status": "DANGER (瀕死)",
+        "card_bg": "#2e1065",
+        "border_color": "#a855f7",
+        "text_color": "#f3e8ff",
     },
     "god": {
         "title": "歴史に名を刻むレベル",
@@ -145,6 +157,9 @@ ZONE_MESSAGES = {
         ),
         "hp_percent": 1,
         "hp_status": "DEAD (精神崩壊)",
+        "card_bg": "#450a0a",
+        "border_color": "#ef4444",
+        "text_color": "#fee2e2",
     },
 }
 
@@ -201,67 +216,41 @@ current_rotation = st.slider(
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
-# --- 6. 演出・ステータス分岐（最も厳しい条件を上に、浅い条件を下に配置） ---
+# --- 6. 演出・ステータス分岐（上から順に最も深いゾーンから正しく判定） ---
 st.markdown("---")
 
 is_yutime_over = current_rotation >= (p_denom * 2.8)
 
 if prob_ハマり <= 1.0 or current_rotation >= (p_denom * 3.5):
-  # 神域（超大ハマり・確率1%未満など）
-  zone_data = ZONE_MESSAGES["god"]
-  card_bg = "#450a0a"
-  border_color = "#ef4444"
-  text_color = "#fee2e2"
-  comment = random.choice(zone_data["messages"])
-  comparison_item = random.choice(zone_data["comparisons"])
+  zone_key = "god"  # 5. 神域
 elif is_yutime_over:
-  # 【幻の遊タイム】非搭載ゾーン（基準回転数超えの深いハマり）
-  zone_data = ZONE_MESSAGES["yutime_ghost"]
-  card_bg = "#2e1065"
-  border_color = "#a855f7"
-  text_color = "#f3e8ff"
-  yutime_rot = int(p_denom * 3)
-  comment = random.choice(zone_data["messages"]).format(yutime_rot=yutime_rot)
-  comparison_item = random.choice(zone_data["comparisons"])
-elif prob_ハマり <= 5.0:
-  # 領域展開（深海トラウマ）
-  zone_data = ZONE_MESSAGES["deep"]
-  card_bg = "#431407"
-  border_color = "#ea580c"
-  text_color = "#ffedd5"
-  comment = random.choice(zone_data["messages"])
-  comparison_item = random.choice(zone_data["comparisons"])
+  zone_key = "yutime_ghost"  # 4. 【幻の遊タイム】非搭載ゾーン
+elif prob_ハマり <= 10.0 or current_rotation >= (p_denom * 2.3):
+  zone_key = "deep"  # 3. 領域展開（深海トラウマ）
 elif prob_ハマり > 50:
-  # 平穏
-  zone_data = ZONE_MESSAGES["peaceful"]
-  card_bg = "#1e293b"
-  border_color = "#475569"
-  text_color = "#e2e8f0"
-  comment = random.choice(zone_data["messages"])
-  comparison_item = random.choice(zone_data["comparisons"])
-elif prob_ハマり > 20:
-  # ざわ…
-  zone_data = ZONE_MESSAGES["caution"]
-  card_bg = "#1e293b"
-  border_color = "#64748b"
-  text_color = "#cbd5e1"
-  comment = random.choice(zone_data["messages"])
-  comparison_item = random.choice(zone_data["comparisons"])
+  zone_key = "peaceful"  # 1. 平穏
 else:
-  # 中間層のフォールバック
-  zone_data = ZONE_MESSAGES["deep"]
-  card_bg = "#431407"
-  border_color = "#ea580c"
-  text_color = "#ffedd5"
-  comment = random.choice(zone_data["messages"])
-  comparison_item = random.choice(zone_data["comparisons"])
+  zone_key = "caution"  # 2. ざわ…
+
+zone_data = ZONE_MESSAGES[zone_key]
 
 status_title = zone_data["title"]
-comparison_text = comparison_item["text"]
-comparison_approx = comparison_item["approx"]
-image_url = zone_data["image"]
+card_bg = zone_data["card_bg"]
+border_color = zone_data["border_color"]
+text_color = zone_data["text_color"]
 hp_percent = zone_data["hp_percent"]
 hp_status = zone_data["hp_status"]
+image_url = zone_data["image"]
+
+# メッセージや比較データの安全な取得
+comment = random.choice(zone_data["messages"])
+if zone_key == "yutime_ghost":
+  yutime_rot = int(p_denom * 3)
+  comment = comment.format(yutime_rot=yutime_rot)
+
+comparison_item = random.choice(zone_data["comparisons"])
+comparison_text = comparison_item["text"]
+comparison_approx = comparison_item["approx"]
 
 # --- 7. 統合メインカード ---
 card_html = (
