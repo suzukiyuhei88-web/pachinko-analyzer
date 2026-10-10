@@ -38,8 +38,8 @@ ZONE_MESSAGES = {
             "隣の台が爆連している音をBGMに、静かにレバーを叩くフェーズ。",
         ],
         "comparisons": [
-            "例えるなら：ジャンケンを3回連続ですべてあいこにするくらいの確率",
-            "例えるなら：朝のニュースの占い最下位を2日連続で引くくらいの確率",
+            "ジャンケンを3回連続ですべてあいこにするくらいの確率",
+            "朝のニュースの占い最下位を2日連続で引くくらいの確率",
         ],
     },
     "caution": {
@@ -50,8 +50,8 @@ ZONE_MESSAGES = {
             "周囲の出玉を見ないように視線を台に固定するトレーニング期間。",
         ],
         "comparisons": [
-            "例えるなら：スマホのバッテリー残量1%の状態で、充電器を挿す直前に電源が落ちる確率",
-            "例えるなら：自販機でボタンを押して『当たり』が出てもう1本もらえるくらいの確率",
+            "スマホのバッテリー残量1%の状態で、充電器を挿す直前に電源が落ちる確率",
+            "自販機でボタンを押して『当たり』が出てもう1本もらえるくらいの確率",
         ],
     },
     "yutime_ghost": {
@@ -65,7 +65,7 @@ ZONE_MESSAGES = {
             ),
         ],
         "comparisons": [
-            "例えるなら：昔のゲームの隠し救済コマンドを本気で探し出すくらいの絶望感",
+            "昔のゲームの隠し救済コマンドを本気で探し出すくらいの絶望感",
         ],
     },
     "deep": {
@@ -80,8 +80,8 @@ ZONE_MESSAGES = {
             ("周囲の視線と、自分のメンタルが試されるディープゾーン。"),
         ],
         "comparisons": [
-            "例えるなら：トランプのババ抜きで、なぜか最初から最後まで自分の手札にジョーカーが残り続ける確率",
-            "例えるなら：街中で見知らぬ人に『あれ、〇〇くん？』と完全に人違いされる確率",
+            "トランプのババ抜きで、なぜか最初から最後まで自分の手札にジョーカーが残り続ける確率",
+            "街中で見知らぬ人に『あれ、〇〇くん？』と完全に人違いされる確率",
         ],
     },
     "god": {
@@ -92,8 +92,8 @@ ZONE_MESSAGES = {
             ("我が人生に一片の悔い…いや、めちゃくちゃ悔い残るわ！という領域。"),
         ],
         "comparisons": [
-            "例えるなら：日常で隕石が直撃する確率よりは高いけど、心から救いを求めたい確率",
-            "例えるなら：奇跡と理不尽の境界線を完全に突破して神域に片足を突っ込んでいる確率",
+            "日常で隕石が直撃する確率よりは高いけど、心から救いを求めたい確率",
+            "奇跡と理不尽の境界線を完全に突破して神域に片足を突っ込んでいる確率",
         ],
     },
 }
@@ -215,7 +215,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# メインのインパクトカード（コメント ＋ 確率同等事象の比較テキストを追加）
+# メインのインパクトカード（情報を見やすく階層化）
 st.markdown(
     f"""
     <div style="
@@ -229,10 +229,15 @@ st.markdown(
         <div style="font-size: 42px; margin-bottom: 5px;">{status_emoji}</div>
         <div style="font-size: 14px; color: {text_color}; text-transform: uppercase; letter-spacing: 2px;">{status_title}</div>
         <h2 style="color: {text_color}; margin: 10px 0 6px 0; font-size: 40px; letter-spacing: 1px;">{prob_ハマり:.1f}%</h2>
-        <div style="font-size: 12px; color: {text_color}; opacity: 0.8; margin-bottom: 14px;">（この回転数まで当らない確率）</div>
-        <p style="font-size: 15px; color: {text_color}; line-height: 1.6; margin-bottom: 16px;">{comment}</p>
-        <div style="background-color: rgba(0,0,0,0.3); border-left: 3px solid {border_color}; padding: 10px 12px; border-radius: 4px; text-align: left;">
-            <p style="font-size: 13px; color: {text_color}; margin: 0; opacity: 0.9;">🎯 {comparison_text}</p>
+        <div style="font-size: 12px; color: {text_color}; opacity: 0.8; margin-bottom: 16px;">（この回転数まで当らない確率）</div>
+        
+        <!-- コメントエリア -->
+        <p style="font-size: 15px; color: {text_color}; line-height: 1.6; margin-bottom: 18px; padding: 0 10px;">{comment}</p>
+        
+        <!-- 確率の同等事象エリア（デザインで綺麗に分離） -->
+        <div style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed {border_color}; padding: 12px 14px; border-radius: 6px; text-align: left;">
+            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px; letter-spacing: 1px;">🌍 現実世界での確率スケール</div>
+            <p style="font-size: 13px; color: {text_color}; margin: 0; line-height: 1.5;">🎯 {comparison_text}</p>
         </div>
     </div>
     """,
