@@ -200,15 +200,37 @@ if selected_spec_name == "カスタム":
 else:
   p_denom = spec_options[selected_spec_name]
 
-# --- 4. スペックに応じたスライダー最大値の設計（確率分母の6倍に統一） ---
+# --- 4. セッションステートを用いたスライダーとクイックボタンの同期 ---
+if "rotation_value" not in st.session_state:
+  st.session_state.rotation_value = min(500, int(p_denom * 6))
+
+# スペック切り替え時にスライダー値が最大値を超えないように保護
 max_slider = int(p_denom * 6)
+if st.session_state.rotation_value > max_slider:
+  st.session_state.rotation_value = max_slider
+
 step_val = 5 if p_denom <= 100 else 10
 
+# 🎯 倍率ジャンプ用のクイックボタン（1倍〜6倍）
+st.markdown(
+    "<div style='font-size: 11px; color: #94a3b8; margin-bottom: 4px;'>🎯"
+    " 節目ジャンプ（倍率目安）</div>",
+    unsafe_allow_html=True,
+)
+cols = st.columns(6)
+multipliers = [1, 2, 3, 4, 5, 6]
+for i, m in enumerate(multipliers):
+  target_rot = int(p_denom * m)
+  if target_rot <= max_slider:
+    if cols[i].button(f"{m}倍\n({target_rot})", key=f"btn_{m}x"):
+      st.session_state.rotation_value = target_rot
+
+# メインスライダー
 current_rotation = st.slider(
     "現在の回転数",
     min_value=0,
     max_value=max_slider,
-    value=min(500, max_slider),
+    key="rotation_value",
     step=step_val,
 )
 
