@@ -28,7 +28,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ゾーンごとのデータ定義（平穏 ➔ ざわ… ➔ 遊タイム非搭載 ➔ 領域展開 ➔ 神域） ---
+# --- 2. ゾーンごとのデータ定義 ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -204,25 +204,28 @@ else:
 if "rotation_value" not in st.session_state:
   st.session_state.rotation_value = min(500, int(p_denom * 6))
 
-# スペック切り替え時にスライダー値が最大値を超えないように保護
 max_slider = int(p_denom * 6)
 if st.session_state.rotation_value > max_slider:
   st.session_state.rotation_value = max_slider
 
 step_val = 5 if p_denom <= 100 else 10
 
-# 🎯 倍率ジャンプ用のクイックボタン（1倍〜6倍）
+# 🎯 倍率ジャンプ用のクイックボタン（3個×2段のコンパクト配置）
 st.markdown(
-    "<div style='font-size: 11px; color: #94a3b8; margin-bottom: 4px;'>🎯"
+    "<div style='font-size: 11px; color: #94a3b8; margin-bottom: 2px;'>🎯"
     " 節目ジャンプ（倍率目安）</div>",
     unsafe_allow_html=True,
 )
-cols = st.columns(6)
+
+row1_cols = st.columns(3)
+row2_cols = st.columns(3)
+
 multipliers = [1, 2, 3, 4, 5, 6]
 for i, m in enumerate(multipliers):
   target_rot = int(p_denom * m)
   if target_rot <= max_slider:
-    if cols[i].button(f"{m}倍\n({target_rot})", key=f"btn_{m}x"):
+    target_col = row1_cols[i] if i < 3 else row2_cols[i - 3]
+    if target_col.button(f"{m}倍 ({target_rot})", key=f"btn_{m}x"):
       st.session_state.rotation_value = target_rot
 
 # メインスライダー
@@ -234,25 +237,23 @@ current_rotation = st.slider(
     step=step_val,
 )
 
-# --- 5. 計算ロジック（幾何分布のハマり確率：小数点第1位まで） ---
+# --- 5. 計算ロジック ---
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
-# --- 6. 演出・ステータス分岐（平穏 ➔ ざわ… ➔ 遊タイム非搭載 ➔ 領域展開 ➔ 神域） ---
+# --- 6. 演出・ステータス分岐 ---
 st.markdown("---")
 
-is_yutime_over = current_rotation >= (p_denom * 2.8)
-
 if prob_ハマり > 50:
-  zone_key = "peaceful"  # 1. 平穏（確率50%超）
+  zone_key = "peaceful"
 elif prob_ハマり > 20:
-  zone_key = "caution"  # 2. ざわ…（確率20%超）
+  zone_key = "caution"
 elif prob_ハマり > 10:
-  zone_key = "yutime_ghost"  # 3. 【幻の遊タイム】非搭載ゾーン
+  zone_key = "yutime_ghost"
 elif prob_ハマり > 1.0:
-  zone_key = "deep"  # 4. 領域展開（深海トラウマ）
+  zone_key = "deep"
 else:
-  zone_key = "god"  # 5. 神域（確率1%以下）
+  zone_key = "god"
 
 zone_data = ZONE_MESSAGES[zone_key]
 
@@ -264,7 +265,6 @@ hp_percent = zone_data["hp_percent"]
 hp_status = zone_data["hp_status"]
 image_url = zone_data["image"]
 
-# メッセージや比較データの安全な取得
 comment = random.choice(zone_data["messages"])
 if zone_key == "yutime_ghost":
   yutime_rot = int(p_denom * 3)
@@ -280,8 +280,8 @@ card_html = (
     + border_color
     + "; background-color: "
     + card_bg
-    + '; padding: 18px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">'
-    '<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 12px; font-size: 13px; color: #94a3b8;">'
+    + '; padding: 14px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">'
+    '<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 10px; font-size: 12px; color: #94a3b8;">'
     '<span>スペック: <b style="color: #f8fafc;">1 / '
     + str(p_denom)
     + "</b></span>"
@@ -289,75 +289,7 @@ card_html = (
     + str(current_rotation)
     + "回転</b></span>"
     "</div>"
-    '<div style="text-align: center; margin-bottom: 10px;">'
-    '<div style="font-size: 13px; color: '
+    '<div style="text-align: center; margin-bottom: 8px;">'
+    '<div style="font-size: 12px; color: '
     + text_color
-    + '; text-transform: uppercase; letter-spacing: 2px;">'
-    + status_title
-    + "</div>"
-    "</div>"
-    '<div style="display: flex; align-items: center; justify-content: space-around; margin-bottom: 12px; background-color: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">'
-    '<div style="text-align: left;">'
-    '<h2 style="color: '
-    + text_color
-    + '; margin: 0; font-size: 40px; letter-spacing: 1px;">'
-    + f"{prob_ハマり:.1f}%"
-    + "</h2>"
-    '<div style="font-size: 11px; color: '
-    + text_color
-    + '; opacity: 0.8;">（この回転数まで当らない確率）</div>'
-    "</div>"
-    "<div>"
-    '<img src="'
-    + image_url
-    + '" style="width: 70px; height: 70px; object-fit: contain; border-radius: 50%; background-color: rgba(255,255,255,0.9); padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);" />'
-    "</div>"
-    "</div>"
-    '<p style="font-size: 14px; color: '
-    + text_color
-    + '; line-height: 1.5; margin-bottom: 12px; text-align: center; padding: 0 5px;">'
-    + comment
-    + "</p>"
-    '<div style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed '
-    + border_color
-    + '; padding: 10px 12px; border-radius: 6px; text-align: left; margin-bottom: 12px;">'
-    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">'
-    '<span style="font-size: 11px; color: #94a3b8; letter-spacing: 1px;">🌍 現実世界での確率スケール</span>'
-    '<span style="font-size: 11px; color: #38bdf8; font-weight: bold; background-color: rgba(56, 189, 248, 0.1); padding: 2px 6px; border-radius: 4px;">'
-    + comparison_approx
-    + "</span>"
-    "</div>"
-    '<p style="font-size: 12px; color: '
-    + text_color
-    + '; margin: 0; line-height: 1.4;">🎯 '
-    + comparison_text
-    + "</p>"
-    "</div>"
-    '<!-- 💳 財布/メンタル HPゲージ演出 -->'
-    '<div style="background-color: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 6px;">'
-    '<div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 4px;">'
-    "<span>💳 財布/メンタル HP</span>"
-    "<span>"
-    + hp_status
-    + " "
-    + str(hp_percent)
-    + "%</span>"
-    "</div>"
-    '<div style="width: 100%; background-color: #334155; height: 8px; border-radius: 4px; overflow: hidden;">'
-    '<div style="width: '
-    + str(hp_percent)
-    + "%; background-color: "
-    + (
-        "#22c55e"
-        if hp_percent > 50
-        else "#eab308"
-        if hp_percent > 20
-        else "#ef4444"
-    )
-    + '; height: 100%; transition: width 0.3s ease;"></div>'
-    "</div>"
-    "</div>"
-    "</div>"
-)
-
-st.markdown(card_html, unsafe_allow_html=True)
+    + ';
