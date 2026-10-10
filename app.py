@@ -28,28 +28,30 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ゾーンごとのデータ定義 ---
+# --- 2. ゾーンごとのデータ定義（ネガティブ ＆ ポジティブ対応） ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
-        "messages": [
+        "neg_messages": [
             "まだ慌てるような時間じゃない。ここからが本番です。",
             "財布の紐はまだしっかり締まっています。平和な日常ですね。",
-            "隣の台が爆連している音をBGMに、静かにレバーを叩くフェーズ。",
+        ],
+        "pos_messages": [
+            "素晴らしい立ち上がり！このままの勢いで宇宙の真理に到達しましょう。",
+            "平和な立ち上がり。今日のあなたは一味違う気がします。",
         ],
         "comparisons": [
             {
-                "text": "コインを投げて2回連続で同じ面が出るくらいの確率",
-                "approx": "約 50%",
+                "category": "日常・学校",
+                "neg": "授業中、先生に当てられないかビクビクしてたら本当に当てられる確率",
+                "pos": "なんとなく予習したページがそのままテストに出る確率",
             },
             {
-                "text": "4択クイズでなんとなく選んだ選択肢が外れる確率",
-                "approx": "約 75%",
+                "category": "パチ・スロ",
+                "neg": "朝イチのガセ前兆に惑わされて無駄に投資が膨らむ確率",
+                "pos": "投資1Kでプレミアムフラグを引いてドヤ離席する確率",
             },
         ],
-        "image": (
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
-        ),
         "hp_percent": 100,
         "hp_status": "NORMAL (元気)",
         "card_bg": "#1e293b",
@@ -58,24 +60,26 @@ ZONE_MESSAGES = {
     },
     "caution": {
         "title": "ざわ… ざわ… ゾーン",
-        "messages": [
+        "neg_messages": [
             "少し財布の紐がキュッとなる頃合い。深呼吸してコーヒーでもどうぞ。",
             "「もしかして、今日もやられる日なのでは…？」という悪寒が走り始める頃。",
-            "周囲の出玉を見ないように視線を台に固定するトレーニング期間。",
+        ],
+        "pos_messages": [
+            "ここからの巻き返しが一番ドラマチックなんです。期待値は爆上がり中！",
+            "運命の歯車があなたの方を向き始めています。焦る必要はありません。",
         ],
         "comparisons": [
             {
-                "text": "じゃんけんを2回連続ですべてあいこにする確率",
-                "approx": "約 33%",
+                "category": "日常・学校",
+                "neg": "購買のパン戦争で、お目当ての焼きそばパンが目の前で売り切れる確率",
+                "pos": "自動販売機で当たりが出てもう一本ジュースがもらえる確率",
             },
             {
-                "text": "トランプの山札からハートのカードを引く確率",
-                "approx": "約 25%",
+                "category": "科学",
+                "neg": "スマホを落としたとき、画面ではなく背面から奇跡的に落ちる…と見せかけてバキバキになる確率",
+                "pos": "身の回りの原子が奇跡的に整列してテレポートが起きる確率（ほぼゼロだけど夢はある）",
             },
         ],
-        "image": (
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
-        ),
         "hp_percent": 60,
         "hp_status": "CAUTION (注意)",
         "card_bg": "#1e293b",
@@ -84,21 +88,34 @@ ZONE_MESSAGES = {
     },
     "yutime_ghost": {
         "title": "【幻の遊タイム】非搭載ゾーン",
-        "messages": [
+        "neg_messages": [
             (
-                "昔の基準なら【約 {yutime_rot}回転】で助かって थेね……（遠い目）"
+                "昔の基準なら【約 {yutime_rot}回転】で助かってましたね……（遠い目）"
             ),
             (
                 "遊タイムという名の救済措置が消え去った現代の荒波を、生身で泳いでいます。"
             ),
         ],
-        "comparisons": [{
-            "text": "昔のゲームの隠しコマンドをノーヒントで当てるくらいの絶望感",
-            "approx": "約 15%",
-        }],
-        "image": (
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
-        ),
+        "pos_messages": [
+            (
+                "あえて遊タイムに頼らない！真の漢（おとこ）の自力引きが試される黄金期です！"
+            ),
+            (
+                "これだけ耐えたのだから、ここから訪れる爆連のエネルギーは計り知れません。"
+            ),
+        ],
+        "comparisons": [
+            {
+                "category": "パチ・スロ",
+                "neg": "隣の台が「単発→即ヤメ」された直後に、別の人が座って一撃3万発出す確率",
+                "pos": "自分の台に秘められたポテンシャルが全解放され、周囲がざわめき立つ確率",
+            },
+            {
+                "category": "日常・学校",
+                "neg": "提出期限を完全に勘違いしていて、前日の夜に絶望する確率",
+                "pos": "先生の気まぐれで提出期限が1週間伸びる奇跡が起きる確率",
+            },
+        ],
         "hp_percent": 30,
         "hp_status": "WARNING (警告)",
         "card_bg": "#2e1065",
@@ -107,28 +124,32 @@ ZONE_MESSAGES = {
     },
     "deep": {
         "title": "領域展開（深海トラウマ）",
-        "messages": [
+        "neg_messages": [
             (
                 "RUSHに入った瞬間3秒で駆け抜けたあの日の虚しさに比べれば、このハマりなど微風です。"
             ),
-            (
-                "『からくりサーカス』の運命の一撃で負けた時の絶望感を、思い出させてくれる深海ゾーン。"
-            ),
             ("周囲の視線と、自分のメンタルが試されるディープゾーン。"),
+        ],
+        "pos_messages": [
+            (
+                "歴史に名を残す大当たりのための『溜め』が完了しつつあります。神様もそろそろ目を覚ますはず！"
+            ),
+            (
+                "ここまで耐えたあなたには、全パチンカーを称賛する資格があります。伝説の目撃者になろう！"
+            ),
         ],
         "comparisons": [
             {
-                "text": "トランプのババ抜きで最後までジョーカーが手札に残る確率",
-                "approx": "約 10%",
+                "category": "日常・学校",
+                "neg": "テストで「絶対に合っている」と確信した答えが、盛大に勘違いだった確率",
+                "pos": "テストのヤマ勘がすべて的中して学年1位をかっさらっていく確率",
             },
             {
-                "text": "街中で見知らぬ人に完全に人違いされる確率",
-                "approx": "約 7%",
+                "category": "科学",
+                "neg": "トーストを落としたとき、100%ジャムを塗った面から地面に直撃する確率",
+                "pos": "隕石が直撃する確率よりは低いので、実質安全です。",
             },
         ],
-        "image": (
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
-        ),
         "hp_percent": 10,
         "hp_status": "DANGER (瀕死)",
         "card_bg": "#431407",
@@ -137,24 +158,30 @@ ZONE_MESSAGES = {
     },
     "god": {
         "title": "歴史に名を刻むレベル",
-        "messages": [
+        "neg_messages": [
             ("もはや語るまい。歴史に名を刻むレベルのレア体験デス。"),
             ("確率の女神に完全に嫌われているか、別の何かを召喚している状態です。"),
-            ("我が人生に一片の悔い…いや、めちゃくちゃ悔い残るわ！という領域。"),
+        ],
+        "pos_messages": [
+            (
+                "おめでとうございます！ 宇宙の確率変動を引き当てた『選ばれし神』の領域です！"
+            ),
+            (
+                "これほどの不運を耐え抜いたあなたには、今後すべての幸運が雪崩れ込んでくることでしょう！"
+            ),
         ],
         "comparisons": [
             {
-                "text": "日常でちょっとした奇跡やハプニングが連続して起きる確率",
-                "approx": "約 3%",
+                "category": "科学",
+                "neg": "量子力学のバグを疑うレベル。物理法則があなたに対して反逆しています。",
+                "pos": "ノーベル賞クラスの大発見に匹敵する、統計学上のレアロマン！",
             },
             {
-                "text": "奇跡と理不尽の境界線を完全に突破している確率",
-                "approx": "約 1%未満",
+                "category": "パチ・スロ",
+                "neg": "財布のなかの諭吉が、羽が生えたようにではなく、自発的に消えていく怪奇現象。",
+                "pos": "この後の大当りで、これまでの負けをすべてお釣りが来るほど捲くる大ストーリーの序章！",
             },
         ],
-        "image": (
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
-        ),
         "hp_percent": 1,
         "hp_status": "DEAD (精神崩壊)",
         "card_bg": "#450a0a",
@@ -167,6 +194,14 @@ ZONE_MESSAGES = {
 st.markdown(
     "<h3 style='color: #f8fafc; text-align: center;'>🎰 パチンコ確率診断</h3>",
     unsafe_allow_html=True,
+)
+
+# モード選択スイッチ
+diag_mode = st.radio(
+    "診断モードを選択",
+    ["🖤 ネガティブ（絶望・自虐）", "💖 ポジティブ（狂気的肯定）"],
+    index=0,
+    horizontal=True,
 )
 
 spec_options = {
@@ -200,7 +235,7 @@ if selected_spec_name == "カスタム":
 else:
   p_denom = spec_options[selected_spec_name]
 
-# --- 4. スライダーによる直感的な回転数調整（確率分母の6倍まで） ---
+# --- 4. スライダーによる直感的な回転数調整 ---
 max_slider = int(p_denom * 6)
 step_val = 5 if p_denom <= 100 else 10
 
@@ -238,16 +273,26 @@ border_color = zone_data["border_color"]
 text_color = zone_data["text_color"]
 hp_percent = zone_data["hp_percent"]
 hp_status = zone_data["hp_status"]
-image_url = zone_data["image"]
 
-comment = random.choice(zone_data["messages"])
+# モードに応じたメッセージと比べるネタの選定
+if "ネガティブ" in diag_mode:
+  comment = random.choice(zone_data["neg_messages"])
+  comparison_item = random.choice(zone_data["comparisons"])
+  comparison_text = comparison_item["neg"]
+  comparison_category = comparison_item["category"]
+  image_url = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
+else:
+  comment = random.choice(zone_data["pos_messages"])
+  comparison_item = random.choice(zone_data["comparisons"])
+  comparison_text = comparison_item["pos"]
+  comparison_category = comparison_item["category"]
+  image_url = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhqMv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_yરો_man.png"  # ポジティブ用（あるいは明るい画像）
+  # 念のため安全な画像フォールバック
+  image_url = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7R4ZEolfQVo/s400/pose_kuyashii_man.png"
+
 if zone_key == "yutime_ghost":
   yutime_rot = int(p_denom * 3)
   comment = comment.format(yutime_rot=yutime_rot)
-
-comparison_item = random.choice(zone_data["comparisons"])
-comparison_text = comparison_item["text"]
-comparison_approx = comparison_item["approx"]
 
 # --- 7. 統合メインカード ---
 card_html = (
@@ -297,9 +342,8 @@ card_html = (
     + border_color
     + '; padding: 8px 10px; border-radius: 6px; text-align: left; margin-bottom: 10px;">'
     '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">'
-    '<span style="font-size: 10px; color: #94a3b8; letter-spacing: 1px;">🌍 現実世界での確率スケール</span>'
     '<span style="font-size: 10px; color: #38bdf8; font-weight: bold; background-color: rgba(56, 189, 248, 0.1); padding: 1px 5px; border-radius: 4px;">'
-    + comparison_approx
+    + comparison_category
     + "</span>"
     "</div>"
     '<p style="font-size: 11px; color: '
