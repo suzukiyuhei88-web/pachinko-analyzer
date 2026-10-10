@@ -28,7 +28,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ゾーンごとのデータ定義（ネガティブ ＆ ポジティブ対応） ---
+# --- 2. ゾーンごとのデータ定義（確率スケール付き） ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -45,11 +45,13 @@ ZONE_MESSAGES = {
                 "category": "日常・学校",
                 "neg": "授業中、先生に当てられないかビクビクしてたら本当に当てられる確率",
                 "pos": "なんとなく予習したページがそのままテストに出る確率",
+                "approx": "約 25%",
             },
             {
                 "category": "パチ・スロ",
                 "neg": "朝イチのガセ前兆に惑わされて無駄に投資が膨らむ確率",
                 "pos": "投資1Kでプレミアムフラグを引いてドヤ離席する確率",
+                "approx": "約 30%",
             },
         ],
         "hp_percent": 100,
@@ -73,11 +75,13 @@ ZONE_MESSAGES = {
                 "category": "日常・学校",
                 "neg": "購買のパン戦争で、お目当ての焼きそばパンが目の前で売り切れる確率",
                 "pos": "自動販売機で当たりが出てもう一本ジュースがもらえる確率",
+                "approx": "約 15%",
             },
             {
                 "category": "科学",
                 "neg": "スマホを落としたとき、画面ではなく背面から奇跡的に落ちる…と見せかけてバキバキになる確率",
-                "pos": "身の回りの原子が奇跡的に整列してテレポートが起きる確率（ほぼゼロだけど夢はある）",
+                "pos": "身の回りの原子が奇跡的に整列してテレポートが起きる確率（ほぼゼロのロマン）",
+                "approx": "約 10%",
             },
         ],
         "hp_percent": 60,
@@ -109,11 +113,13 @@ ZONE_MESSAGES = {
                 "category": "パチ・スロ",
                 "neg": "隣の台が「単発→即ヤメ」された直後に、別の人が座って一撃3万発出す確率",
                 "pos": "自分の台に秘められたポテンシャルが全解放され、周囲がざわめき立つ確率",
+                "approx": "約 5%",
             },
             {
                 "category": "日常・学校",
                 "neg": "提出期限を完全に勘違いしていて、前日の夜に絶望する確率",
                 "pos": "先生の気まぐれで提出期限が1週間伸びる奇跡が起きる確率",
+                "approx": "約 8%",
             },
         ],
         "hp_percent": 30,
@@ -143,11 +149,13 @@ ZONE_MESSAGES = {
                 "category": "日常・学校",
                 "neg": "テストで「絶対に合っている」と確信した答えが、盛大に勘違いだった確率",
                 "pos": "テストのヤマ勘がすべて的中して学年1位をかっさらっていく確率",
+                "approx": "約 3%",
             },
             {
                 "category": "科学",
                 "neg": "トーストを落としたとき、100%ジャムを塗った面から地面に直撃する確率",
-                "pos": "隕石が直撃する確率よりは低いので、実質安全です。",
+                "pos": "日常で四つ葉のクローバーを連続して3回見つける確率",
+                "approx": "約 2%",
             },
         ],
         "hp_percent": 10,
@@ -160,14 +168,16 @@ ZONE_MESSAGES = {
         "title": "歴史に名を刻むレベル",
         "neg_messages": [
             ("もはや語るまい。歴史に名を刻むレベルのレア体験デス。"),
-            ("確率の女神に完全に嫌われているか、別の何かを召喚している状態です。"),
+            (
+                "財布のなかの諭吉が、羽が生えたようにではなく、自発的に消えていく怪奇現象。"
+            ),
         ],
         "pos_messages": [
             (
                 "おめでとうございます！ 宇宙の確率変動を引き当てた『選ばれし神』の領域です！"
             ),
             (
-                "これほどの不運を耐え抜いたあなたには、今後すべての幸運が雪崩れ込んでくることでしょう！"
+                "この後の大当りで、これまでの負けをすべてお釣りが来るほど捲くる大ストーリーの序章！"
             ),
         ],
         "comparisons": [
@@ -175,11 +185,13 @@ ZONE_MESSAGES = {
                 "category": "科学",
                 "neg": "量子力学のバグを疑うレベル。物理法則があなたに対して反逆しています。",
                 "pos": "ノーベル賞クラスの大発見に匹敵する、統計学上のレアロマン！",
+                "approx": "約 0.5%",
             },
             {
-                "category": "パチ・スロ",
-                "neg": "財布のなかの諭吉が、羽が生えたようにではなく、自発的に消えていく怪奇現象。",
-                "pos": "この後の大当りで、これまでの負けをすべてお釣りが来るほど捲くる大ストーリーの序章！",
+                "category": "日常・学校",
+                "neg": "隕石がピンポイントで自宅の庭に落ちてくる確率より、なぜかメンタルに刺さる不運。",
+                "pos": "宝くじの高額当選をかすめて、別の形で幸運を総取りする確率",
+                "approx": "約 0.1%",
             },
         ],
         "hp_percent": 1,
@@ -196,10 +208,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# モード選択スイッチ
+# モード選択（3択）
 diag_mode = st.radio(
-    "診断モードを選択",
-    ["🖤 ネガティブ（絶望・自虐）", "💖 ポジティブ（狂気的肯定）"],
+    "表示モード",
+    ["🖤💖 ネガ・ポジ両方表示", "🖤 ネガティブのみ", "💖 ポジティブのみ"],
     index=0,
     horizontal=True,
 )
@@ -273,28 +285,56 @@ border_color = zone_data["border_color"]
 text_color = zone_data["text_color"]
 hp_percent = zone_data["hp_percent"]
 hp_status = zone_data["hp_status"]
+image_url = (
+    "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
+)
 
-# モードに応じたメッセージと比べるネタの選定
-if "ネガティブ" in diag_mode:
-  comment = random.choice(zone_data["neg_messages"])
-  comparison_item = random.choice(zone_data["comparisons"])
-  comparison_text = comparison_item["neg"]
-  comparison_category = comparison_item["category"]
-  image_url = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
-else:
-  comment = random.choice(zone_data["pos_messages"])
-  comparison_item = random.choice(zone_data["comparisons"])
-  comparison_text = comparison_item["pos"]
-  comparison_category = comparison_item["category"]
-  image_url = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhqMv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_yરો_man.png"  # ポジティブ用（あるいは明るい画像）
-  # 念のため安全な画像フォールバック
-  image_url = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7R4ZEolfQVo/s400/pose_kuyashii_man.png"
+# メッセージと比較データの安全な取得
+neg_comment = random.choice(zone_data["neg_messages"])
+pos_comment = random.choice(zone_data["pos_messages"])
+comparison_item = random.choice(zone_data["comparisons"])
+comparison_category = comparison_item["category"]
+approx_rate = comparison_item["approx"]
 
 if zone_key == "yutime_ghost":
   yutime_rot = int(p_denom * 3)
-  comment = comment.format(yutime_rot=yutime_rot)
+  neg_comment = neg_comment.format(yutime_rot=yutime_rot)
+  pos_comment = pos_comment.format(yutime_rot=yutime_rot)
 
-# --- 7. 統合メインカード ---
+# --- 7. 統合メインカードの組み立て ---
+# モードに応じたコンテンツ構築
+content_html = ""
+
+if "ネガ・ポジ両方" in diag_mode:
+  content_html += (
+      f'<p style="font-size: 13px; color: #f1f5f9; line-height: 1.4;'
+      f' margin-bottom: 8px; text-align: center;">🖤 <b>絶望:</b>'
+      f" {neg_comment}</p>"
+  )
+  content_html += (
+      f'<p style="font-size: 13px; color: #fce7f3; line-height: 1.4;'
+      f' margin-bottom: 10px; text-align: center;">💖 <b>狂気的肯定:</b>'
+      f" {pos_comment}</p>"
+  )
+  comparison_display = (
+      f'<div><span style="color: #ef4444;">🖤 ネガ:</span>'
+      f' {comparison_item["neg"]}</div><div style="margin-top: 4px;"><span'
+      f' style="color: #ec4899;">💖 ポジ:</span>'
+      f' {comparison_item["pos"]}</div>'
+  )
+elif "ネガティブのみ" in diag_mode:
+  content_html += (
+      f'<p style="font-size: 13px; color: {text_color}; line-height: 1.4;'
+      f' margin-bottom: 10px; text-align: center;">{neg_comment}</p>'
+  )
+  comparison_display = f'🖤 {comparison_item["neg"]}'
+else:
+  content_html += (
+      f'<p style="font-size: 13px; color: {text_color}; line-height: 1.4;'
+      f' margin-bottom: 10px; text-align: center;">{pos_comment}</p>'
+  )
+  comparison_display = f'💖 {comparison_item["pos"]}'
+
 card_html = (
     '<div style="border: 3px double '
     + border_color
@@ -333,24 +373,23 @@ card_html = (
     + '" style="width: 60px; height: 60px; object-fit: contain; border-radius: 50%; background-color: rgba(255,255,255,0.9); padding: 3px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);" />'
     "</div>"
     "</div>"
-    '<p style="font-size: 13px; color: '
-    + text_color
-    + '; line-height: 1.4; margin-bottom: 10px; text-align: center; padding: 0 4px;">'
-    + comment
-    + "</p>"
-    '<div style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed '
+    + content_html
+    + '<div style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed '
     + border_color
     + '; padding: 8px 10px; border-radius: 6px; text-align: left; margin-bottom: 10px;">'
-    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">'
+    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">'
     '<span style="font-size: 10px; color: #38bdf8; font-weight: bold; background-color: rgba(56, 189, 248, 0.1); padding: 1px 5px; border-radius: 4px;">'
     + comparison_category
     + "</span>"
+    '<span style="font-size: 10px; color: #38bdf8; font-weight: bold;">'
+    + approx_rate
+    + "</span>"
     "</div>"
-    '<p style="font-size: 11px; color: '
+    '<div style="font-size: 11px; color: '
     + text_color
-    + '; margin: 0; line-height: 1.3;">🎯 '
-    + comparison_text
-    + "</p>"
+    + '; line-height: 1.4;">'
+    + comparison_display
+    + "</div>"
     "</div>"
     '<!-- 💳 財布/メンタル HPゲージ演出 -->'
     '<div style="background-color: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 6px;">'
