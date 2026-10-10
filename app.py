@@ -200,52 +200,51 @@ if selected_spec_name == "カスタム":
 else:
   p_denom = spec_options[selected_spec_name]
 
-# --- 4. セッションステートによる回転数の同期管理 ---
+# --- 4. セッションステートによる完全同期管理 ---
 max_slider = int(p_denom * 6)
 
 if "current_rot" not in st.session_state:
   st.session_state.current_rot = min(500, max_slider)
 
-# スペック変更等で最大値を超えた場合の保険
 if st.session_state.current_rot > max_slider:
   st.session_state.current_rot = max_slider
 
 
-# コールバック関数：数値入力ボックスが変更されたとき
-def update_from_number():
-  st.session_state.current_rot = st.session_state.num_input_val
+# コールバック：数値入力が変更されたとき
+def on_change_input():
+  st.session_state.current_rot = st.session_state.input_box
 
 
-# コールバック関数：スライダーが変更されたとき
-def update_from_slider():
-  st.session_state.current_rot = st.session_state.slider_val
+# コールバック：スライダーが変更されたとき
+def on_change_slider():
+  st.session_state.current_rot = st.session_state.slider_bar
 
 
 step_val = 5 if p_denom <= 100 else 10
 
-# 📝 直接数字を打ち込める数値入力（コールバック連動）
+# 📝 直接入力（valueにセッションステートの最新値を指定）
 st.number_input(
     "回転数を直接入力",
     min_value=0,
     max_value=max_slider,
     value=st.session_state.current_rot,
     step=1,
-    key="num_input_val",
-    on_change=update_from_number,
+    key="input_box",
+    on_change=on_change_input,
 )
 
-# 🎚️ スライダー（コールバック連動）
+# 🎚️ スライダー（valueにセッションステートの最新値を指定）
 st.slider(
     "またはスライダーで調整",
     min_value=0,
     max_value=max_slider,
     value=st.session_state.current_rot,
     step=step_val,
-    key="slider_val",
-    on_change=update_from_slider,
+    key="slider_bar",
+    on_change=on_change_slider,
 )
 
-# 確定した回転数
+# 最終的な回転数（常に同期された値を使用）
 current_rotation = st.session_state.current_rot
 
 # --- 5. 計算ロジック ---
