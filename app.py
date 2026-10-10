@@ -23,7 +23,6 @@ st.markdown(
         color: #e2e8f0 !important;
         font-family: 'DotGothic16', sans-serif !important;
     }
-    /* ボタンの視認性アップ用 */
     .stButton button {
         width: 100%;
         background-color: #1e293b;
@@ -72,7 +71,7 @@ ZONE_MESSAGES = {
         "title": "ざわ… ざわ… ゾーン",
         "messages": [
             "少し財布の紐がキュッとなる頃合い。深呼吸してコーヒーでもどうぞ。",
-            "<span>「もしかして、今日もやられる日なのでは…？」という悪寒が走り始める頃。</span>",
+            "「もしかして、今日もやられる日なのでは…？」という悪寒が走り始める頃。",
             "周囲の出玉を見ないように視線を台に固定するトレーニング期間。",
         ],
         "comparisons": [
@@ -212,7 +211,7 @@ if selected_spec_name == "カスタム":
 else:
   p_denom = spec_options[selected_spec_name]
 
-# --- 4. セッションステートによる回転数の管理とステップボタン ---
+# --- 4. セッションステートによる回転数の管理 ---
 max_slider = int(p_denom * 6)
 
 if "current_rot" not in st.session_state:
@@ -221,21 +220,24 @@ if "current_rot" not in st.session_state:
 if st.session_state.current_rot > max_slider:
   st.session_state.current_rot = max_slider
 
-# スライダー用の一時変数
 step_val = 5 if p_denom <= 100 else 10
 
-# 🎚️ メインスライダー
+
+# スライダー変更時のコールバック
+def on_slider_change():
+  st.session_state.current_rot = st.session_state.slider_widget
+
+
+# 🎚️ メインスライダー（コールバックで値を確実に同期）
 current_rotation = st.slider(
     "現在の回転数",
     min_value=0,
     max_value=max_slider,
     value=st.session_state.current_rot,
     step=step_val,
-    key="slider_input",
+    key="slider_widget",
+    on_change=on_slider_change,
 )
-
-# スライダーで動かされた値をセッションステートに同期
-st.session_state.current_rot = current_rotation
 
 # 🎛️ 微調整・ジャンプボタン（-100, -10, -1, +1, +10, +100）
 st.markdown(
@@ -251,10 +253,10 @@ labels = ["-100", "-10", "-1", "+1", "+10", "+100"]
 for i, adj in enumerate(adjustments):
   if cols[i].button(labels[i], key=f"adj_{adj}"):
     new_val = st.session_state.current_rot + adj
-    # 0からmax_sliderの範囲に収める
     st.session_state.current_rot = max(0, min(max_slider, new_val))
     st.rerun()
 
+# 最終的な回転数
 current_rotation = st.session_state.current_rot
 
 # --- 5. 計算ロジック ---
