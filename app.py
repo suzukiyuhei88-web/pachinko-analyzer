@@ -8,11 +8,35 @@ st.set_page_config(
     page_title="パチンコ確率診断", page_icon="🎰", layout="centered"
 )
 
-# --- 0. CSVデータの読み込み ---
+# --- 0. CSVデータの読み込みと数値化パース ---
 @st.cache_data
 def load_data():
     try:
-        return pd.read_csv('neta_master.csv')
+        df = pd.read_csv('neta_master.csv')
+        # 確率数値（%）を比較するためのパース列を追加
+        def parse_probability(text):
+            text_str = str(text)
+            if '1/36' in text_str:
+                return 1/36 * 100
+            if '432万分の1' in text_str or '0.000023%' in text_str:
+                return 0.000023
+            if '65万分の1' in text_str or '0.00015%' in text_str:
+                return 0.00015
+            if '1000兆分の1' in text_str:
+                return 1e-12
+            if '数百万分の1' in text_str or '0.00001%' in text_str:
+                return 0.00001
+            import re
+            matches = re.findall(r'([0-9]+\.?[0-9]*)%', text_str)
+            if matches:
+                return float(matches[0])
+            ranges = re.findall(r'([0-9]+\.?[0-9]*)%?[〜~]([0-9]+\.?[0-9]*)%', text_str)
+            if ranges:
+                return (float(ranges[0][0]) + float(ranges[0][1])) / 2.0
+            return 50.0
+        
+        df['prob_val'] = df['確率・数値'].apply(parse_probability)
+        return df
     except Exception:
         return None
 
@@ -39,7 +63,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ゾーンごとのメッセージ・演出定義 ---
+# --- 2. ゾーンごとのメッセージ・演出定義（UIパラメータ用） ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -123,7 +147,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# モード選択（3択）
 diag_mode = st.radio(
     "表示モード",
     ["両方味わう", "絶望に浸る", "狂気的に肯定される"],
@@ -213,18 +236,21 @@ if zone_key == "yutime_ghost":
     neg_comment = neg_comment.format(yutime_rot=yutime_rot)
     pos_comment = pos_comment.format(yutime_rot=yutime_rot)
 
-# 比較データの取得（neta_master.csvから安全にランダム取得、なければフォールバック）
+# --- 7. ハマり確率に最も近いCSVネタを自動マッチング ---
 if df_master is not None and len(df_master) > 0:
-    sample_row = df_master.sample(1).iloc[0]
-    comparison_category = str(sample_row.get('ゾーン', '日常'))
-    approx_rate = str(sample_row.get('確率・数値', ''))
-    comparison_text = str(sample_row.get('事象', '')) + "：" + str(sample_row.get('コメント', ''))
+    # 計算された prob_ハマり に最も近い prob_val を持つ行を検索
+    df_master['diff'] = (df_master['prob_val'] - prob_ハマり).abs()
+    closest_row = df_master.loc[df_master['diff'].idxmin()]
+    
+    comparison_category = str(closest_row.get('ゾーン', '日常'))
+    approx_rate = str(closest_row.get('確率・数値', ''))
+    comparison_text = str(closest_row.get('事象', '')) + "：" + str(closest_row.get('コメント', ''))
 else:
     comparison_category = "日常"
-    approx_rate = "約 25%"
-    comparison_text = "日常のちょっとした不運な出来事"
+    approx_rate = f"約 {prob_ハマり:.1f}%"
+    comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 7. ラベルを排除したシームレスなカード構築 ---
+# --- 8. ラベルを排除したシームレスなカード構築 ---
 content_html = ""
 
 if diag_mode == "両方味わう":
@@ -309,7 +335,7 @@ card_html = (
     "</div>"
     '<!-- 💳 財布/メンタル HPゲージ演出 -->'
     '<div style="background-color: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 6px;">'
-    '<div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 3px;">'
+    '<div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; master-bottom: 3px;">'
     "<span>💳 財布/メンタル HP</span>"
     "<span>"
     + hp_status
