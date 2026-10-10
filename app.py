@@ -28,7 +28,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ゾーンごとのデータ定義（確率スケール付き） ---
+# --- 2. ゾーンごとのデータ定義（ラベル排除版） ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -37,8 +37,8 @@ ZONE_MESSAGES = {
             "財布の紐はまだしっかり締まっています。平和な日常ですね。",
         ],
         "pos_messages": [
-            "素晴らしい立ち上がり！このままの勢いで宇宙の真理に到達しましょう。",
-            "平和な立ち上がり。今日のあなたは一味違う気がします。",
+            "素晴らしい立ち上がり。この調子で宇宙の真理へ近づきましょう。",
+            "穏やかな風が吹いています。今日のあなたは一味違います。",
         ],
         "comparisons": [
             {
@@ -67,7 +67,7 @@ ZONE_MESSAGES = {
             "「もしかして、今日もやられる日なのでは…？」という悪寒が走り始める頃。",
         ],
         "pos_messages": [
-            "ここからの巻き返しが一番ドラマチックなんです。期待値は爆上がり中！",
+            "ここからの巻き返しが一番ドラマチックなんです。期待値は上昇中。",
             "運命の歯車があなたの方を向き始めています。焦る必要はありません。",
         ],
         "comparisons": [
@@ -80,7 +80,7 @@ ZONE_MESSAGES = {
             {
                 "category": "科学",
                 "neg": "スマホを落としたとき、画面ではなく背面から奇跡的に落ちる…と見せかけてバキバキになる確率",
-                "pos": "身の回りの原子が奇跡的に整列してテレポートが起きる確率（ほぼゼロのロマン）",
+                "pos": "身の回りの原子が奇跡的に整列してテレポートが起きる確率（ロマン枠）",
                 "approx": "約 10%",
             },
         ],
@@ -102,7 +102,7 @@ ZONE_MESSAGES = {
         ],
         "pos_messages": [
             (
-                "あえて遊タイムに頼らない！真の漢（おとこ）の自力引きが試される黄金期です！"
+                "あえて遊タイムに頼らない。自力での引き戻しが試される黄金期です。"
             ),
             (
                 "これだけ耐えたのだから、ここから訪れる爆連のエネルギーは計り知れません。"
@@ -138,10 +138,10 @@ ZONE_MESSAGES = {
         ],
         "pos_messages": [
             (
-                "歴史に名を残す大当たりのための『溜め』が完了しつつあります。神様もそろそろ目を覚ますはず！"
+                "歴史に名を残す大当りのための『溜め』が完了しつつあります。神様もそろそろ目を覚ます頃。"
             ),
             (
-                "ここまで耐えたあなたには、全パチンカーを称賛する資格があります。伝説の目撃者になろう！"
+                "ここまで耐えたあなたには、全パチンカーを称賛する資格があります。伝説の目撃者へ。"
             ),
         ],
         "comparisons": [
@@ -174,17 +174,17 @@ ZONE_MESSAGES = {
         ],
         "pos_messages": [
             (
-                "おめでとうございます！ 宇宙の確率変動を引き当てた『選ばれし神』の領域です！"
+                "おめでとうございます。宇宙の確率変動を引き当てた『選ばれし者』の領域です。"
             ),
             (
-                "この後の大当りで、これまでの負けをすべてお釣りが来るほど捲くる大ストーリーの序章！"
+                "この後の大当りで、これまでのすべてをお釣りが来るほど捲くる大ストーリーの序章。"
             ),
         ],
         "comparisons": [
             {
                 "category": "科学",
                 "neg": "量子力学のバグを疑うレベル。物理法則があなたに対して反逆しています。",
-                "pos": "ノーベル賞クラスの大発見に匹敵する、統計学上のレアロマン！",
+                "pos": "ノーベル賞クラスの大発見に匹敵する、統計学上のレアロマン。",
                 "approx": "約 0.5%",
             },
             {
@@ -211,7 +211,7 @@ st.markdown(
 # モード選択（3択）
 diag_mode = st.radio(
     "表示モード",
-    ["🖤💖 ネガ・ポジ両方表示", "🖤 ネガティブのみ", "💖 ポジティブのみ"],
+    ["両方味わう", "絶望に浸る", "狂気的に肯定される"],
     index=0,
     horizontal=True,
 )
@@ -289,7 +289,7 @@ image_url = (
     "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
 )
 
-# メッセージと比較データの安全な取得
+# メッセージと比較データの取得
 neg_comment = random.choice(zone_data["neg_messages"])
 pos_comment = random.choice(zone_data["pos_messages"])
 comparison_item = random.choice(zone_data["comparisons"])
@@ -301,39 +301,35 @@ if zone_key == "yutime_ghost":
   neg_comment = neg_comment.format(yutime_rot=yutime_rot)
   pos_comment = pos_comment.format(yutime_rot=yutime_rot)
 
-# --- 7. 統合メインカードの組み立て ---
-# モードに応じたコンテンツ構築
+# --- 7. ラベルを排除したシームレスなカード構築 ---
 content_html = ""
 
-if "ネガ・ポジ両方" in diag_mode:
+if diag_mode == "両方味わう":
   content_html += (
       f'<p style="font-size: 13px; color: #f1f5f9; line-height: 1.4;'
-      f' margin-bottom: 8px; text-align: center;">🖤 <b>絶望:</b>'
-      f" {neg_comment}</p>"
+      f' margin-bottom: 6px; text-align: center;">{neg_comment}</p>'
   )
   content_html += (
       f'<p style="font-size: 13px; color: #fce7f3; line-height: 1.4;'
-      f' margin-bottom: 10px; text-align: center;">💖 <b>狂気的肯定:</b>'
-      f" {pos_comment}</p>"
+      f' margin-bottom: 10px; text-align: center; opacity: 0.9;">'
+      f"{pos_comment}</p>"
   )
   comparison_display = (
-      f'<div><span style="color: #ef4444;">🖤 ネガ:</span>'
-      f' {comparison_item["neg"]}</div><div style="margin-top: 4px;"><span'
-      f' style="color: #ec4899;">💖 ポジ:</span>'
-      f' {comparison_item["pos"]}</div>'
+      f'<div style="margin-bottom: 4px;">• {comparison_item["neg"]}</div>'
+      f'<div style="opacity: 0.85;">• {comparison_item["pos"]}</div>'
   )
-elif "ネガティブのみ" in diag_mode:
+elif diag_mode == "絶望に浸る":
   content_html += (
       f'<p style="font-size: 13px; color: {text_color}; line-height: 1.4;'
       f' margin-bottom: 10px; text-align: center;">{neg_comment}</p>'
   )
-  comparison_display = f'🖤 {comparison_item["neg"]}'
+  comparison_display = f'• {comparison_item["neg"]}'
 else:
   content_html += (
       f'<p style="font-size: 13px; color: {text_color}; line-height: 1.4;'
       f' margin-bottom: 10px; text-align: center;">{pos_comment}</p>'
   )
-  comparison_display = f'💖 {comparison_item["pos"]}'
+  comparison_display = f'• {comparison_item["pos"]}'
 
 card_html = (
     '<div style="border: 3px double '
