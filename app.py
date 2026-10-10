@@ -200,8 +200,8 @@ if selected_spec_name == "カスタム":
 else:
   p_denom = spec_options[selected_spec_name]
 
-# --- 4. スペックに応じたスライダー最大値の動的調整 ---
-max_slider = max(1000, int(p_denom * 4.2))
+# --- 4. スペックに応じたスライダー最大値の設計（確率分母の6倍に統一） ---
+max_slider = int(p_denom * 6)
 step_val = 5 if p_denom <= 100 else 10
 
 current_rotation = st.slider(
@@ -216,7 +216,7 @@ current_rotation = st.slider(
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
-# --- 6. 演出・ステータス分岐（確率の階段を上から順に正しく判定） ---
+# --- 6. 演出・ステータス分岐（平穏 ➔ ざわ… ➔ 遊タイム非搭載 ➔ 領域展開 ➔ 神域） ---
 st.markdown("---")
 
 is_yutime_over = current_rotation >= (p_denom * 2.8)
