@@ -28,8 +28,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ネタ帳データ（コメント ＋ 確率同等事象 ＋ イラスト画像URL） ---
-# ※ "image" の部分に、いらすとや等の画像URLやファイル名を指定できます
+# --- 2. ネタ帳データ（コメント ＋ 確率同等事象 ＋ 悔しがるいらすとや画像） ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -49,8 +48,8 @@ ZONE_MESSAGES = {
             },
         ],
         "image": (
-            "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=150"
-        ),  # 仮置き画像
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
+        ),
     },
     "caution": {
         "title": "ざわ… ざわ… ゾーン",
@@ -70,8 +69,8 @@ ZONE_MESSAGES = {
             },
         ],
         "image": (
-            "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=150"
-        ),  # 仮置き画像
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
+        ),
     },
     "yutime_ghost": {
         "title": "【幻の遊タイム】非搭載ゾーン",
@@ -88,8 +87,8 @@ ZONE_MESSAGES = {
             "approx": "約 15%",
         }],
         "image": (
-            "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=150"
-        ),  # 仮置き画像
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
+        ),
     },
     "deep": {
         "title": "領域展開（深海トラウマ）",
@@ -113,8 +112,8 @@ ZONE_MESSAGES = {
             },
         ],
         "image": (
-            "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=150"
-        ),  # 仮置き画像
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
+        ),
     },
     "god": {
         "title": "歴史に名を刻むレベル",
@@ -134,8 +133,8 @@ ZONE_MESSAGES = {
             },
         ],
         "image": (
-            "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=150"
-        ),  # 仮置き画像
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
+        ),
     },
 }
 
@@ -254,11 +253,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# メインのインパクトカード（絵文字の代わりに画像タグを表示）
+# メインのインパクトカード（いらすとや画像を配置）
 card_html = f"""
 <div style="border: 3px double {border_color}; background-color: {card_bg}; padding: 24px 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
-    <div style="margin-bottom: 10px;">
-        <img src="{image_url}" style="width: 80px; height: 80px; object-fit: contain; border-radius: 50%; background-color: rgba(255,255,255,0.1); padding: 4px;" />
+    <div style="margin-bottom: 12px;">
+        <img src="{image_url}" style="width: 100px; height: 100px; object-fit: contain; border-radius: 50%; background-color: rgba(255,255,255,0.9); padding: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);" />
     </div>
     <div style="font-size: 14px; color: {text_color}; text-transform: uppercase; letter-spacing: 2px;">{status_title}</div>
     <h2 style="color: {text_color}; margin: 10px 0 6px 0; font-size: 40px; letter-spacing: 1px;">{prob_ハマり:.1f}%</h2>
