@@ -23,6 +23,18 @@ st.markdown(
         color: #e2e8f0 !important;
         font-family: 'DotGothic16', sans-serif !important;
     }
+    /* ボタンの視認性アップ用 */
+    .stButton button {
+        width: 100%;
+        background-color: #1e293b;
+        color: #f8fafc;
+        border: 1px solid #475569;
+        font-family: 'DotGothic16', sans-serif !important;
+    }
+    .stButton button:hover {
+        background-color: #334155;
+        border-color: #94a3b8;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -60,7 +72,7 @@ ZONE_MESSAGES = {
         "title": "ざわ… ざわ… ゾーン",
         "messages": [
             "少し財布の紐がキュッとなる頃合い。深呼吸してコーヒーでもどうぞ。",
-            "「もしかして、今日もやられる日なのでは…？」という悪寒が走り始める頃。",
+            "<span>「もしかして、今日もやられる日なのでは…？」という悪寒が走り始める頃。</span>",
             "周囲の出玉を見ないように視線を台に固定するトレーニング期間。",
         ],
         "comparisons": [
@@ -200,7 +212,7 @@ if selected_spec_name == "カスタム":
 else:
   p_denom = spec_options[selected_spec_name]
 
-# --- 4. セッションステートによる完全同期管理 ---
+# --- 4. セッションステートによる回転数の管理とステップボタン ---
 max_slider = int(p_denom * 6)
 
 if "current_rot" not in st.session_state:
@@ -209,42 +221,40 @@ if "current_rot" not in st.session_state:
 if st.session_state.current_rot > max_slider:
   st.session_state.current_rot = max_slider
 
-
-# コールバック：数値入力が変更されたとき
-def on_change_input():
-  st.session_state.current_rot = st.session_state.input_box
-
-
-# コールバック：スライダーが変更されたとき
-def on_change_slider():
-  st.session_state.current_rot = st.session_state.slider_bar
-
-
+# スライダー用の一時変数
 step_val = 5 if p_denom <= 100 else 10
 
-# 📝 直接入力（valueにセッションステートの最新値を指定）
-st.number_input(
-    "回転数を直接入力",
-    min_value=0,
-    max_value=max_slider,
-    value=st.session_state.current_rot,
-    step=1,
-    key="input_box",
-    on_change=on_change_input,
-)
-
-# 🎚️ スライダー（valueにセッションステートの最新値を指定）
-st.slider(
-    "またはスライダーで調整",
+# 🎚️ メインスライダー
+current_rotation = st.slider(
+    "現在の回転数",
     min_value=0,
     max_value=max_slider,
     value=st.session_state.current_rot,
     step=step_val,
-    key="slider_bar",
-    on_change=on_change_slider,
+    key="slider_input",
 )
 
-# 最終的な回転数（常に同期された値を使用）
+# スライダーで動かされた値をセッションステートに同期
+st.session_state.current_rot = current_rotation
+
+# 🎛️ 微調整・ジャンプボタン（-100, -10, -1, +1, +10, +100）
+st.markdown(
+    "<div style='font-size: 11px; color: #94a3b8; margin-bottom: 2px;'>⚡"
+    " クイック調整ボタン</div>",
+    unsafe_allow_html=True,
+)
+
+cols = st.columns(6)
+adjustments = [-100, -10, -1, 1, 10, 100]
+labels = ["-100", "-10", "-1", "+1", "+10", "+100"]
+
+for i, adj in enumerate(adjustments):
+  if cols[i].button(labels[i], key=f"adj_{adj}"):
+    new_val = st.session_state.current_rot + adj
+    # 0からmax_sliderの範囲に収める
+    st.session_state.current_rot = max(0, min(max_slider, new_val))
+    st.rerun()
+
 current_rotation = st.session_state.current_rot
 
 # --- 5. 計算ロジック ---
