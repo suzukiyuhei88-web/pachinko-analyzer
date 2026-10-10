@@ -19,7 +19,7 @@ st.markdown(
         background-color: #0f172a;
         color: #f8fafc;
     }
-    label, .stRadio p, .stSlider p {
+    label, .stRadio p {
         color: #e2e8f0 !important;
         font-family: 'DotGothic16', sans-serif !important;
     }
@@ -29,6 +29,7 @@ st.markdown(
         color: #f8fafc;
         border: 1px solid #475569;
         font-family: 'DotGothic16', sans-serif !important;
+        padding: 4px 0px;
     }
     .stButton button:hover {
         background-color: #334155;
@@ -211,53 +212,51 @@ if selected_spec_name == "カスタム":
 else:
   p_denom = spec_options[selected_spec_name]
 
-# --- 4. セッションステートによる回転数の管理 ---
-max_slider = int(p_denom * 6)
+# --- 4. セッションステートによる回転数の管理とボタン操作 ---
+max_limit = int(p_denom * 6)
 
 if "current_rot" not in st.session_state:
-  st.session_state.current_rot = min(500, max_slider)
+  st.session_state.current_rot = min(500, max_limit)
 
-if st.session_state.current_rot > max_slider:
-  st.session_state.current_rot = max_slider
+if st.session_state.current_rot > max_limit:
+  st.session_state.current_rot = max_limit
 
-step_val = 5 if p_denom <= 100 else 10
-
-
-# スライダー変更時のコールバック
-def on_slider_change():
-  st.session_state.current_rot = st.session_state.slider_widget
-
-
-# 🎚️ メインスライダー（コールバックで値を確実に同期）
-current_rotation = st.slider(
-    "現在の回転数",
-    min_value=0,
-    max_value=max_slider,
-    value=st.session_state.current_rot,
-    step=step_val,
-    key="slider_widget",
-    on_change=on_slider_change,
-)
-
-# 🎛️ 微調整・ジャンプボタン（-100, -10, -1, +1, +10, +100）
+# 🎛️ クイック調整ボタン（2段構成でスマホでも押しやすく）
 st.markdown(
     "<div style='font-size: 11px; color: #94a3b8; margin-bottom: 2px;'>⚡"
-    " クイック調整ボタン</div>",
+    " 回転数クイック調整</div>",
     unsafe_allow_html=True,
 )
 
-cols = st.columns(6)
+row1 = st.columns(3)
+row2 = st.columns(3)
+
 adjustments = [-100, -10, -1, 1, 10, 100]
 labels = ["-100", "-10", "-1", "+1", "+10", "+100"]
 
 for i, adj in enumerate(adjustments):
-  if cols[i].button(labels[i], key=f"adj_{adj}"):
+  target_col = row1[i] if i < 3 else row2[i - 3]
+  if target_col.button(labels[i], key=f"adj_{adj}"):
     new_val = st.session_state.current_rot + adj
-    st.session_state.current_rot = max(0, min(max_slider, new_val))
+    st.session_state.current_rot = max(0, min(max_limit, new_val))
     st.rerun()
 
-# 最終的な回転数
-current_rotation = st.session_state.current_rot
+# 📝 現在の回転数を直接入力できる数値入力欄
+def on_number_input_change():
+  st.session_state.current_rot = st.session_state.num_input
+
+current_rotation = st.number_input(
+    "現在の回転数",
+    min_value=0,
+    max_value=max_limit,
+    value=st.session_state.current_rot,
+    step=1,
+    key="num_input",
+    on_change=on_number_input_change,
+)
+
+# 念のため同期
+st.session_state.current_rot = current_rotation
 
 # --- 5. 計算ロジック ---
 p = 1.0 / p_denom if p_denom > 0 else 0
