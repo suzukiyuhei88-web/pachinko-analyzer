@@ -215,7 +215,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# メインのインパクトカード（情報を見やすく階層化）
+# メインのインパクトカード
 st.markdown(
     f"""
     <div style="
@@ -231,10 +231,8 @@ st.markdown(
         <h2 style="color: {text_color}; margin: 10px 0 6px 0; font-size: 40px; letter-spacing: 1px;">{prob_ハマり:.1f}%</h2>
         <div style="font-size: 12px; color: {text_color}; opacity: 0.8; margin-bottom: 16px;">（この回転数まで当らない確率）</div>
         
-        <!-- コメントエリア -->
         <p style="font-size: 15px; color: {text_color}; line-height: 1.6; margin-bottom: 18px; padding: 0 10px;">{comment}</p>
         
-        <!-- 確率の同等事象エリア（デザインで綺麗に分離） -->
         <div style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed {border_color}; padding: 12px 14px; border-radius: 6px; text-align: left;">
             <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px; letter-spacing: 1px;">🌍 現実世界での確率スケール</div>
             <p style="font-size: 13px; color: {text_color}; margin: 0; line-height: 1.5;">🎯 {comparison_text}</p>
