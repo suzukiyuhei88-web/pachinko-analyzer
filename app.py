@@ -28,7 +28,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ネタ帳データ（1ファイルに統合！） ---
+# --- 2. ネタ帳データ（シュールなコメント ＋ 確率同等事象） ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -37,6 +37,10 @@ ZONE_MESSAGES = {
             "財布の紐はまだしっかり締まっています。平和な日常ですね。",
             "隣の台が爆連している音をBGMに、静かにレバーを叩くフェーズ。",
         ],
+        "comparisons": [
+            "例えるなら：ジャンケンを3回連続ですべてあいこにするくらいの確率",
+            "例えるなら：朝のニュースの占い最下位を2日連続で引くくらいの確率",
+        ],
     },
     "caution": {
         "title": "ざわ… ざわ… ゾーン",
@@ -44,6 +48,10 @@ ZONE_MESSAGES = {
             "少し財布の紐がキュッとなる頃合い。深呼吸してコーヒーでもどうぞ。",
             "「もしかして、今日もやられる日なのでは…？」という悪寒が走り始める頃。",
             "周囲の出玉を見ないように視線を台に固定するトレーニング期間。",
+        ],
+        "comparisons": [
+            "例えるなら：スマホのバッテリー残量1%の状態で、充電器を挿す直前に電源が落ちる確率",
+            "例えるなら：自販機でボタンを押して『当たり』が出てもう1本もらえるくらいの確率",
         ],
     },
     "yutime_ghost": {
@@ -55,6 +63,9 @@ ZONE_MESSAGES = {
             (
                 "遊タイムという名の救済措置が消え去った現代の荒波を、生身で泳いでいます。"
             ),
+        ],
+        "comparisons": [
+            "例えるなら：昔のゲームの隠し救済コマンドを本気で探し出すくらいの絶望感",
         ],
     },
     "deep": {
@@ -68,6 +79,10 @@ ZONE_MESSAGES = {
             ),
             ("周囲の視線と、自分のメンタルが試されるディープゾーン。"),
         ],
+        "comparisons": [
+            "例えるなら：トランプのババ抜きで、なぜか最初から最後まで自分の手札にジョーカーが残り続ける確率",
+            "例えるなら：街中で見知らぬ人に『あれ、〇〇くん？』と完全に人違いされる確率",
+        ],
     },
     "god": {
         "title": "歴史に名を刻むレベル",
@@ -75,6 +90,10 @@ ZONE_MESSAGES = {
             ("もはや語るまい。歴史に名を刻むレベルのレア体験デス。"),
             ("確率の女神に完全に嫌われているか、別の何かを召喚している状態です。"),
             ("我が人生に一片の悔い…いや、めちゃくちゃ悔い残るわ！という領域。"),
+        ],
+        "comparisons": [
+            "例えるなら：日常で隕石が直撃する確率よりは高いけど、心から救いを求めたい確率",
+            "例えるなら：奇跡と理不尽の境界線を完全に突破して神域に片足を突っ込んでいる確率",
         ],
     },
 }
@@ -144,6 +163,7 @@ if prob_ハマり > 50:
   border_color = "#475569"
   text_color = "#e2e8f0"
   comment = random.choice(zone_data["messages"])
+  comparison_text = random.choice(zone_data["comparisons"])
   danger_level = 0.2
 elif prob_ハマり > 20:
   status_emoji = "☕"
@@ -152,6 +172,7 @@ elif prob_ハマり > 20:
   border_color = "#64748b"
   text_color = "#cbd5e1"
   comment = random.choice(zone_data["messages"])
+  comparison_text = random.choice(zone_data["comparisons"])
   danger_level = 0.5
 elif is_yutime_over:
   status_emoji = "👻"
@@ -161,6 +182,7 @@ elif is_yutime_over:
   text_color = "#f3e8ff"
   yutime_rot = int(p_denom * 3)
   comment = random.choice(zone_data["messages"]).format(yutime_rot=yutime_rot)
+  comparison_text = random.choice(zone_data["comparisons"])
   danger_level = 0.8
 elif prob_ハマり > 5:
   status_emoji = "🔥"
@@ -169,6 +191,7 @@ elif prob_ハマり > 5:
   border_color = "#ea580c"
   text_color = "#ffedd5"
   comment = random.choice(zone_data["messages"])
+  comparison_text = random.choice(zone_data["comparisons"])
   danger_level = 0.85
 else:
   status_emoji = "⚡"
@@ -177,6 +200,7 @@ else:
   border_color = "#ef4444"
   text_color = "#fee2e2"
   comment = random.choice(zone_data["messages"])
+  comparison_text = random.choice(zone_data["comparisons"])
   danger_level = 1.0
 
 status_title = zone_data["title"]
@@ -191,7 +215,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# メインのインパクトカード
+# メインのインパクトカード（コメント ＋ 確率同等事象の比較テキストを追加）
 st.markdown(
     f"""
     <div style="
@@ -206,7 +230,10 @@ st.markdown(
         <div style="font-size: 14px; color: {text_color}; text-transform: uppercase; letter-spacing: 2px;">{status_title}</div>
         <h2 style="color: {text_color}; margin: 10px 0 6px 0; font-size: 40px; letter-spacing: 1px;">{prob_ハマり:.1f}%</h2>
         <div style="font-size: 12px; color: {text_color}; opacity: 0.8; margin-bottom: 14px;">（この回転数まで当らない確率）</div>
-        <p style="font-size: 15px; color: {text_color}; line-height: 1.6;">{comment}</p>
+        <p style="font-size: 15px; color: {text_color}; line-height: 1.6; margin-bottom: 16px;">{comment}</p>
+        <div style="background-color: rgba(0,0,0,0.3); border-left: 3px solid {border_color}; padding: 10px 12px; border-radius: 4px; text-align: left;">
+            <p style="font-size: 13px; color: {text_color}; margin: 0; opacity: 0.9;">🎯 {comparison_text}</p>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
