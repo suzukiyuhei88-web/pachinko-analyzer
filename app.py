@@ -1,4 +1,5 @@
 import math
+import random
 import streamlit as st
 
 # ページの基本設定
@@ -9,21 +10,15 @@ st.set_page_config(
 # --- 1. デザイン用のカスタムCSS（DotGothic16フォントの導入） ---
 st.markdown(
     """
-    <!-- Google Fontsから「DotGothic16」を読み込み -->
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
-    
     <style>
-    /* 全体にレトロドットフォントを適用 */
     html, body, [class*="css"], .stMarkdown, .stText, h1, h2, h3, p {
         font-family: 'DotGothic16', sans-serif !important;
     }
-    
     .stApp {
-        background-color: #0f172a; /* 落ち着いたダークネイビー */
+        background-color: #0f172a;
         color: #f8fafc;
     }
-    
-    /* ラジオボタンやスライダーの文字調整 */
     label, .stRadio p, .stSlider p {
         color: #e2e8f0 !important;
         font-family: 'DotGothic16', sans-serif !important;
@@ -33,7 +28,58 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. タイトルと選択エリア ---
+# --- 2. ネタ帳データ（1ファイルに統合！） ---
+ZONE_MESSAGES = {
+    "peaceful": {
+        "title": "まだ慌てるような時間じゃない",
+        "messages": [
+            "まだ慌てるような時間じゃない。ここからが本番です。",
+            "財布の紐はまだしっかり締まっています。平和な日常ですね。",
+            "隣の台が爆連している音をBGMに、静かにレバーを叩くフェーズ。",
+        ],
+    },
+    "caution": {
+        "title": "ざわ… ざわ… ゾーン",
+        "messages": [
+            "少し財布の紐がキュッとなる頃合い。深呼吸してコーヒーでもどうぞ。",
+            "「もしかして、今日もやられる日なのでは…？」という悪寒が走り始める頃。",
+            "周囲の出玉を見ないように視線を台に固定するトレーニング期間。",
+        ],
+    },
+    "yutime_ghost": {
+        "title": "【幻の遊タイム】非搭載ゾーン",
+        "messages": [
+            (
+                "昔の基準なら【約 {yutime_rot}回転】で助かってましたね……（遠い目）"
+            ),
+            (
+                "遊タイムという名の救済措置が消え去った現代の荒波を、生身で泳いでいます。"
+            ),
+        ],
+    },
+    "deep": {
+        "title": "領域展開（深海トラウマ）",
+        "messages": [
+            (
+                "RUSHに入った瞬間3秒で駆け抜けたあの日の虚しさに比べれば、このハマりなど微風です。"
+            ),
+            (
+                "『からくりサーカス』の運命の一撃で負けた時の絶望感を、思い出させてくれる深海ゾーン。"
+            ),
+            ("周囲の視線と、自分のメンタルが試されるディープゾーン。"),
+        ],
+    },
+    "god": {
+        "title": "歴史に名を刻むレベル",
+        "messages": [
+            ("もはや語るまい。歴史に名を刻むレベルのレア体験デス。"),
+            ("確率の女神に完全に嫌われているか、別の何かを召喚している状態です。"),
+            ("我が人生に一片の悔い…いや、めちゃくちゃ悔い残るわ！という領域。"),
+        ],
+    },
+}
+
+# --- 3. タイトルと選択エリア ---
 st.markdown(
     "<h3 style='color: #f8fafc; text-align: center;'>🎰 パチンコ確率診断</h3>",
     unsafe_allow_html=True,
@@ -54,7 +100,6 @@ selected_spec_name = st.radio(
     horizontal=True,
 )
 
-# スペックの決定とカスタム入力
 if selected_spec_name == "カスタム":
   p_denom = st.number_input(
       "大当り確率の分母を入力 (例: 319.6)",
@@ -71,7 +116,7 @@ if selected_spec_name == "カスタム":
 else:
   p_denom = spec_options[selected_spec_name]
 
-# --- 3. スペックに応じたスライダー最大値の動的調整 ---
+# --- 4. スペックに応じたスライダー最大値の動的調整 ---
 max_slider = max(1000, int(p_denom * 4.2))
 step_val = 5 if p_denom <= 100 else 10
 
@@ -83,55 +128,58 @@ current_rotation = st.slider(
     step=step_val,
 )
 
-# --- 4. 計算ロジック（幾何分布のハマり確率：小数点第1位まで） ---
+# --- 5. 計算ロジック（幾何分布のハマり確率：小数点第1位まで） ---
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
-# --- 5. 演出・ステータス分岐 ---
+# --- 6. 演出・ステータス分岐 ---
 st.markdown("---")
 
 is_yutime_over = current_rotation >= (p_denom * 2.8)
 
 if prob_ハマり > 50:
   status_emoji = "🧊"
-  status_title = "平穏（平常運転）"
+  zone_data = ZONE_MESSAGES["peaceful"]
   card_bg = "#1e293b"
   border_color = "#475569"
   text_color = "#e2e8f0"
-  comment = "まだ慌てるような時間じゃない。ここからが本番です。"
+  comment = random.choice(zone_data["messages"])
   danger_level = 0.2
 elif prob_ハマり > 20:
   status_emoji = "☕"
-  status_title = "ざわ... ざわ..."
+  zone_data = ZONE_MESSAGES["caution"]
   card_bg = "#1e293b"
   border_color = "#64748b"
   text_color = "#cbd5e1"
-  comment = "少し財布の紐がキュッとなる頃合い。深呼吸してコーヒーでもどうぞ。"
+  comment = random.choice(zone_data["messages"])
   danger_level = 0.5
 elif is_yutime_over:
   status_emoji = "👻"
-  status_title = "【幻の遊タイム】非搭載ゾーン"
+  zone_data = ZONE_MESSAGES["yutime_ghost"]
   card_bg = "#2e1065"
   border_color = "#a855f7"
   text_color = "#f3e8ff"
-  comment = f"昔の基準なら【約 {int(p_denom * 3)}回転】で助かってましたね……（遠い目）"
+  yutime_rot = int(p_denom * 3)
+  comment = random.choice(zone_data["messages"]).format(yutime_rot=yutime_rot)
   danger_level = 0.8
 elif prob_ハマり > 5:
   status_emoji = "🔥"
-  status_title = "領域展開（深海）"
+  zone_data = ZONE_MESSAGES["deep"]
   card_bg = "#431407"
   border_color = "#ea580c"
   text_color = "#ffedd5"
-  comment = "周囲の視線と、自分のメンタルが試されるディープゾーン。"
+  comment = random.choice(zone_data["messages"])
   danger_level = 0.85
 else:
   status_emoji = "⚡"
-  status_title = "神域（都市伝説）"
+  zone_data = ZONE_MESSAGES["god"]
   card_bg = "#450a0a"
   border_color = "#ef4444"
   text_color = "#fee2e2"
-  comment = "もはや語るまい。歴史に名を刻むレベルのレア体験デス。"
+  comment = random.choice(zone_data["messages"])
   danger_level = 1.0
+
+status_title = zone_data["title"]
 
 # 選択状況の表示カード
 st.markdown(
@@ -143,7 +191,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# メインのインパクトカード（フォント・枠線をゲームUI風に調整）
+# メインのインパクトカード
 st.markdown(
     f"""
     <div style="
@@ -164,7 +212,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 6. 危険度メーター ---
+# --- 7. 危険度メーター ---
 st.markdown("<br>", unsafe_allow_html=True)
 st.markdown(
     "<p style='font-size: 13px; color: #94a3b8; margin-bottom: 4px;'>📊"
