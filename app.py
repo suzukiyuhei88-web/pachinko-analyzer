@@ -50,13 +50,15 @@ ZONE_MESSAGES = {
         "image": (
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
         ),
+        "hp_percent": 100,
+        "hp_status": "NORMAL (元気)",
     },
     "caution": {
         "title": "ざわ… ざわ… ゾーン",
         "messages": [
             "少し財布の紐がキュッとなる頃合い。深呼吸してコーヒーでもどうぞ。",
             "「もしかして、今日もやられる日なのでは…？」という悪寒が走り始める頃。",
-            "周囲の出玉を見ないように視線を台に固定するトレーニング期間。",
+            "周囲の出玉を見ないように視線の台に固定するトレーニング期間。",
         ],
         "comparisons": [
             {
@@ -71,6 +73,8 @@ ZONE_MESSAGES = {
         "image": (
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
         ),
+        "hp_percent": 60,
+        "hp_status": "CAUTION (注意)",
     },
     "yutime_ghost": {
         "title": "【幻の遊タイム】非搭載ゾーン",
@@ -89,6 +93,8 @@ ZONE_MESSAGES = {
         "image": (
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
         ),
+        "hp_percent": 25,
+        "hp_status": "WARNING (警告)",
     },
     "deep": {
         "title": "領域展開（深海トラウマ）",
@@ -114,6 +120,8 @@ ZONE_MESSAGES = {
         "image": (
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
         ),
+        "hp_percent": 10,
+        "hp_status": "DANGER (瀕死)",
     },
     "god": {
         "title": "歴史に名を刻むレベル",
@@ -135,6 +143,8 @@ ZONE_MESSAGES = {
         "image": (
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
         ),
+        "hp_percent": 1,
+        "hp_status": "DEAD (精神崩壊)",
     },
 }
 
@@ -203,7 +213,6 @@ if prob_ハマり > 50:
   text_color = "#e2e8f0"
   comment = random.choice(zone_data["messages"])
   comparison_item = random.choice(zone_data["comparisons"])
-  danger_level = 0.2
 elif prob_ハマり > 20:
   zone_data = ZONE_MESSAGES["caution"]
   card_bg = "#1e293b"
@@ -211,7 +220,6 @@ elif prob_ハマり > 20:
   text_color = "#cbd5e1"
   comment = random.choice(zone_data["messages"])
   comparison_item = random.choice(zone_data["comparisons"])
-  danger_level = 0.5
 elif is_yutime_over:
   zone_data = ZONE_MESSAGES["yutime_ghost"]
   card_bg = "#2e1065"
@@ -220,7 +228,6 @@ elif is_yutime_over:
   yutime_rot = int(p_denom * 3)
   comment = random.choice(zone_data["messages"]).format(yutime_rot=yutime_rot)
   comparison_item = random.choice(zone_data["comparisons"])
-  danger_level = 0.8
 elif prob_ハマり > 5:
   zone_data = ZONE_MESSAGES["deep"]
   card_bg = "#431407"
@@ -228,7 +235,6 @@ elif prob_ハマり > 5:
   text_color = "#ffedd5"
   comment = random.choice(zone_data["messages"])
   comparison_item = random.choice(zone_data["comparisons"])
-  danger_level = 0.85
 else:
   zone_data = ZONE_MESSAGES["god"]
   card_bg = "#450a0a"
@@ -236,21 +242,22 @@ else:
   text_color = "#fee2e2"
   comment = random.choice(zone_data["messages"])
   comparison_item = random.choice(zone_data["comparisons"])
-  danger_level = 1.0
 
 status_title = zone_data["title"]
 comparison_text = comparison_item["text"]
 comparison_approx = comparison_item["approx"]
 image_url = zone_data["image"]
+hp_percent = zone_data["hp_percent"]
+hp_status = zone_data["hp_status"]
 
-# --- 7. 統合メインカード（スペック・回転数・確率・アイコン・コメント・比較をすべて集約） ---
+# --- 7. 統合メインカード（HPゲージ演出込み） ---
 card_html = (
     '<div style="border: 3px double '
     + border_color
     + "; background-color: "
     + card_bg
-    + '; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">'
-    '<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 14px; font-size: 13px; color: #94a3b8;">'
+    + '; padding: 18px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">'
+    '<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 12px; font-size: 13px; color: #94a3b8;">'
     '<span>スペック: <b style="color: #f8fafc;">1 / '
     + str(p_denom)
     + "</b></span>"
@@ -265,11 +272,11 @@ card_html = (
     + status_title
     + "</div>"
     "</div>"
-    '<div style="display: flex; align-items: center; justify-content: space-around; margin-bottom: 14px; background-color: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px;">'
+    '<div style="display: flex; align-items: center; justify-content: space-around; margin-bottom: 12px; background-color: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">'
     '<div style="text-align: left;">'
     '<h2 style="color: '
     + text_color
-    + '; margin: 0; font-size: 42px; letter-spacing: 1px;">'
+    + '; margin: 0; font-size: 40px; letter-spacing: 1px;">'
     + f"{prob_ハマり:.1f}%"
     + "</h2>"
     '<div style="font-size: 11px; color: '
@@ -279,17 +286,17 @@ card_html = (
     "<div>"
     '<img src="'
     + image_url
-    + '" style="width: 75px; height: 75px; object-fit: contain; border-radius: 50%; background-color: rgba(255,255,255,0.9); padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);" />'
+    + '" style="width: 70px; height: 70px; object-fit: contain; border-radius: 50%; background-color: rgba(255,255,255,0.9); padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);" />'
     "</div>"
     "</div>"
     '<p style="font-size: 14px; color: '
     + text_color
-    + '; line-height: 1.5; margin-bottom: 14px; text-align: center; padding: 0 5px;">'
+    + '; line-height: 1.5; margin-bottom: 12px; text-align: center; padding: 0 5px;">'
     + comment
     + "</p>"
     '<div style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed '
     + border_color
-    + '; padding: 10px 12px; border-radius: 6px; text-align: left;">'
+    + '; padding: 10px 12px; border-radius: 6px; text-align: left; margin-bottom: 12px;">'
     '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">'
     '<span style="font-size: 11px; color: #94a3b8; letter-spacing: 1px;">🌍 現実世界での確率スケール</span>'
     '<span style="font-size: 11px; color: #38bdf8; font-weight: bold; background-color: rgba(56, 189, 248, 0.1); padding: 2px 6px; border-radius: 4px;">'
@@ -302,16 +309,31 @@ card_html = (
     + comparison_text
     + "</p>"
     "</div>"
+    '<!-- 💳 財布/メンタル HPゲージ演出 -->'
+    '<div style="background-color: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 6px;">'
+    '<div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 4px;">'
+    "<span>💳 財布/メンタル HP</span>"
+    "<span>"
+    + hp_status
+    + " "
+    + str(hp_percent)
+    + "%</span>"
+    "</div>"
+    '<div style="width: 100%; background-color: #334155; height: 8px; border-radius: 4px; overflow: hidden;">'
+    '<div style="width: '
+    + str(hp_percent)
+    + "%; background-color: "
+    + (
+        "#22c55e"
+        if hp_percent > 50
+        else "#eab308"
+        if hp_percent > 20
+        else "#ef4444"
+    )
+    + '; height: 100%; transition: width 0.3s ease;"></div>'
+    "</div>"
+    "</div>"
     "</div>"
 )
 
 st.markdown(card_html, unsafe_allow_html=True)
-
-# --- 8. 危険度メーター ---
-st.markdown("<br>", unsafe_allow_html=True)
-st.markdown(
-    "<p style='font-size: 13px; color: #94a3b8; margin-bottom: 4px;'>📊"
-    " ハマり危険度</p>",
-    unsafe_allow_html=True,
-)
-st.progress(danger_level)
