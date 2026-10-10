@@ -200,40 +200,53 @@ if selected_spec_name == "カスタム":
 else:
   p_denom = spec_options[selected_spec_name]
 
-# --- 4. スライダー最大値の定義（確率分母の6倍） ---
+# --- 4. セッションステートによる回転数の同期管理 ---
 max_slider = int(p_denom * 6)
+
+if "current_rot" not in st.session_state:
+  st.session_state.current_rot = min(500, max_slider)
+
+# スペック変更等で最大値を超えた場合の保険
+if st.session_state.current_rot > max_slider:
+  st.session_state.current_rot = max_slider
+
+
+# コールバック関数：数値入力ボックスが変更されたとき
+def update_from_number():
+  st.session_state.current_rot = st.session_state.num_input_val
+
+
+# コールバック関数：スライダーが変更されたとき
+def update_from_slider():
+  st.session_state.current_rot = st.session_state.slider_val
+
+
 step_val = 5 if p_denom <= 100 else 10
 
-# セッションステートの初期化（初期値は500、または最大値を超えないように調整）
-if "rotation_input" not in st.session_state:
-  st.session_state.rotation_input = min(500, max_slider)
+# 📝 直接数字を打ち込める数値入力（コールバック連動）
+st.number_input(
+    "回転数を直接入力",
+    min_value=0,
+    max_value=max_slider,
+    value=st.session_state.current_rot,
+    step=1,
+    key="num_input_val",
+    on_change=update_from_number,
+)
 
-if st.session_state.rotation_input > max_slider:
-  st.session_state.rotation_input = max_slider
+# 🎚️ スライダー（コールバック連動）
+st.slider(
+    "またはスライダーで調整",
+    min_value=0,
+    max_value=max_slider,
+    value=st.session_state.current_rot,
+    step=step_val,
+    key="slider_val",
+    on_change=update_from_slider,
+)
 
-# 🔄 2カラム構成：左側に「数値直接入力」、右側に「スライダー」をコンパクトに配置
-col_input, col_slider = st.columns([1, 2])
-
-with col_input:
-  current_rotation = st.number_input(
-      "回転数を直接入力",
-      min_value=0,
-      max_value=max_slider,
-      value=st.session_state.rotation_input,
-      step=1,
-      key="rotation_num_input",
-  )
-
-with col_slider:
-  # スライダー経由で動かされた場合の値を反映
-  current_rotation = st.slider(
-      "現在の回転数",
-      min_value=0,
-      max_value=max_slider,
-      value=current_rotation,
-      step=step_val,
-      key="rotation_slider",
-  )
+# 確定した回転数
+current_rotation = st.session_state.current_rot
 
 # --- 5. 計算ロジック ---
 p = 1.0 / p_denom if p_denom > 0 else 0
