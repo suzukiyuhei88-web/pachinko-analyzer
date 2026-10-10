@@ -216,7 +216,7 @@ current_rotation = st.slider(
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
-# --- 6. 演出・ステータス分岐（ユーザー様の意図通りの順番で上から判定） ---
+# --- 6. 演出・ステータス分岐（確率の階段を上から順に正しく判定） ---
 st.markdown("---")
 
 is_yutime_over = current_rotation >= (p_denom * 2.8)
@@ -225,12 +225,12 @@ if prob_ハマり > 50:
   zone_key = "peaceful"  # 1. 平穏（確率50%超）
 elif prob_ハマり > 20:
   zone_key = "caution"  # 2. ざわ…（確率20%超）
-elif not is_yutime_over and prob_ハマり > 5:
-  zone_key = "yutime_ghost"  # 3. 【幻の遊タイム】非搭載ゾーン（中等度ハマり）
-elif is_yutime_over or prob_ハマり > 1:
-  zone_key = "deep"  # 4. 領域展開（深海トラウマ）（さらに深いハマり）
+elif prob_ハマり > 10:
+  zone_key = "yutime_ghost"  # 3. 【幻の遊タイム】非搭載ゾーン
+elif prob_ハマり > 1.0:
+  zone_key = "deep"  # 4. 領域展開（深海トラウマ）
 else:
-  zone_key = "god"  # 5. 神域（歴史的大ハマり）
+  zone_key = "god"  # 5. 神域（確率1%以下）
 
 zone_data = ZONE_MESSAGES[zone_key]
 
