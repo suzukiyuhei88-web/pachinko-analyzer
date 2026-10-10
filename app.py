@@ -29,13 +29,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 1. スペック選択（ラフ画風の横並びボタン形式） ---
+# --- 1. スペック選択（ラフ画風の横並びボタン形式 ＋ カスタム対応） ---
 spec_options = {
     "甘デジ (1/99)": 99.9,
     "ライトミドル (1/199)": 199.8,
     "ミドル (1/319)": 319.6,
     "ラッキートリガー (1/349)": 349.0,
-    "超ミドル (1/399)": 399.6,
+    "カスタム": 0.0,  # 自由入力用
 }
 
 # 横並びのラジオボタンで選択式にする
@@ -43,9 +43,20 @@ selected_spec_name = st.radio(
     "機種スペックを選択",
     list(spec_options.keys()),
     index=2,  # デフォルトでミドル(1/319)を選択
-    horizontal=True,  # 横並びにしてスマホで押しやすくする
+    horizontal=True,
 )
-p_denom = spec_options[selected_spec_name]
+
+# 「カスタム」が選ばれた時だけ、自由に入力できる数値を出す
+if selected_spec_name == "カスタム":
+  p_denom = st.number_input(
+      "大当り確率の分母を入力 (例: 319.6)",
+      min_value=1.0,
+      max_value=1000.0,
+      value=319.6,
+      step=0.1,
+  )
+else:
+  p_denom = spec_options[selected_spec_name]
 
 # --- 2. 現在の回転数入力 ---
 current_spin = st.slider(
