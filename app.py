@@ -28,7 +28,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ネタ帳データ（シュールなコメント ＋ 確率同等事象） ---
+# --- 2. ネタ帳データ（シュールなコメント ＋ パーセンテージ付き確率同等事象） ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -38,8 +38,14 @@ ZONE_MESSAGES = {
             "隣の台が爆連している音をBGMに、静かにレバーを叩くフェーズ。",
         ],
         "comparisons": [
-            "ジャンケンを3回連続ですべてあいこにするくらいの確率",
-            "朝のニュースの占い最下位を2日連続で引くくらいの確率",
+            {
+                "text": "コインを投げて2回連続で同じ面が出るくらいの確率",
+                "approx": "約 50%",
+            },
+            {
+                "text": "4択クイズでなんとなく選んだ選択肢が外れる確率",
+                "approx": "約 75%",
+            },
         ],
     },
     "caution": {
@@ -50,8 +56,14 @@ ZONE_MESSAGES = {
             "周囲の出玉を見ないように視線を台に固定するトレーニング期間。",
         ],
         "comparisons": [
-            "スマホのバッテリー残量1%の状態で、充電器を挿す直前に電源が落ちる確率",
-            "自販機でボタンを押して『当たり』が出てもう1本もらえるくらいの確率",
+            {
+                "text": "じゃんけんを2回連続ですべてあいこにする確率",
+                "approx": "約 33%",
+            },
+            {
+                "text": "トランプの山札からハートのカードを引く確率",
+                "approx": "約 25%",
+            },
         ],
     },
     "yutime_ghost": {
@@ -64,9 +76,10 @@ ZONE_MESSAGES = {
                 "遊タイムという名の救済措置が消え去った現代の荒波を、生身で泳いでいます。"
             ),
         ],
-        "comparisons": [
-            "昔のゲームの隠し救済コマンドを本気で探し出すくらいの絶望感",
-        ],
+        "comparisons": [{
+            "text": "昔のゲームの隠しコマンドをノーヒントで当てるくらいの絶望感",
+            "approx": "約 15%",
+        }],
     },
     "deep": {
         "title": "領域展開（深海トラウマ）",
@@ -80,8 +93,14 @@ ZONE_MESSAGES = {
             ("周囲の視線と、自分のメンタルが試されるディープゾーン。"),
         ],
         "comparisons": [
-            "トランプのババ抜きで、なぜか最初から最後まで自分の手札にジョーカーが残り続ける確率",
-            "街中で見知らぬ人に『あれ、〇〇くん？』と完全に人違いされる確率",
+            {
+                "text": "トランプのババ抜きで最後までジョーカーが手札に残る確率",
+                "approx": "約 10%",
+            },
+            {
+                "text": "街中で見知らぬ人に完全に人違いされる確率",
+                "approx": "約 7%",
+            },
         ],
     },
     "god": {
@@ -92,8 +111,14 @@ ZONE_MESSAGES = {
             ("我が人生に一片の悔い…いや、めちゃくちゃ悔い残るわ！という領域。"),
         ],
         "comparisons": [
-            "日常で隕石が直撃する確率よりは高いけど、心から救いを求めたい確率",
-            "奇跡と理不尽の境界線を完全に突破して神域に片足を突っ込んでいる確率",
+            {
+                "text": "日常でちょっとした奇跡やハプニングが連続して起きる確率",
+                "approx": "約 3%",
+            },
+            {
+                "text": "奇跡と理不尽の境界線を完全に突破している確率",
+                "approx": "約 1%未満",
+            },
         ],
     },
 }
@@ -163,7 +188,7 @@ if prob_ハマり > 50:
   border_color = "#475569"
   text_color = "#e2e8f0"
   comment = random.choice(zone_data["messages"])
-  comparison_text = random.choice(zone_data["comparisons"])
+  comparison_item = random.choice(zone_data["comparisons"])
   danger_level = 0.2
 elif prob_ハマり > 20:
   status_emoji = "☕"
@@ -172,7 +197,7 @@ elif prob_ハマり > 20:
   border_color = "#64748b"
   text_color = "#cbd5e1"
   comment = random.choice(zone_data["messages"])
-  comparison_text = random.choice(zone_data["comparisons"])
+  comparison_item = random.choice(zone_data["comparisons"])
   danger_level = 0.5
 elif is_yutime_over:
   status_emoji = "👻"
@@ -182,7 +207,7 @@ elif is_yutime_over:
   text_color = "#f3e8ff"
   yutime_rot = int(p_denom * 3)
   comment = random.choice(zone_data["messages"]).format(yutime_rot=yutime_rot)
-  comparison_text = random.choice(zone_data["comparisons"])
+  comparison_item = random.choice(zone_data["comparisons"])
   danger_level = 0.8
 elif prob_ハマり > 5:
   status_emoji = "🔥"
@@ -191,7 +216,7 @@ elif prob_ハマり > 5:
   border_color = "#ea580c"
   text_color = "#ffedd5"
   comment = random.choice(zone_data["messages"])
-  comparison_text = random.choice(zone_data["comparisons"])
+  comparison_item = random.choice(zone_data["comparisons"])
   danger_level = 0.85
 else:
   status_emoji = "⚡"
@@ -200,10 +225,12 @@ else:
   border_color = "#ef4444"
   text_color = "#fee2e2"
   comment = random.choice(zone_data["messages"])
-  comparison_text = random.choice(zone_data["comparisons"])
+  comparison_item = random.choice(zone_data["comparisons"])
   danger_level = 1.0
 
 status_title = zone_data["title"]
+comparison_text = comparison_item["text"]
+comparison_approx = comparison_item["approx"]
 
 # 選択状況の表示カード
 st.markdown(
@@ -215,7 +242,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# メインのインパクトカード（HTMLのインデントを詰めて確実に出力）
+# メインのインパクトカード（パーセンテージ表記を目立たせる）
 card_html = f"""
 <div style="border: 3px double {border_color}; background-color: {card_bg}; padding: 24px 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
     <div style="font-size: 42px; margin-bottom: 5px;">{status_emoji}</div>
@@ -224,7 +251,10 @@ card_html = f"""
     <div style="font-size: 12px; color: {text_color}; opacity: 0.8; margin-bottom: 16px;">（この回転数まで当らない確率）</div>
     <p style="font-size: 15px; color: {text_color}; line-height: 1.6; margin-bottom: 18px; padding: 0 10px;">{comment}</p>
     <div style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed {border_color}; padding: 12px 14px; border-radius: 6px; text-align: left;">
-        <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px; letter-spacing: 1px;">🌍 現実世界での確率スケール</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 11px; color: #94a3b8; letter-spacing: 1px;">🌍 現実世界での確率スケール</span>
+            <span style="font-size: 12px; color: #38bdf8; font-weight: bold; background-color: rgba(56, 189, 248, 0.1); padding: 2px 6px; border-radius: 4px;">{comparison_approx}</span>
+        </div>
         <p style="font-size: 13px; color: {text_color}; margin: 0; line-height: 1.5;">🎯 {comparison_text}</p>
     </div>
 </div>
