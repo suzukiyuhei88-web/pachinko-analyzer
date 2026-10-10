@@ -28,7 +28,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ゾーンごとのデータ定義（タイトル、メッセージ、比較、HP残量をすべてここに一元管理） ---
+# --- 2. ゾーンごとのデータ定義（平穏 ➔ ざわ… ➔ 遊タイム非搭載 ➔ 領域展開 ➔ 神域） ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -82,6 +82,29 @@ ZONE_MESSAGES = {
         "border_color": "#64748b",
         "text_color": "#cbd5e1",
     },
+    "yutime_ghost": {
+        "title": "【幻の遊タイム】非搭載ゾーン",
+        "messages": [
+            (
+                "昔の基準なら【約 {yutime_rot}回転】で助かってましたね……（遠い目）"
+            ),
+            (
+                "遊タイムという名の救済措置が消え去った現代の荒波を、生身で泳いでいます。"
+            ),
+        ],
+        "comparisons": [{
+            "text": "昔のゲームの隠しコマンドをノーヒントで当てるくらいの絶望感",
+            "approx": "約 15%",
+        }],
+        "image": (
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
+        ),
+        "hp_percent": 30,
+        "hp_status": "WARNING (警告)",
+        "card_bg": "#2e1065",
+        "border_color": "#a855f7",
+        "text_color": "#f3e8ff",
+    },
     "deep": {
         "title": "領域展開（深海トラウマ）",
         "messages": [
@@ -106,34 +129,11 @@ ZONE_MESSAGES = {
         "image": (
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
         ),
-        "hp_percent": 30,
-        "hp_status": "WARNING (警告)",
+        "hp_percent": 10,
+        "hp_status": "DANGER (瀕死)",
         "card_bg": "#431407",
         "border_color": "#ea580c",
         "text_color": "#ffedd5",
-    },
-    "yutime_ghost": {
-        "title": "【幻の遊タイム】非搭載ゾーン",
-        "messages": [
-            (
-                "昔の基準なら【約 {yutime_rot}回転】で助かってましたね……（遠い目）"
-            ),
-            (
-                "遊タイムという名の救済措置が消え去った現代の荒波を、生身で泳いでいます。"
-            ),
-        ],
-        "comparisons": [{
-            "text": "昔のゲームの隠しコマンドをノーヒントで当てるくらいの絶望感",
-            "approx": "約 15%",
-        }],
-        "image": (
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
-        ),
-        "hp_percent": 10,
-        "hp_status": "DANGER (瀕死)",
-        "card_bg": "#2e1065",
-        "border_color": "#a855f7",
-        "text_color": "#f3e8ff",
     },
     "god": {
         "title": "歴史に名を刻むレベル",
@@ -216,21 +216,21 @@ current_rotation = st.slider(
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
-# --- 6. 演出・ステータス分岐（上から順に最も深いゾーンから正しく判定） ---
+# --- 6. 演出・ステータス分岐（ユーザー様の意図通りの順番で上から判定） ---
 st.markdown("---")
 
 is_yutime_over = current_rotation >= (p_denom * 2.8)
 
-if prob_ハマり <= 1.0 or current_rotation >= (p_denom * 3.5):
-  zone_key = "god"  # 5. 神域
-elif is_yutime_over:
-  zone_key = "yutime_ghost"  # 4. 【幻の遊タイム】非搭載ゾーン
-elif prob_ハマり <= 10.0 or current_rotation >= (p_denom * 2.3):
-  zone_key = "deep"  # 3. 領域展開（深海トラウマ）
-elif prob_ハマり > 50:
-  zone_key = "peaceful"  # 1. 平穏
+if prob_ハマり > 50:
+  zone_key = "peaceful"  # 1. 平穏（確率50%超）
+elif prob_ハマり > 20:
+  zone_key = "caution"  # 2. ざわ…（確率20%超）
+elif not is_yutime_over and prob_ハマり > 5:
+  zone_key = "yutime_ghost"  # 3. 【幻の遊タイム】非搭載ゾーン（中等度ハマり）
+elif is_yutime_over or prob_ハマり > 1:
+  zone_key = "deep"  # 4. 領域展開（深海トラウマ）（さらに深いハマり）
 else:
-  zone_key = "caution"  # 2. ざわ…
+  zone_key = "god"  # 5. 神域（歴史的大ハマり）
 
 zone_data = ZONE_MESSAGES[zone_key]
 
