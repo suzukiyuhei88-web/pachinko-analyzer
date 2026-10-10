@@ -29,7 +29,7 @@ st.markdown(
         color: #f8fafc;
         border: 1px solid #475569;
         font-family: 'DotGothic16', sans-serif !important;
-        padding: 4px 0px;
+        padding: 6px 0px;
     }
     .stButton button:hover {
         background-color: #334155;
@@ -206,7 +206,7 @@ if selected_spec_name == "カスタム":
   )
   if p_denom <= 1.0:
     st.error(
-        "⚠️ エラー: 確率の分母は「1.0」より大きい数値を入力してください。"
+        "⚠️ エラー: 確率の分母は「1.0`より大きい数値を入力してください。"
     )
     st.stop()
 else:
@@ -221,7 +221,7 @@ if "current_rot" not in st.session_state:
 if st.session_state.current_rot > max_limit:
   st.session_state.current_rot = max_limit
 
-# 🎛️ クイック調整ボタン（2段構成でスマホでも押しやすく）
+# 🎛️ クイック調整ボタン（-100, -10, -1, +1, +10, +100）
 st.markdown(
     "<div style='font-size: 11px; color: #94a3b8; margin-bottom: 2px;'>⚡"
     " 回転数クイック調整</div>",
@@ -241,22 +241,7 @@ for i, adj in enumerate(adjustments):
     st.session_state.current_rot = max(0, min(max_limit, new_val))
     st.rerun()
 
-# 📝 現在の回転数を直接入力できる数値入力欄
-def on_number_input_change():
-  st.session_state.current_rot = st.session_state.num_input
-
-current_rotation = st.number_input(
-    "現在の回転数",
-    min_value=0,
-    max_value=max_limit,
-    value=st.session_state.current_rot,
-    step=1,
-    key="num_input",
-    on_change=on_number_input_change,
-)
-
-# 念のため同期
-st.session_state.current_rot = current_rotation
+current_rotation = st.session_state.current_rot
 
 # --- 5. 計算ロジック ---
 p = 1.0 / p_denom if p_denom > 0 else 0
@@ -306,7 +291,7 @@ card_html = (
     '<span>スペック: <b style="color: #f8fafc;">1 / '
     + str(p_denom)
     + "</b></span>"
-    '<span>現在: <b style="color: #f8fafc;">'
+    '<span>現在: <b style="color: #38bdf8; font-size: 16px;">'
     + str(current_rotation)
     + "回転</b></span>"
     "</div>"
