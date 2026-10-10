@@ -35,26 +35,34 @@ spec_options = {
     "ライトミドル (1/199)": 199.8,
     "ミドル (1/319)": 319.6,
     "ラッキートリガー (1/349)": 349.0,
-    "カスタム": 0.0,  # 自由入力用
+    "カスタム": 0.0,
 }
 
-# 横並びのラジオボタンで選択式にする
 selected_spec_name = st.radio(
     "機種スペックを選択",
     list(spec_options.keys()),
-    index=2,  # デフォルトでミドル(1/319)を選択
+    index=2,
     horizontal=True,
 )
 
-# 「カスタム」が選ばれた時だけ、自由に入力できる数値を出す
+# スペックの決定とエラーチェック
 if selected_spec_name == "カスタム":
   p_denom = st.number_input(
       "大当り確率の分母を入力 (例: 319.6)",
-      min_value=1.0,
-      max_value=1000.0,
+      min_value=0.0,
+      max_value=10000.0,
       value=319.6,
       step=0.1,
   )
+
+  # --- 異常値のチェック ---
+  if p_denom <= 1.0:
+    st.error(
+        "⚠️ エラー: 確率の分母は「1.0」より大きい数値を入力してください。"
+    )
+    st.stop()  # ここで以後の処理をストップし、画面の崩れを防ぐ
+  elif p_denom > 5000.0:
+    st.warning("⚠️ 注意: 少し大きすぎる数値が入力されています。")
 else:
   p_denom = spec_options[selected_spec_name]
 
