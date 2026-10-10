@@ -6,19 +6,27 @@ st.set_page_config(
     page_title="パチンコ確率診断", page_icon="🎰", layout="centered"
 )
 
-# --- 1. デザイン用のカスタムCSS（レトロ・スタイリッシュ風） ---
+# --- 1. デザイン用のカスタムCSS（DotGothic16フォントの導入） ---
 st.markdown(
     """
+    <!-- Google Fontsから「DotGothic16」を読み込み -->
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    
     <style>
-    /* 全体の背景やフォントの雰囲気調整 */
+    /* 全体にレトロドットフォントを適用 */
+    html, body, [class*="css"], .stMarkdown, .stText, h1, h2, h3, p {
+        font-family: 'DotGothic16', sans-serif !important;
+    }
+    
     .stApp {
-        background-color: #0f172a; /* 落ち着いたダークネイビー（レトロ・アーケード風） */
+        background-color: #0f172a; /* 落ち着いたダークネイビー */
         color: #f8fafc;
     }
-    /* ラジオボタンや文字を見やすく */
+    
+    /* ラジオボタンやスライダーの文字調整 */
     label, .stRadio p, .stSlider p {
         color: #e2e8f0 !important;
-        font-weight: bold;
+        font-family: 'DotGothic16', sans-serif !important;
     }
     </style>
     """,
@@ -79,7 +87,7 @@ current_rotation = st.slider(
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
-# --- 5. 演出・ステータス分岐（ベースの仮置きコメント） ---
+# --- 5. 演出・ステータス分岐 ---
 st.markdown("---")
 
 is_yutime_over = current_rotation >= (p_denom * 2.8)
@@ -103,24 +111,24 @@ elif prob_ハマり > 20:
 elif is_yutime_over:
   status_emoji = "👻"
   status_title = "【幻の遊タイム】非搭載ゾーン"
-  card_bg = "#2e1065"  # 少し紫がかったダーク
-  border_color = "#7c3aed"
-  text_color = "#ddd6fe"
+  card_bg = "#2e1065"
+  border_color = "#a855f7"
+  text_color = "#f3e8ff"
   comment = f"昔の基準なら【約 {int(p_denom * 3)}回転】で助かってましたね……（遠い目）"
   danger_level = 0.8
 elif prob_ハマり > 5:
   status_emoji = "🔥"
   status_title = "領域展開（深海）"
-  card_bg = "#431407"  # 濃いオレンジ・ブラウン系
-  border_color = "#c2410c"
+  card_bg = "#431407"
+  border_color = "#ea580c"
   text_color = "#ffedd5"
   comment = "周囲の視線と、自分のメンタルが試されるディープゾーン。"
   danger_level = 0.85
 else:
   status_emoji = "⚡"
   status_title = "神域（都市伝説）"
-  card_bg = "#450a0a"  # 濃いレッド系
-  border_color = "#dc2626"
+  card_bg = "#450a0a"
+  border_color = "#ef4444"
   text_color = "#fee2e2"
   comment = "もはや語るまい。歴史に名を刻むレベルのレア体験デス。"
   danger_level = 1.0
@@ -129,28 +137,28 @@ else:
 st.markdown(
     f"""
     <div style="background-color: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 10px;">
-        <span style="font-size: 13px; color: #94a3b8;">選択スペック: <b style="color: #f8fafc;">1 / {p_denom}</b> ／ 現在: <b style="color: #f8fafc;">{current_rotation}回転</b></span>
+        <span style="font-size: 14px; color: #94a3b8;">選択スペック: <b style="color: #f8fafc;">1 / {p_denom}</b> ／ 現在: <b style="color: #f8fafc;">{current_rotation}回転</b></span>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-# メインのインパクトカード
+# メインのインパクトカード（フォント・枠線をゲームUI風に調整）
 st.markdown(
     f"""
     <div style="
-        border: 2px solid {border_color}; 
+        border: 3px double {border_color}; 
         background-color: {card_bg}; 
         padding: 24px 20px; 
-        border-radius: 12px; 
+        border-radius: 8px; 
         text-align: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     ">
-        <div style="font-size: 40px; margin-bottom: 5px;">{status_emoji}</div>
-        <div style="font-size: 12px; color: {text_color}; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.9;">{status_title}</div>
-        <h2 style="color: {text_color}; margin: 8px 0 4px 0; font-size: 32px; font-family: monospace;">{prob_ハマり:.1f}%</h2>
-        <div style="font-size: 11px; color: {text_color}; opacity: 0.7; margin-bottom: 12px;">（この回転数まで当らない確率）</div>
-        <p style="font-size: 14px; color: {text_color}; font-weight: bold; line-height: 1.5;">{comment}</p>
+        <div style="font-size: 42px; margin-bottom: 5px;">{status_emoji}</div>
+        <div style="font-size: 14px; color: {text_color}; text-transform: uppercase; letter-spacing: 2px;">{status_title}</div>
+        <h2 style="color: {text_color}; margin: 10px 0 6px 0; font-size: 40px; letter-spacing: 1px;">{prob_ハマり:.1f}%</h2>
+        <div style="font-size: 12px; color: {text_color}; opacity: 0.8; margin-bottom: 14px;">（この回転数まで当らない確率）</div>
+        <p style="font-size: 15px; color: {text_color}; line-height: 1.6;">{comment}</p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -159,8 +167,8 @@ st.markdown(
 # --- 6. 危険度メーター ---
 st.markdown("<br>", unsafe_allow_html=True)
 st.markdown(
-    "<p style='font-size: 12px; font-weight: bold; color: #94a3b8;"
-    " margin-bottom: 4px;'>📊 ハマり危険度</p>",
+    "<p style='font-size: 13px; color: #94a3b8; margin-bottom: 4px;'>📊"
+    " ハマり危険度</p>",
     unsafe_allow_html=True,
 )
 st.progress(danger_level)
