@@ -28,7 +28,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ネタ帳データ（コメント ＋ 確率同等事象 ＋ 仮アイコン） ---
+# --- 2. ネタ帳データ（コメント ＋ 確率同等事象 ＋ 仮アイコン・HP修正版） ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -58,7 +58,7 @@ ZONE_MESSAGES = {
         "messages": [
             "少し財布の紐がキュッとなる頃合い。深呼吸してコーヒーでもどうぞ。",
             "「もしかして、今日もやられる日なのでは…？」という悪寒が走り始める頃。",
-            "周囲の出玉を見ないように視線の台に固定するトレーニング期間。",
+            "周囲の出玉を見ないように視線を台に固定するトレーニング期間。",
         ],
         "comparisons": [
             {
@@ -120,7 +120,7 @@ ZONE_MESSAGES = {
         "image": (
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
         ),
-        "hp_percent": 10,
+        "hp_percent": 5,
         "hp_status": "DANGER (瀕死)",
     },
     "god": {
@@ -250,7 +250,7 @@ image_url = zone_data["image"]
 hp_percent = zone_data["hp_percent"]
 hp_status = zone_data["hp_status"]
 
-# --- 7. 統合メインカード（HPゲージ演出込み） ---
+# --- 7. 統合メインカード（HPゲージ修正版） ---
 card_html = (
     '<div style="border: 3px double '
     + border_color
