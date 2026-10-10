@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="パチンコ確率診断", page_icon="🎰", layout="centered"
 )
 
-# --- 1. デザイン用のカスタムCSS（DotGothic16フォントの導入 ＆ コンパクト化） ---
+# --- 1. デザイン用のカスタムCSS（DotGothic16フォントの導入） ---
 st.markdown(
     """
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -244,44 +244,67 @@ comparison_approx = comparison_item["approx"]
 image_url = zone_data["image"]
 
 # --- 7. 統合メインカード（スペック・回転数・確率・アイコン・コメント・比較をすべて集約） ---
-card_html = f"""
-<div style="border: 3px double {border_color}; background-color: {card_bg}; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
-    
-    <!-- ヘッダー：選択スペックと現在回転数をカード内に内包 -->
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 14px; font-size: 13px; color: #94a3b8;">
-        <span>スペック: <b style="color: #f8fafc;">1 / {p_denom}</b></span>
-        <span>現在: <b style="color: #f8fafc;">{current_rotation}回転</b></span>
-    </div>
+card_html = (
+    '<div style="border: 3px double '
+    + border_color
+    + "; background-color: "
+    + card_bg
+    + '; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">'
+    '<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 14px; font-size: 13px; color: #94a3b8;">'
+    '<span>スペック: <b style="color: #f8fafc;">1 / '
+    + str(p_denom)
+    + "</b></span>"
+    '<span>現在: <b style="color: #f8fafc;">'
+    + str(current_rotation)
+    + "回転</b></span>"
+    "</div>"
+    '<div style="text-align: center; margin-bottom: 10px;">'
+    '<div style="font-size: 13px; color: '
+    + text_color
+    + '; text-transform: uppercase; letter-spacing: 2px;">'
+    + status_title
+    + "</div>"
+    "</div>"
+    '<div style="display: flex; align-items: center; justify-content: space-around; margin-bottom: 14px; background-color: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px;">'
+    '<div style="text-align: left;">'
+    '<h2 style="color: '
+    + text_color
+    + '; margin: 0; font-size: 42px; letter-spacing: 1px;">'
+    + f"{prob_ハマり:.1f}%"
+    + "</h2>"
+    '<div style="font-size: 11px; color: '
+    + text_color
+    + '; opacity: 0.8;">（この回転数まで当らない確率）</div>'
+    "</div>"
+    "<div>"
+    '<img src="'
+    + image_url
+    + '" style="width: 75px; height: 75px; object-fit: contain; border-radius: 50%; background-color: rgba(255,255,255,0.9); padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);" />'
+    "</div>"
+    "</div>"
+    '<p style="font-size: 14px; color: '
+    + text_color
+    + '; line-height: 1.5; margin-bottom: 14px; text-align: center; padding: 0 5px;">'
+    + comment
+    + "</p>"
+    '<div style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed '
+    + border_color
+    + '; padding: 10px 12px; border-radius: 6px; text-align: left;">'
+    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">'
+    '<span style="font-size: 11px; color: #94a3b8; letter-spacing: 1px;">🌍 現実世界での確率スケール</span>'
+    '<span style="font-size: 11px; color: #38bdf8; font-weight: bold; background-color: rgba(56, 189, 248, 0.1); padding: 2px 6px; border-radius: 4px;">'
+    + comparison_approx
+    + "</span>"
+    "</div>"
+    '<p style="font-size: 12px; color: '
+    + text_color
+    + '; margin: 0; line-height: 1.4;">🎯 '
+    + comparison_text
+    + "</p>"
+    "</div>"
+    "</div>"
+)
 
-    <!-- ゾーンタイトルとステータス -->
-    <div style="text-align: center; margin-bottom: 10px;">
-        <div style="font-size: 13px; color: {text_color}; text-transform: uppercase; letter-spacing: 2px;">{status_title}</div>
-    </div>
-
-    <!-- 横並びレイアウト（左：確率表示 ＆ 右：アイコンイラスト） -->
-    <div style="display: flex; align-items: center; justify-content: space-around; margin-bottom: 14px; background-color: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px;">
-        <div style="text-align: left;">
-            <h2 style="color: {text_color}; margin: 0; font-size: 42px; letter-spacing: 1px;">{prob_ハマり:.1f}%</h2>
-            <div style="font-size: 11px; color: {text_color}; opacity: 0.8;">（この回転数まで当らない確率）</div>
-        </div>
-        <div>
-            <img src="{image_url}" style="width: 75px; height: 75px; object-fit: contain; border-radius: 50%; background-color: rgba(255,255,255,0.9); padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);" />
-        </div>
-    </div>
-
-    <!-- シュールなコメント -->
-    <p style="font-size: 14px; color: {text_color}; line-height: 1.5; margin-bottom: 14px; text-align: center; padding: 0 5px;">{comment}</p>
-    
-    <!-- 現実世界の確率スケール -->
-    <div style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed {border_color}; padding: 10px 12px; border-radius: 6px; text-align: left;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <span style="font-size: 11px; color: #94a3b8; letter-spacing: 1px;">🌍 現実世界での確率スケール</span>
-            <span style="font-size: 11px; color: #38bdf8; font-weight: bold; background-color: rgba(56, 189, 248, 0.1); padding: 2px 6px; border-radius: 4px;">{comparison_approx}</span>
-        </div>
-        <p style="font-size: 12px; color: {text_color}; margin: 0; line-height: 1.4;">🎯 {comparison_text}</p>
-    </div>
-</div>
-"""
 st.markdown(card_html, unsafe_allow_html=True)
 
 # --- 8. 危険度メーター ---
