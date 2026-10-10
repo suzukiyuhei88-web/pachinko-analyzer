@@ -28,7 +28,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ネタ帳データ（HPの順序を「ゆうタイム ➔ 領域展開（最深部）」に正しく整理） ---
+# --- 2. ネタ帳データ ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -76,26 +76,6 @@ ZONE_MESSAGES = {
         "hp_percent": 60,
         "hp_status": "CAUTION (注意)",
     },
-    "yutime_ghost": {
-        "title": "【幻の遊タイム】非搭載ゾーン",
-        "messages": [
-            (
-                "昔の基準なら【約 {yutime_rot}回転】で助かってましたね……（遠い目）"
-            ),
-            (
-                "遊タイムという名の救済措置が消え去った現代の荒波を、生身で泳いでいます。"
-            ),
-        ],
-        "comparisons": [{
-            "text": "昔のゲームの隠しコマンドをノーヒントで当てるくらいの絶望感",
-            "approx": "約 15%",
-        }],
-        "image": (
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
-        ),
-        "hp_percent": 25,
-        "hp_status": "WARNING (警告)",
-    },
     "deep": {
         "title": "領域展開（深海トラウマ）",
         "messages": [
@@ -117,6 +97,26 @@ ZONE_MESSAGES = {
                 "approx": "約 7%",
             },
         ],
+        "image": (
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
+        ),
+        "hp_percent": 25,
+        "hp_status": "WARNING (警告)",
+    },
+    "yutime_ghost": {
+        "title": "【幻の遊タイム】非搭載ゾーン",
+        "messages": [
+            (
+                "昔の基準なら【約 {yutime_rot}回転】で助かってましたね……（遠い目）"
+            ),
+            (
+                "遊タイムという名の救済措置が消え去った現代の荒波を、生身で泳いでいます。"
+            ),
+        ],
+        "comparisons": [{
+            "text": "昔のゲームの隠しコマンドをノーヒントで当てるくらいの絶望感",
+            "approx": "約 15%",
+        }],
         "image": (
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
         ),
@@ -201,26 +201,21 @@ current_rotation = st.slider(
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
-# --- 6. 演出・ステータス分岐（ゆうタイム ➔ 領域展開 の順で深くする） ---
+# --- 6. 演出・ステータス分岐（最も厳しい条件を上に、浅い条件を下に配置） ---
 st.markdown("---")
 
 is_yutime_over = current_rotation >= (p_denom * 2.8)
 
-if prob_ハマり > 50:
-  zone_data = ZONE_MESSAGES["peaceful"]
-  card_bg = "#1e293b"
-  border_color = "#475569"
-  text_color = "#e2e8f0"
-  comment = random.choice(zone_data["messages"])
-  comparison_item = random.choice(zone_data["comparisons"])
-elif prob_ハマり > 20:
-  zone_data = ZONE_MESSAGES["caution"]
-  card_bg = "#1e293b"
-  border_color = "#64748b"
-  text_color = "#cbd5e1"
+if prob_ハマり <= 1.0 or current_rotation >= (p_denom * 3.5):
+  # 神域（超大ハマり・確率1%未満など）
+  zone_data = ZONE_MESSAGES["god"]
+  card_bg = "#450a0a"
+  border_color = "#ef4444"
+  text_color = "#fee2e2"
   comment = random.choice(zone_data["messages"])
   comparison_item = random.choice(zone_data["comparisons"])
 elif is_yutime_over:
+  # 【幻の遊タイム】非搭載ゾーン（基準回転数超えの深いハマり）
   zone_data = ZONE_MESSAGES["yutime_ghost"]
   card_bg = "#2e1065"
   border_color = "#a855f7"
@@ -228,18 +223,36 @@ elif is_yutime_over:
   yutime_rot = int(p_denom * 3)
   comment = random.choice(zone_data["messages"]).format(yutime_rot=yutime_rot)
   comparison_item = random.choice(zone_data["comparisons"])
-elif prob_ハマり > 5:
+elif prob_ハマり <= 5.0:
+  # 領域展開（深海トラウマ）
   zone_data = ZONE_MESSAGES["deep"]
   card_bg = "#431407"
   border_color = "#ea580c"
   text_color = "#ffedd5"
   comment = random.choice(zone_data["messages"])
   comparison_item = random.choice(zone_data["comparisons"])
+elif prob_ハマり > 50:
+  # 平穏
+  zone_data = ZONE_MESSAGES["peaceful"]
+  card_bg = "#1e293b"
+  border_color = "#475569"
+  text_color = "#e2e8f0"
+  comment = random.choice(zone_data["messages"])
+  comparison_item = random.choice(zone_data["comparisons"])
+elif prob_ハマり > 20:
+  # ざわ…
+  zone_data = ZONE_MESSAGES["caution"]
+  card_bg = "#1e293b"
+  border_color = "#64748b"
+  text_color = "#cbd5e1"
+  comment = random.choice(zone_data["messages"])
+  comparison_item = random.choice(zone_data["comparisons"])
 else:
-  zone_data = ZONE_MESSAGES["god"]
-  card_bg = "#450a0a"
-  border_color = "#ef4444"
-  text_color = "#fee2e2"
+  # 中間層のフォールバック
+  zone_data = ZONE_MESSAGES["deep"]
+  card_bg = "#431407"
+  border_color = "#ea580c"
+  text_color = "#ffedd5"
   comment = random.choice(zone_data["messages"])
   comparison_item = random.choice(zone_data["comparisons"])
 
