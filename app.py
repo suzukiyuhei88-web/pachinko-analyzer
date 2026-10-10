@@ -19,21 +19,9 @@ st.markdown(
         background-color: #0f172a;
         color: #f8fafc;
     }
-    label, .stRadio p {
+    label, .stRadio p, .stSlider p {
         color: #e2e8f0 !important;
         font-family: 'DotGothic16', sans-serif !important;
-    }
-    .stButton button {
-        width: 100%;
-        background-color: #1e293b;
-        color: #f8fafc;
-        border: 1px solid #475569;
-        font-family: 'DotGothic16', sans-serif !important;
-        padding: 6px 0px;
-    }
-    .stButton button:hover {
-        background-color: #334155;
-        border-color: #94a3b8;
     }
     </style>
     """,
@@ -98,7 +86,7 @@ ZONE_MESSAGES = {
         "title": "【幻の遊タイム】非搭載ゾーン",
         "messages": [
             (
-                "昔の基準なら【約 {yutime_rot}回転】で助かってましたね……（遠い目）"
+                "昔の基準なら【約 {yutime_rot}回転】で助かって थेね……（遠い目）"
             ),
             (
                 "遊タイムという名の救済措置が消え去った現代の荒波を、生身で泳いでいます。"
@@ -206,42 +194,23 @@ if selected_spec_name == "カスタム":
   )
   if p_denom <= 1.0:
     st.error(
-        "⚠️ エラー: 確率の分母は「1.0`より大きい数値を入力してください。"
+        "⚠️ エラー: 確率の分母は「1.0」より大きい数値を入力してください。"
     )
     st.stop()
 else:
   p_denom = spec_options[selected_spec_name]
 
-# --- 4. セッションステートによる回転数の管理とボタン操作 ---
-max_limit = int(p_denom * 6)
+# --- 4. スライダーによる直感的な回転数調整（確率分母の6倍まで） ---
+max_slider = int(p_denom * 6)
+step_val = 5 if p_denom <= 100 else 10
 
-if "current_rot" not in st.session_state:
-  st.session_state.current_rot = min(500, max_limit)
-
-if st.session_state.current_rot > max_limit:
-  st.session_state.current_rot = max_limit
-
-# 🎛️ クイック調整ボタン（-100, -10, -1, +1, +10, +100）
-st.markdown(
-    "<div style='font-size: 11px; color: #94a3b8; margin-bottom: 2px;'>⚡"
-    " 回転数クイック調整</div>",
-    unsafe_allow_html=True,
+current_rotation = st.slider(
+    "現在の回転数",
+    min_value=0,
+    max_value=max_slider,
+    value=min(500, max_slider),
+    step=step_val,
 )
-
-row1 = st.columns(3)
-row2 = st.columns(3)
-
-adjustments = [-100, -10, -1, 1, 10, 100]
-labels = ["-100", "-10", "-1", "+1", "+10", "+100"]
-
-for i, adj in enumerate(adjustments):
-  target_col = row1[i] if i < 3 else row2[i - 3]
-  if target_col.button(labels[i], key=f"adj_{adj}"):
-    new_val = st.session_state.current_rot + adj
-    st.session_state.current_rot = max(0, min(max_limit, new_val))
-    st.rerun()
-
-current_rotation = st.session_state.current_rot
 
 # --- 5. 計算ロジック ---
 p = 1.0 / p_denom if p_denom > 0 else 0
@@ -291,7 +260,7 @@ card_html = (
     '<span>スペック: <b style="color: #f8fafc;">1 / '
     + str(p_denom)
     + "</b></span>"
-    '<span>現在: <b style="color: #38bdf8; font-size: 16px;">'
+    '<span>現在: <b style="color: #f8fafc;">'
     + str(current_rotation)
     + "回転</b></span>"
     "</div>"
