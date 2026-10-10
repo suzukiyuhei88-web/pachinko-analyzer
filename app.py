@@ -28,7 +28,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ネタ帳データ（コメント ＋ 確率同等事象 ＋ 仮アイコン・HP修正版） ---
+# --- 2. ネタ帳データ（HPの順序を「ゆうタイム ➔ 領域展開（最深部）」に正しく整理） ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -201,7 +201,7 @@ current_rotation = st.slider(
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
-# --- 6. 演出・ステータス分岐 ---
+# --- 6. 演出・ステータス分岐（ゆうタイム ➔ 領域展開 の順で深くする） ---
 st.markdown("---")
 
 is_yutime_over = current_rotation >= (p_denom * 2.8)
@@ -250,7 +250,7 @@ image_url = zone_data["image"]
 hp_percent = zone_data["hp_percent"]
 hp_status = zone_data["hp_status"]
 
-# --- 7. 統合メインカード（HPゲージ修正版） ---
+# --- 7. 統合メインカード ---
 card_html = (
     '<div style="border: 3px double '
     + border_color
