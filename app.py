@@ -13,7 +13,6 @@ st.set_page_config(
 def load_data():
     try:
         df = pd.read_csv('neta_master.csv')
-        # 確率数値（%）を比較するためのパース列を追加
         def parse_probability(text):
             text_str = str(text)
             if '1/36' in text_str:
@@ -117,7 +116,7 @@ ZONE_MESSAGES = {
             "RUSHに入った瞬間3秒で駆け抜けたあの日の虚しさに比べれば、このハマりなど微風です。"
         ],
         "pos_messages": [
-            "歴史に名を残す大当りのための『溜め』が完了しつつあります。神様もそろそろ目を覚ます頃。"
+            "歴史に名を刻む大当りのための『溜め』が完了しつつあります。神様もそろそろ目を覚ます頃。"
         ],
         "hp_percent": 10,
         "hp_status": "DANGER (瀕死)",
@@ -236,17 +235,14 @@ if zone_key == "yutime_ghost":
     neg_comment = neg_comment.format(yutime_rot=yutime_rot)
     pos_comment = pos_comment.format(yutime_rot=yutime_rot)
 
-# --- 7. ハマり確率に最も近いCSVネタを自動マッチング ---
+# --- 7. ハマり確率に最も近いCSVネタを自動マッチング（ゾーン表記は除外） ---
 if df_master is not None and len(df_master) > 0:
-    # 計算された prob_ハマり に最も近い prob_val を持つ行を検索
     df_master['diff'] = (df_master['prob_val'] - prob_ハマり).abs()
     closest_row = df_master.loc[df_master['diff'].idxmin()]
     
-    comparison_category = str(closest_row.get('ゾーン', '日常'))
     approx_rate = str(closest_row.get('確率・数値', ''))
     comparison_text = str(closest_row.get('事象', '')) + "：" + str(closest_row.get('コメント', ''))
 else:
-    comparison_category = "日常"
     approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
@@ -320,9 +316,7 @@ card_html = (
     + border_color
     + '; padding: 8px 10px; border-radius: 6px; text-align: left; margin-bottom: 10px;">'
     '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">'
-    '<span style="font-size: 10px; color: #38bdf8; font-weight: bold; background-color: rgba(56, 189, 248, 0.1); padding: 1px 5px; border-radius: 4px;">'
-    + comparison_category
-    + "</span>"
+    '<span style="font-size: 10px; color: #38bdf8; font-weight: bold;">比較ファクト</span>'
     '<span style="font-size: 10px; color: #38bdf8; font-weight: bold;">'
     + approx_rate
     + "</span>"
@@ -335,7 +329,7 @@ card_html = (
     "</div>"
     '<!-- 💳 財布/メンタル HPゲージ演出 -->'
     '<div style="background-color: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 6px;">'
-    '<div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; master-bottom: 3px;">'
+    '<div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 3px;">'
     "<span>💳 財布/メンタル HP</span>"
     "<span>"
     + hp_status
