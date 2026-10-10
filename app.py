@@ -28,7 +28,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ネタ帳データ（シュールなコメント ＋ パーセンテージ付き確率同等事象） ---
+# --- 2. ネタ帳データ（コメント ＋ 確率同等事象 ＋ イラスト画像URL） ---
+# ※ "image" の部分に、いらすとや等の画像URLやファイル名を指定できます
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "まだ慌てるような時間じゃない",
@@ -47,6 +48,9 @@ ZONE_MESSAGES = {
                 "approx": "約 75%",
             },
         ],
+        "image": (
+            "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=150"
+        ),  # 仮置き画像
     },
     "caution": {
         "title": "ざわ… ざわ… ゾーン",
@@ -65,6 +69,9 @@ ZONE_MESSAGES = {
                 "approx": "約 25%",
             },
         ],
+        "image": (
+            "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=150"
+        ),  # 仮置き画像
     },
     "yutime_ghost": {
         "title": "【幻の遊タイム】非搭載ゾーン",
@@ -80,6 +87,9 @@ ZONE_MESSAGES = {
             "text": "昔のゲームの隠しコマンドをノーヒントで当てるくらいの絶望感",
             "approx": "約 15%",
         }],
+        "image": (
+            "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=150"
+        ),  # 仮置き画像
     },
     "deep": {
         "title": "領域展開（深海トラウマ）",
@@ -102,6 +112,9 @@ ZONE_MESSAGES = {
                 "approx": "約 7%",
             },
         ],
+        "image": (
+            "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=150"
+        ),  # 仮置き画像
     },
     "god": {
         "title": "歴史に名を刻むレベル",
@@ -120,6 +133,9 @@ ZONE_MESSAGES = {
                 "approx": "約 1%未満",
             },
         ],
+        "image": (
+            "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=150"
+        ),  # 仮置き画像
     },
 }
 
@@ -182,7 +198,6 @@ st.markdown("---")
 is_yutime_over = current_rotation >= (p_denom * 2.8)
 
 if prob_ハマり > 50:
-  status_emoji = "🧊"
   zone_data = ZONE_MESSAGES["peaceful"]
   card_bg = "#1e293b"
   border_color = "#475569"
@@ -191,7 +206,6 @@ if prob_ハマり > 50:
   comparison_item = random.choice(zone_data["comparisons"])
   danger_level = 0.2
 elif prob_ハマり > 20:
-  status_emoji = "☕"
   zone_data = ZONE_MESSAGES["caution"]
   card_bg = "#1e293b"
   border_color = "#64748b"
@@ -200,7 +214,6 @@ elif prob_ハマり > 20:
   comparison_item = random.choice(zone_data["comparisons"])
   danger_level = 0.5
 elif is_yutime_over:
-  status_emoji = "👻"
   zone_data = ZONE_MESSAGES["yutime_ghost"]
   card_bg = "#2e1065"
   border_color = "#a855f7"
@@ -210,7 +223,6 @@ elif is_yutime_over:
   comparison_item = random.choice(zone_data["comparisons"])
   danger_level = 0.8
 elif prob_ハマり > 5:
-  status_emoji = "🔥"
   zone_data = ZONE_MESSAGES["deep"]
   card_bg = "#431407"
   border_color = "#ea580c"
@@ -219,7 +231,6 @@ elif prob_ハマり > 5:
   comparison_item = random.choice(zone_data["comparisons"])
   danger_level = 0.85
 else:
-  status_emoji = "⚡"
   zone_data = ZONE_MESSAGES["god"]
   card_bg = "#450a0a"
   border_color = "#ef4444"
@@ -231,6 +242,7 @@ else:
 status_title = zone_data["title"]
 comparison_text = comparison_item["text"]
 comparison_approx = comparison_item["approx"]
+image_url = zone_data["image"]
 
 # 選択状況の表示カード
 st.markdown(
@@ -242,10 +254,12 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# メインのインパクトカード（パーセンテージ表記を目立たせる）
+# メインのインパクトカード（絵文字の代わりに画像タグを表示）
 card_html = f"""
 <div style="border: 3px double {border_color}; background-color: {card_bg}; padding: 24px 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
-    <div style="font-size: 42px; margin-bottom: 5px;">{status_emoji}</div>
+    <div style="margin-bottom: 10px;">
+        <img src="{image_url}" style="width: 80px; height: 80px; object-fit: contain; border-radius: 50%; background-color: rgba(255,255,255,0.1); padding: 4px;" />
+    </div>
     <div style="font-size: 14px; color: {text_color}; text-transform: uppercase; letter-spacing: 2px;">{status_title}</div>
     <h2 style="color: {text_color}; margin: 10px 0 6px 0; font-size: 40px; letter-spacing: 1px;">{prob_ハマり:.1f}%</h2>
     <div style="font-size: 12px; color: {text_color}; opacity: 0.8; margin-bottom: 16px;">（この回転数まで当らない確率）</div>
