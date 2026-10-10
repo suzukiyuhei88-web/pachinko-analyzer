@@ -204,14 +204,36 @@ else:
 max_slider = int(p_denom * 6)
 step_val = 5 if p_denom <= 100 else 10
 
-# シンプルで安定したスライダー
-current_rotation = st.slider(
-    "現在の回転数",
-    min_value=0,
-    max_value=max_slider,
-    value=min(500, max_slider),
-    step=step_val,
-)
+# セッションステートの初期化（初期値は500、または最大値を超えないように調整）
+if "rotation_input" not in st.session_state:
+  st.session_state.rotation_input = min(500, max_slider)
+
+if st.session_state.rotation_input > max_slider:
+  st.session_state.rotation_input = max_slider
+
+# 🔄 2カラム構成：左側に「数値直接入力」、右側に「スライダー」をコンパクトに配置
+col_input, col_slider = st.columns([1, 2])
+
+with col_input:
+  current_rotation = st.number_input(
+      "回転数を直接入力",
+      min_value=0,
+      max_value=max_slider,
+      value=st.session_state.rotation_input,
+      step=1,
+      key="rotation_num_input",
+  )
+
+with col_slider:
+  # スライダー経由で動かされた場合の値を反映
+  current_rotation = st.slider(
+      "現在の回転数",
+      min_value=0,
+      max_value=max_slider,
+      value=current_rotation,
+      step=step_val,
+      key="rotation_slider",
+  )
 
 # --- 5. 計算ロジック ---
 p = 1.0 / p_denom if p_denom > 0 else 0
