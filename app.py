@@ -208,39 +208,28 @@ status_title = zone_data["title"]
 # 選択状況の表示カード
 st.markdown(
     f"""
-    <div style="background-color: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 10px;">
-        <span style="font-size: 14px; color: #94a3b8;">選択スペック: <b style="color: #f8fafc;">1 / {p_denom}</b> ／ 現在: <b style="color: #f8fafc;">{current_rotation}回転</b></span>
-    </div>
-    """,
+<div style="background-color: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 10px;">
+    <span style="font-size: 14px; color: #94a3b8;">選択スペック: <b style="color: #f8fafc;">1 / {p_denom}</b> ／ 現在: <b style="color: #f8fafc;">{current_rotation}回転</b></span>
+</div>
+""",
     unsafe_allow_html=True,
 )
 
-# メインのインパクトカード
-st.markdown(
-    f"""
-    <div style="
-        border: 3px double {border_color}; 
-        background-color: {card_bg}; 
-        padding: 24px 20px; 
-        border-radius: 8px; 
-        text-align: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    ">
-        <div style="font-size: 42px; margin-bottom: 5px;">{status_emoji}</div>
-        <div style="font-size: 14px; color: {text_color}; text-transform: uppercase; letter-spacing: 2px;">{status_title}</div>
-        <h2 style="color: {text_color}; margin: 10px 0 6px 0; font-size: 40px; letter-spacing: 1px;">{prob_ハマり:.1f}%</h2>
-        <div style="font-size: 12px; color: {text_color}; opacity: 0.8; margin-bottom: 16px;">（この回転数まで当らない確率）</div>
-        
-        <p style="font-size: 15px; color: {text_color}; line-height: 1.6; margin-bottom: 18px; padding: 0 10px;">{comment}</p>
-        
-        <div style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed {border_color}; padding: 12px 14px; border-radius: 6px; text-align: left;">
-            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px; letter-spacing: 1px;">🌍 現実世界での確率スケール</div>
-            <p style="font-size: 13px; color: {text_color}; margin: 0; line-height: 1.5;">🎯 {comparison_text}</p>
-        </div>
+# メインのインパクトカード（HTMLのインデントを詰めて確実に出力）
+card_html = f"""
+<div style="border: 3px double {border_color}; background-color: {card_bg}; padding: 24px 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+    <div style="font-size: 42px; margin-bottom: 5px;">{status_emoji}</div>
+    <div style="font-size: 14px; color: {text_color}; text-transform: uppercase; letter-spacing: 2px;">{status_title}</div>
+    <h2 style="color: {text_color}; margin: 10px 0 6px 0; font-size: 40px; letter-spacing: 1px;">{prob_ハマり:.1f}%</h2>
+    <div style="font-size: 12px; color: {text_color}; opacity: 0.8; margin-bottom: 16px;">（この回転数まで当らない確率）</div>
+    <p style="font-size: 15px; color: {text_color}; line-height: 1.6; margin-bottom: 18px; padding: 0 10px;">{comment}</p>
+    <div style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed {border_color}; padding: 12px 14px; border-radius: 6px; text-align: left;">
+        <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px; letter-spacing: 1px;">🌍 現実世界での確率スケール</div>
+        <p style="font-size: 13px; color: {text_color}; margin: 0; line-height: 1.5;">🎯 {comparison_text}</p>
     </div>
-    """,
-    unsafe_allow_html=True,
-)
+</div>
+"""
+st.markdown(card_html, unsafe_allow_html=True)
 
 # --- 7. 危険度メーター ---
 st.markdown("<br>", unsafe_allow_html=True)
