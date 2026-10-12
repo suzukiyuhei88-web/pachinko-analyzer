@@ -58,8 +58,9 @@ st.markdown(
         color: #cbd5e1 !important;
         font-family: 'DotGothic16', sans-serif !important;
     }
+    /* タイトルが途切れないよう、上部の余白をしっかり確保する */
     .block-container {
-        padding-top: 1rem;
+        padding-top: 3rem;
         padding-bottom: 2rem;
     }
     /* ラジオボタンをコンパクトに横並びさせる調整 */
@@ -141,7 +142,7 @@ if 'rotation_input' not in st.session_state or st.session_state.get('last_spec')
     st.session_state['rotation_input'] = min(300, int(p_denom * 6))
     st.session_state['last_spec'] = p_denom
 
-# クイックジャンプ（1.5倍・2.5倍を削除し、主要な4点に絞る）
+# クイックジャンプ（0.5倍、1倍、2倍、3倍）
 st.markdown("<p style='font-size: 11px; color: #94a3b8; margin: 4px 0 0 0;'>▼ クイックジャンプ（倍率選択）</p>", unsafe_allow_html=True)
 jump_option = st.radio(
     "クイックジャンプ",
@@ -204,9 +205,9 @@ hash_seed = int(prob_ハマり * 1000) % 3
 
 if zone_key == "peaceful":
     comments = [
-        "「おっ、早めの当りですね！ まだ財布も心もノーダメージでウハウハな時間帯ですわ」",
-        "「このスピード感で当たってくれると助かるんですけどねぇ。まあ、油断大敵ですよ」",
-        "「サクッと初当りを引けてご機嫌なご様子。ここから連チャンを伸ばせるかが見せ所ですね」"
+        "<span>「おっ、早めの当りですね！ まだ財布も心もノーダメージでウハウハな時間帯ですわ」</span>",
+        "<span>「このスピード感で当たってくれると助かるんですけどねぇ。まあ、油断大敵ですよ」</span>",
+        "<span>「サクッと初当りを引けてご機嫌なご様子。ここから連チャンを伸ばせるかが見せ所ですね」</span>"
     ]
     footers = [
         "※早い当りは嬉しいですが、持ち玉の維持こそが勝負の分かれ道です。",
@@ -315,7 +316,7 @@ card_html = f"""
 
     <!-- 財布・メンタル HPゲージ -->
     <div style="background-color: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; margin-bottom: 8px;">
-        <div style="display: flex; justify-content: space- ведь; font-size: 10px; color: #94a3b8; margin-bottom: 2px;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 2px;">
             <span>💳 財布 / メンタル残存値</span>
             <span>{zone_data['hp_status']} ({hp_percent}%)</span>
         </div>
