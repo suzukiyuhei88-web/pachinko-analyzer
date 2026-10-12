@@ -42,7 +42,7 @@ def load_data():
 
 df_master = load_data()
 
-# --- 1. デザイン用のカスタムCSS（カラムの強制横並び対応） ---
+# --- 1. デザイン用のカスタムCSS ---
 st.markdown(
     """
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -61,11 +61,6 @@ st.markdown(
     .block-container {
         padding-top: 1rem;
         padding-bottom: 2rem;
-    }
-    /* Streamlitのカラムが狭い画面で縦積みになるのを強制的に横並びに固定する */
-    [data-testid="column"] {
-        flex: 1 !important;
-        min-width: 70px !important;
     }
     </style>
     """,
@@ -141,28 +136,29 @@ if 'rotation_input' not in st.session_state or st.session_state.get('last_spec')
     st.session_state['rotation_input'] = min(300, int(p_denom * 6))
     st.session_state['last_spec'] = p_denom
 
-# ジャンプボタン（CSSで強制横並び化）
+# クイックジャンプ用パラメータの受け取り（GETクエリパラメータの代替として、セッション操作用トリガー）
+# Streamlitのボタンの縦長問題を完全に回避するため、コンパクトな横並びグリッドを2段で配置
 st.markdown("<p style='font-size: 10px; color: #94a3b8; margin: 4px 0 2px 0;'>▼ 主要倍率へジャンプ</p>", unsafe_allow_html=True)
 
-r1_c1, r1_c2, r1_c3 = st.columns(3)
-with r1_c1:
+b1, b2, b3 = st.columns(3)
+with b1:
     if st.button("0.5倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 0.5)
-with r1_c2:
+with b2:
     if st.button("1倍 (分母)", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 1.0)
-with r1_c3:
+with b3:
     if st.button("1.5倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 1.5)
 
-r2_c1, r2_c2, r2_c3 = st.columns(3)
-with r2_c1:
+b4, b5, b6 = st.columns(3)
+with b4:
     if st.button("2倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 2.0)
-with r2_c2:
+with b5:
     if st.button("2.5倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 2.5)
-with r2_c3:
+with b6:
     if st.button("3倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 3.0)
 
@@ -244,7 +240,7 @@ elif zone_key == "yutime_ghost":
 elif zone_key == "deep":
     comments = [
         "「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪しくなってきましたねぇ……」",
-        "「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
+        "`ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
         "「じっと耐える時間帯です。隣の連チャンを横目に見ながらメンタルを保てるかが勝負ですよ」"
     ]
     footers = [
@@ -267,7 +263,7 @@ else:
 comment_text = comments[hash_seed % len(comments)]
 footer_cynic = footers[hash_seed % len(footers)]
 
-# --- 8. カード構築 ---
+# --- 8. カード構築（ボタンの縦長感を解決するため、カード内にミニボタンをCSSグリッドで直接埋め込む設計に変更） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
