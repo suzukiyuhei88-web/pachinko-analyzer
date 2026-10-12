@@ -42,7 +42,7 @@ def load_data():
 
 df_master = load_data()
 
-# --- 1. デザイン用のカスタムCSS（DotGothic16フォント ＆ ダークテーマ） ---
+# --- 1. デザイン用のカスタムCSS ---
 st.markdown(
     """
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -63,12 +63,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ゾーンごとのステータス・キャラクターコメント定義 ---
-ZONE_MESSAGES = {
+# --- 2. 状態判定（1, 4, 5 と連動：タイトル、HP、カラー）の定義 ---
+ZONE_DEFINITIONS = {
     "peaceful": {
         "title": "平穏域 (NORMAL)",
-        "comment": "「まだ投資も浅いし、気楽なもんですわ。ここから地獄が始まるとも知らずにね」",
-        "footer_cynic": "※台の機嫌はあなたとは無関係に一定の確率で抽選し続けています。",
         "hp_percent": 100,
         "hp_status": "STABLE",
         "border_color": "#3b82f6",
@@ -76,8 +74,6 @@ ZONE_MESSAGES = {
     },
     "caution": {
         "title": "警戒域 (CAUTION)",
-        "comment": "「『そろそろ当たるはず』？ いいえ、確率の抽選は毎回リセットですよ。都合よく解釈しないことですね」",
-        "footer_cynic": "※確率に「そろそろ」という概念は存在しません。",
         "hp_percent": 60,
         "hp_status": "CAUTION",
         "border_color": "#10b981",
@@ -85,8 +81,6 @@ ZONE_MESSAGES = {
     },
     "yutime_ghost": {
         "title": "警告域 / 遊タイム非搭載 (WARNING)",
-        "comment": "「昔の台ならここで遊タイムの救済があったんですけどねえ……現代の荒波スペックじゃただの養分ロードですわ」",
-        "footer_cynic": "※冷徹な液晶演出だけが、あなたの財布のHPを削っていきます。",
         "hp_percent": 30,
         "hp_status": "WARNING",
         "border_color": "#a855f7",
@@ -94,8 +88,6 @@ ZONE_MESSAGES = {
     },
     "deep": {
         "title": "深海トラウマ領域 (DEEP)",
-        "comment": "「ここまで来ると、もはや引き際が見えなくなってパチンコ屋のATMとトモダチ状態ですね。お疲れ様です」",
-        "footer_cynic": "※ハンドルを固定したところで、数学的確率は1ミリも変動しません。",
         "hp_percent": 10,
         "hp_status": "DANGER",
         "border_color": "#f97316",
@@ -103,8 +95,6 @@ ZONE_MESSAGES = {
     },
     "god": {
         "title": "確率特異点 / 神の領域 (SINGULARITY)",
-        "comment": "「いやあ、見事な下振れ芸ですね！ 凡人には真似できない領域の数字を叩き出してますよ、ある意味で誇っていいいんじゃないですか？」",
-        "footer_cynic": "※周囲の視線は同情か、あるいは反面教師を見るような冷ややかなものです。",
         "hp_percent": 1,
         "hp_status": "CRITICAL",
         "border_color": "#ef4444",
@@ -141,7 +131,7 @@ current_rotation = st.slider("現在のハマり回転数", min_value=0, max_val
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
-# --- 6. ゾーン分岐 ---
+# --- 6. 状態判定の決定（1, 4, 5用） ---
 if prob_ハマり > 50:
     zone_key = "peaceful"
 elif prob_ハマり > 20:
@@ -153,12 +143,7 @@ elif prob_ハマり > 1.0:
 else:
     zone_key = "god"
 
-zone_data = ZONE_MESSAGES[zone_key]
-
-comment_text = zone_data["comment"]
-if zone_key == "yutime_ghost":
-    yutime_rot = int(p_denom * 3)
-    comment_text = comment_text.format(yutime_rot=yutime_rot)
+zone_data = ZONE_DEFINITIONS[zone_key]
 
 # --- 7. CSVネタマッチング（無機質アナライザー用） ---
 if df_master is not None and len(df_master) > 0:
@@ -167,10 +152,28 @@ if df_master is not None and len(df_master) > 0:
     approx_rate = str(closest_row.get('確率・数値', ''))
     comparison_text = str(closest_row.get('事象', '')) + "：" + str(closest_row.get('コメント', ''))
 else:
-    approx_rate = f"约 {prob_ハマり:.1f}%"
+    approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 8. 2軸構造化カードの構築（無機質データ vs キャラクターセリフ） ---
+# --- 8. ハマり確率に依存する要素（2. キャラクターセリフ ＆ 3. フッター） ---
+if prob_ハマり > 50:
+    comment_text = "「まだ投資も浅いし、気楽なもんですわ。ここから地獄が始まるとも知らずにね」"
+    footer_cynic = "※台の機嫌はあなたとは無関係に一定の確率で抽選し続けています。"
+elif prob_ハマり > 20:
+    comment_text = "「『そろそろ当たるはず』？ いいえ、確率の抽選は毎回リセットですよ。都合よく解釈しないことですね」"
+    footer_cynic = "※確率に「そろそろ」という概念は存在しません。"
+elif prob_ハマり > 10:
+    yutime_rot = int(p_denom * 3)
+    comment_text = f"「昔の台ならここで遊タイムの救済があったんですけどねえ……現代の荒波スペックじゃただの養分ロードですわ（※目安約 {yutime_rot}回転）」"
+    footer_cynic = "※冷徹な液晶演出だけが、あなたの財布のHPを削っていきます。"
+elif prob_ハマり > 1.0:
+    comment_text = "「ここまで来ると、もはや引き際が見えなくなってパチンコ屋のATMとトモダチ状態ですね。お疲れ様です」"
+    footer_cynic = "※ハンドルを固定したところで、数学的確率は1ミリも変動しません。"
+else:
+    comment_text = "「いやあ、見事な下振れ芸ですね！ 凡人には真似できない領域の数字を叩き出してますよ、ある意味で誇っていいんじゃないですか？」"
+    footer_cynic = "※周囲の視線は同情か、あるいは反面教師を見るような冷ややかなものです。"
+
+# --- 9. 2軸構造化カードの構築 ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 hp_percent = zone_data['hp_percent']
@@ -207,24 +210,21 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- 【軸2】キャラクターセリフ枠（裏研修風キャラクターのコメント） -->
+    <!-- 【軸2】キャラクターセリフ枠（ハマり確率に依存するコメント） -->
     <div style="margin-bottom: 12px;">
         <div style="font-size: 10px; color: {accent_color}; letter-spacing: 1px; margin-bottom: 4px;">■ 状態判定: {zone_data['title']}</div>
         
-        <!-- キャラクター発言ボックス（アイコン仮置き ＋ 吹き出し風） -->
         <div style="display: flex; align-items: flex-start; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 6px;">
-            <!-- 仮置きキャラクターアイコン -->
             <div style="min-width: 40px; height: 40px; background-color: #1e293b; border: 1px dashed {accent_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #94a3b8; margin-right: 10px; text-align: center;">
                 [ICON]
             </div>
-            <!-- セリフ本文 -->
             <div style="font-size: 12px; color: #e2e8f0; line-height: 1.4;">
                 {comment_text}
             </div>
         </div>
     </div>
 
-    <!-- 財布・メンタル HPゲージ -->
+    <!-- 財布・メンタル HPゲージ（状態判定に連動） -->
     <div style="background-color: rgba(0,0,0,0.4); padding: 6px 10px; border-radius: 6px; margin-bottom: 10px;">
         <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 3px;">
             <span>💳 財布 / メンタル残存値</span>
@@ -235,9 +235,9 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- サブリミナル・フッター -->
+    <!-- サブリミナル・フッター（ハマり確率に依存する皮肉） -->
     <div style="text-align: center; font-size: 10px; color: #64748b; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
-        {zone_data['footer_cynic']}
+        {footer_cynic}
     </div>
 
 </div>
