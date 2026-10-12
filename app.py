@@ -71,7 +71,7 @@ ZONE_DEFINITIONS = {
         "hp_status": "STABLE",
         "border_color": "#3b82f6",
         "accent_color": "#60a5fa",
-        "bg_color": "#0d1b2a", # 青系統の薄いダーク
+        "bg_color": "#0d1b2a",
     },
     "caution": {
         "title": "警戒域 (CAUTION)",
@@ -79,7 +79,7 @@ ZONE_DEFINITIONS = {
         "hp_status": "CAUTION",
         "border_color": "#10b981",
         "accent_color": "#34d399",
-        "bg_color": "#062318", # 緑系統の薄いダーク
+        "bg_color": "#062318",
     },
     "yutime_ghost": {
         "title": "警告域 / 遊タイム非搭載 (WARNING)",
@@ -87,7 +87,7 @@ ZONE_DEFINITIONS = {
         "hp_status": "WARNING",
         "border_color": "#a855f7",
         "accent_color": "#c084fc",
-        "bg_color": "#1e102f", # 紫系統の薄いダーク
+        "bg_color": "#1e102f",
     },
     "deep": {
         "title": "深海トラウマ領域 (DEEP)",
@@ -95,7 +95,7 @@ ZONE_DEFINITIONS = {
         "hp_status": "DANGER",
         "border_color": "#f97316",
         "accent_color": "#fb923c",
-        "bg_color": "#2c150b", # オレンジ系統の薄いダーク
+        "bg_color": "#2c150b",
     },
     "god": {
         "title": "確率特異点 / 神の領域 (SINGULARITY)",
@@ -103,7 +103,7 @@ ZONE_DEFINITIONS = {
         "hp_status": "CRITICAL",
         "border_color": "#ef4444",
         "accent_color": "#f87171",
-        "bg_color": "#2d0f0f", # 赤系統の薄いダーク
+        "bg_color": "#2d0f0f",
     },
 }
 
@@ -236,7 +236,7 @@ card_html = f"""
     font-family: 'DotGothic16', sans-serif !important;
 }}
 </style>
-<div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; box-sizing: border-box; transition: background-color 0.3s ease, border-color 0.3s ease;">
+<div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease;">
     
     <!-- 【ベース】データコア -->
     <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 12px;">
@@ -275,14 +275,14 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- 財布・メンタル HPゲージ（状態判定に連動） -->
+    <!-- 財布・メンタル HPゲージ（状態判定に連動 ＋ トランジションアニメーション追加） -->
     <div style="background-color: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; margin-bottom: 10px;">
         <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 3px;">
             <span>💳 財布 / メンタル残存値</span>
             <span>{zone_data['hp_status']} ({hp_percent}%)</span>
         </div>
         <div style="width: 100%; background-color: rgba(0,0,0,0.5); height: 5px; border-radius: 3px; overflow: hidden;">
-            <div style="width: {hp_percent}%; background-color: {border_color}; height: 100%;"></div>
+            <div style="width: {hp_percent}%; background-color: {border_color}; height: 100%; transition: width 0.4s ease, background-color 0.4s ease;"></div>
         </div>
     </div>
 
