@@ -301,7 +301,7 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 9. カード構築（アスキーアート完全準拠のレイアウト） ---
+# --- 9. カード構築（レイアウト固定 ＆ 上部フレーズの主張を抑えたトーン） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -316,16 +316,14 @@ card_html = f"""
 </style>
 <div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.8); max-width: 500px; margin: 5px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease; position: relative;">
     
-    <!-- 【最上部】至高の名言置換フレーズ枠（最大のアイキャッチ） -->
-    <div style="margin-bottom: 12px;">
-        <div style="display: flex; align-items: center; background: rgba(0,0,0,0.5); border: 2px solid {accent_color}; padding: 14px; border-radius: 6px;">
-            <div style="font-size: 13px; color: {accent_color}; line-height: 1.5; text-align: center; width: 100%; font-weight: bold; letter-spacing: 1px;">
-                {quote_text}
-            </div>
+    <!-- 【一番上】至高の名言置換フレーズ枠（主張を極限まで抑えた控えめなトーン） -->
+    <div style="margin-bottom: 12px; text-align: center; padding: 6px 10px; background: rgba(0,0,0,0.2); border-bottom: 1px dashed rgba(255,255,255,0.15); border-radius: 4px;">
+        <div style="font-size: 11px; color: #94a3b8; line-height: 1.4; letter-spacing: 0.5px; opacity: 0.85;">
+            {quote_text}
         </div>
     </div>
 
-    <!-- 【メイン主役】ハマり確率 -->
+    <!-- 【メイン主役】ハマり確率（最重要：5） -->
     <div style="background-color: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); padding: 14px; border-radius: 6px; margin-bottom: 12px; text-align: center;">
         <div style="font-size: 10px; color: #94a3b8; letter-spacing: 1px; margin-bottom: 2px;">[ ハマり確率（ここまで当らない確率） ]</div>
         <div style="font-size: 38px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 4px 0;">{prob_ハマり:.2f}%</div>
@@ -338,7 +336,7 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- 【軸1】無機質アナライザー -->
+    <!-- 【軸1】無機質アナライザー（次点：3.5） -->
     <div style="background-color: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px; margin-bottom: 10px;">
         <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748b; letter-spacing: 1px; margin-bottom: 3px;">
             <span>[ SYSTEM: OBJECTIVE_ANALYSIS ]</span>
@@ -349,7 +347,7 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- 【軸2】シニカルコメント枠 -->
+    <!-- 【軸2】シニカルコメント枠（サポート：3） -->
     <div style="margin-bottom: 10px;">
         <div style="display: flex; align-items: flex-start; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px;">
             <div style="min-width: 36px; height: 36px; background-color: rgba(0,0,0,0.3); border: 1px dashed {accent_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #94a3b8; margin-right: 8px; text-align: center;">
@@ -380,4 +378,4 @@ card_html = f"""
 </div>
 """
 
-components.html(card_html, height=640, scrolling=False)
+components.html(card_html, height=620, scrolling=False)
