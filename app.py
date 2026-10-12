@@ -91,7 +91,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. 状態判定（倍率ベース）と名言フレーズ・コメントの定義 ---
+# --- 2. 状態判定（倍率ベース）と名言フレーズ・コメント、および「ざわ…」頻度の定義 ---
 ZONE_DEFINITIONS = {
     "peaceful": {
         "title": "STAGE 1 : 慢心 / 平穏域 (WHITE)",
@@ -101,7 +101,7 @@ ZONE_DEFINITIONS = {
         "hp_text_color": "#22c55e",  # 緑（ステージ1）
         "bg_color": "#111827",
         "quote": "狙い台…計画通り…！",
-        "zawa_count": 0,
+        "zawa_count": 0,  # ステージ1：出さない
         "comments": [
             "「おっ、早めの当りですね！ まだ財布も心もノーダメージでウハウハな時間帯ですわ」",
             "「このスピード感で当たってくれると助かるんですけどねぇ。まあ、油断大敵ですよ」",
@@ -121,7 +121,7 @@ ZONE_DEFINITIONS = {
         "hp_text_color": "#facc15",  # 黄（ステージ2）
         "bg_color": "#082f49",
         "quote": "まだあわてるような投資じゃない",
-        "zawa_count": 5,
+        "zawa_count": 0,  # ステージ2：出さない
         "comments": [
             "「確率分母以内ですからね、まだまだ『まあまあ許容範囲内』ってところですわ」",
             "「『そろそろ当たるはず』……いやいや、分母以内ならまだ平常運転ですよ。気楽にいきましょう」",
@@ -141,7 +141,7 @@ ZONE_DEFINITIONS = {
         "hp_text_color": "#f97316",  # オレンジ（ステージ3）
         "bg_color": "#422006",
         "quote": "その日 パチンカーは思い出した<br>確率の妙に囚われていた屈辱を……",
-        "zawa_count": 18,
+        "zawa_count": 8,  # ステージ3：ほんの少し
         "comments": [
             "「うーん、分母を超えて2倍ハマりコースですか。まあ、パチンコ打ってりゃよくある日常風景ですね」",
             "<span>「『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？」</span>",
@@ -161,7 +161,7 @@ ZONE_DEFINITIONS = {
         "hp_text_color": "#ef4444",  # 赤（ステージ4）
         "bg_color": "#052e16",
         "quote": "まだだ！まだ台が当たりたがっている！！",
-        "zawa_count": 35,
+        "zawa_count": 28,  # ステージ4：多め
         "comments": [
             "<span><span>「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪くなってきましたねぇ……」</span></span>",
             "「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
@@ -181,10 +181,10 @@ ZONE_DEFINITIONS = {
         "hp_text_color": "#ef4444",  # 赤（ステージ5）
         "bg_color": "#450a0a",
         "quote": "台が球を吐き出さない限り、止まるんじゃねぇぞ…",
-        "zawa_count": 55,
+        "zawa_count": 55,  # ステージ5：最大
         "comments": [
             "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
-            "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンライズが出ているのを感じませんか？」",
+            "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
             "<span>「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」</span>"
         ],
         "footers": [
@@ -284,7 +284,7 @@ comment_text = zone_data['comments'][hash_seed % len(zone_data['comments'])]
 footer_cynic = zone_data['footers'][hash_seed % len(zone_data['footers'])]
 quote_text = zone_data['quote']
 
-# --- 8. 背景「ざわ…」演出の動的生成 ---
+# --- 8. 背景「ざわ…」演出の動的生成（ステージ1・2はゼロ、3→4→5で段階増加） ---
 zawa_count = zone_data["zawa_count"]
 if zawa_count > 0:
     zawa_html_list = []
@@ -301,7 +301,7 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 9. カード構築（補助情報を1行に最適化） ---
+# --- 9. カード構築（倍率表記「(〇.〇倍ハマり)」と1行補助情報・くすみローズのHPバー） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -333,11 +333,11 @@ card_html = f"""
             <span style="font-size: 38px; color: {accent_color}; font-weight: bold;">{prob_ハマり:.2f}%</span>
         </div>
         
-        <!-- 【補助情報】大当り確率と回転数（13px維持のまま横幅とパディングを調整して1行化） -->
+        <!-- 【補助情報】大当り確率と回転数（表記ルール「(〇.〇倍ハマり)」適用、1行化） -->
         <div style="border-top: 1px dashed rgba(255,255,255,0.15); margin-top: 10px; padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 13px; color: #94a3b8; white-space: nowrap;">
             <span>大当り: <b style="color: #f8fafc; font-size: 13px;">1/{p_denom}</b></span>
             <span style="color: rgba(255,255,255,0.2);">|</span>
-            <span>回転数: <b style="color: #f8fafc; font-size: 13px;">{current_rotation}</b> <span style="font-size: 11px; color: {accent_color};">({rotation_ratio:.1f}倍)</span></span>
+            <span>回転数: <b style="color: #f8fafc; font-size: 13px;">{current_rotation}</b> <span style="font-size: 11px; color: {accent_color};">({rotation_ratio:.1f}倍ハマり)</span></span>
         </div>
     </div>
 
