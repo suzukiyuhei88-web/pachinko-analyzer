@@ -42,7 +42,7 @@ def load_data():
 
 df_master = load_data()
 
-# --- 1. デザイン用のカスタムCSS ---
+# --- 1. デザイン用のカスタムCSS ＆ 「ざわ…」背景演出用スタイル ---
 st.markdown(
     """
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -53,6 +53,7 @@ st.markdown(
     .stApp {
         background-color: #0b0f19;
         color: #f8fafc;
+        position: relative;
     }
     label, .stRadio p, .stNumberInput p {
         color: #cbd5e1 !important;
@@ -61,58 +62,93 @@ st.markdown(
     .block-container {
         padding-top: 3rem;
         padding-bottom: 2rem;
+        position: relative;
+        z-index: 2;
     }
     /* ラジオボタンをコンパクトに横並びさせる調整 */
     .stRadio > div {
         flex-direction: row !important;
         gap: 10px;
     }
+    /* 背景「ざわ…」侵食レイヤー */
+    .zawa-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }
+    .zawa-item {
+        position: absolute;
+        font-weight: 900;
+        font-family: 'Yu Gothic', sans-serif;
+        color: rgba(255, 51, 102, 0.15);
+        white-space: nowrap;
+    }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# --- 2. 状態判定（倍率ベース）の定義 ---
+# --- 2. 状態判定（倍率ベース）と決定版名言フレーズの定義 ---
 ZONE_DEFINITIONS = {
     "peaceful": {
-        "title": "平穏域 / 超初期 (NORMAL)",
+        "title": "STAGE 1 : 慢心 (NORMAL)",
         "hp_percent": 100,
         "hp_status": "STABLE",
-        "border_color": "#3b82f6",
-        "accent_color": "#60a5fa",
+        "border_color": "#00ffcc",
+        "accent_color": "#00ffcc",
         "bg_color": "#0d1b2a",
+        "quote": "狙い台…計画通り…！",
+        "zawa_count": 0,
+        "footer": "※早い当りは嬉しいですが、持ち玉の維持こそが勝負の分かれ道です。"
     },
     "caution": {
-        "title": "警戒域 / 分母以内 (CAUTION)",
+        "title": "STAGE 2 : 強がり (CAUTION)",
         "hp_percent": 75,
         "hp_status": "CAUTION",
-        "border_color": "#10b981",
-        "accent_color": "#34d399",
+        "border_color": "#ffcc00",
+        "accent_color": "#ffcc00",
         "bg_color": "#062318",
+        "quote": "まだあわてるような投資じゃない",
+        "zawa_count": 5,
+        "footer": "※確率分母以内での当りは全体の約63%です。まだ普通の範囲内ですね。"
     },
     "yutime_ghost": {
-        "title": "警告域 / 2倍ハマり圏 (WARNING)",
+        "title": "STAGE 3 : 屈辱 (WARNING)",
         "hp_percent": 50,
         "hp_status": "WARNING",
-        "border_color": "#a855f7",
-        "accent_color": "#c084fc",
+        "border_color": "#ff9900",
+        "accent_color": "#ff9900",
         "bg_color": "#1e102f",
+        "quote": "その日 パチンカーは思い出した<br>確率の妙に囚われていた屈辱を……",
+        "zawa_count": 18,
+        "footer": "※「ここから取り返せばいいや」という甘い期待が泥沼の始まりです。"
     },
     "deep": {
-        "title": "深海トラウマ領域 / 3倍ハマり圏 (DEEP)",
+        "title": "STAGE 4 : 執着 (DEEP)",
         "hp_percent": 25,
         "hp_status": "DANGER",
-        "border_color": "#f97316",
-        "accent_color": "#fb923c",
+        "border_color": "#ff3333",
+        "accent_color": "#ff3333",
         "bg_color": "#2c150b",
+        "quote": "まだだ！まだ台が当たりたがっている！！",
+        "zawa_count": 35,
+        "footer": "※サンクコスト効果に支配されていませんか？ 冷静になりましょう。"
     },
     "god": {
-        "title": "確率特異点 / 神の領域 (SINGULARITY)",
+        "title": "STAGE 5 : 狂気 (SINGULARITY)",
         "hp_percent": 5,
         "hp_status": "CRITICAL",
-        "border_color": "#ef4444",
-        "accent_color": "#f87171",
+        "border_color": "#ff0055",
+        "accent_color": "#ff0055",
         "bg_color": "#2d0f0f",
+        "quote": "台が球を吐き出さない限り、止まるんじゃねぇぞ…",
+        "zawa_count": 55,
+        "footer": "※財布の命日へようこそ。撤退の二文字はすでに脳内から消えています。"
     },
 }
 
@@ -199,73 +235,31 @@ else:
     approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 7. セリフ＆フッター ---
-hash_seed = int(prob_ハマり * 1000) % 3
+# --- 7. 背景「ざわ…」演出の動的生成 ---
+zawa_count = zone_data["zawa_count"]
+if zawa_count > 0:
+    zawa_html_list = []
+    # 再描画時も位置が安定するように現在の回転数と分母をシードに利用
+    random.seed(int(current_rotation + p_denom))
+    for i in range(zawa_count):
+        top = random.randint(2, 95)
+        left = random.randint(2, 95)
+        size = random.uniform(0.9, 1.8) + (zawa_count * 0.005)
+        deg = random.randint(-20, 20)
+        text = "ざわ…" if i % 2 == 0 else "ざわ"
+        zawa_html_list.append(
+            f'<div class="zawa-item" style="top:{top}vh; left:{left}vw; font-size:{size}rem; transform:rotate({deg}deg);">{text}</div>'
+        )
+    zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
+    st.markdown(zawa_container, unsafe_allow_html=True)
 
-if zone_key == "peaceful":
-    comments = [
-        "「おっ、早めの当りですね！ まだ財布も心もノーダメージでウハウハな時間帯ですわ」",
-        "「このスピード感で当たってくれると助かるんですけどねぇ。まあ、油断大敵ですよ」",
-        "「サクッと初当りを引けてご機嫌なご様子。ここから連チャンを伸ばせるかが見せ所ですね」"
-    ]
-    footers = [
-        "※早い当りは嬉しいですが、持ち玉の維持こそが勝負の分かれ道です。",
-        "※この調子でプラス域をキープしてさっさと逃げたいところですね。",
-        "※確率の恩恵を素直に受け取っておきましょう。"
-    ]
-elif zone_key == "caution":
-    comments = [
-        "「確率分母以内ですからね、まだまだ『まあまあ許容範囲内』ってところですわ」",
-        "「『そろそろ当たるはず』……いやいや、分母以内ならまだ平常運転ですよ。気楽にいきましょう」",
-        "「ここまでは想定内の挙動ですね。焦らず淡々とハンドルを握っていきましょうか」"
-    ]
-    footers = [
-        "※確率分母以内での当りは全体の約63%です。まだ普通の範囲内ですね。",
-        "※ここから先が本当の地獄の始まり……なんて冗談ですけど、油断は禁物です。",
-        "※財布のHPはまだ満タンに近いです。"
-    ]
-elif zone_key == "yutime_ghost":
-    comments = [
-        "「うーん、分母を超えて2倍ハマりコースですか。まあ、パチンコ打ってりゃよくある日常風景ですね」",
-        "「『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？」",
-        "「ちょっと嫌な汗をかく頃合いですが、ここから一撃でまくる台も多いですからねえ」"
-    ]
-    footers = [
-        "※2倍ハマりに到達する確率は約13.5%です。まだまだよくある日常です。",
-        "※「ここから取り返せばいいや」という甘い期待が泥沼の始まりです。",
-        "※演出の派手さと裏腹に、財布の残高は着実に削られています。"
-    ]
-elif zone_key == "deep":
-    comments = [
-        "「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪しくなってきましたねぇ……」",
-        "「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
-        "<span>「じっと耐える時間帯です。隣の連チャンを横目に見ながらメンタルを保てるかが勝負ですよ」</span>"
-    ]
-    footers = [
-        "※3倍ハマりに到達する確率は約5%未満。そろそろ不穏な領域です。",
-        "※サンクコスト効果に支配されていませんか？ 冷静になりましょう。",
-        "※ハンドルを固定したところで、確率はあなたに微笑みません。"
-    ]
-else:
-    comments = [
-        "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
-        "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
-        "<span>「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」</span>"
-    ]
-    footers = [
-        "※ここから当たる確率はごくわずか。完全な虚無との戦いです。",
-        "※周囲の視線は同情、あるいは哀れみを含んだものに変わっています。",
-        "※財布の命日へようこそ。撤退の二文字はすでに脳内から消えています。"
-    ]
-
-comment_text = comments[hash_seed % len(comments)]
-footer_cynic = footers[hash_seed % len(footers)]
-
-# --- 8. カード構築（ハマり度を少数第一位までに整形） ---
+# --- 8. カード構築（確定した名言置換フレーズを反映） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
 hp_percent = zone_data['hp_percent']
+quote_text = zone_data['quote']
+footer_cynic = zone_data['footer']
 
 card_html = f"""
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -274,20 +268,20 @@ card_html = f"""
     font-family: 'DotGothic16', sans-serif !important;
 }}
 </style>
-<div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 5px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease;">
+<div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.8); max-width: 500px; margin: 5px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease; position: relative; z-index: 3;">
     
     <!-- 【最上部】状態判定ヘッダー -->
-    <div style="background-color: rgba(0,0,0,0.4); border-left: 4px solid {accent_color}; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px;">
+    <div style="background-color: rgba(0,0,0,0.5); border-left: 4px solid {accent_color}; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px;">
         <div style="font-size: 9px; color: #94a3b8; letter-spacing: 1px;">■ 現在の状態判定</div>
         <div style="font-size: 14px; color: {accent_color}; font-weight: bold; margin-top: 2px;">{zone_data['title']}</div>
     </div>
 
     <!-- 【メイン主役】ハマり確率 -->
-    <div style="background-color: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.15); padding: 14px; border-radius: 6px; margin-bottom: 12px; text-align: center;">
+    <div style="background-color: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); padding: 14px; border-radius: 6px; margin-bottom: 12px; text-align: center;">
         <div style="font-size: 10px; color: #94a3b8; letter-spacing: 1px; margin-bottom: 2px;">[ ハマり確率（ここまで当らない確率） ]</div>
         <div style="font-size: 38px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 4px 0;">{prob_ハマり:.2f}%</div>
         
-        <!-- 【補助情報】大当り確率と回転数（ハマり度は少数第一位まで） -->
+        <!-- 【補助情報】大当り確率と回転数 -->
         <div style="border-top: 1px dashed rgba(255,255,255,0.15); margin-top: 10px; padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 16px; font-size: 11px; color: #94a3b8;">
             <span>大当り確率: <b style="color: #f8fafc;">1/{p_denom}</b></span>
             <span style="color: rgba(255,255,255,0.2);">|</span>
@@ -296,7 +290,7 @@ card_html = f"""
     </div>
 
     <!-- 【軸1】無機質アナライザー -->
-    <div style="background-color: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px; margin-bottom: 10px;">
+    <div style="background-color: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px; margin-bottom: 10px;">
         <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748b; letter-spacing: 1px; margin-bottom: 3px;">
             <span>[ SYSTEM: OBJECTIVE_ANALYSIS ]</span>
             <span style="color: #38bdf8;">{approx_rate}</span>
@@ -306,14 +300,11 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- 【軸2】キャラクターセリフ枠 -->
+    <!-- 【軸2】名言置換フレーズ枠 -->
     <div style="margin-bottom: 10px;">
-        <div style="display: flex; align-items: flex-start; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px;">
-            <div style="min-width: 36px; height: 36px; background-color: rgba(0,0,0,0.3); border: 1px dashed {accent_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #94a3b8; margin-right: 8px; text-align: center;">
-                [ICON]
-            </div>
-            <div style="font-size: 11px; color: #f1f5f9; line-height: 1.4;">
-                {comment_text}
+        <div style="display: flex; align-items: center; background: rgba(0,0,0,0.35); border: 1px solid {accent_color}; padding: 12px; border-radius: 6px;">
+            <div style="font-size: 12px; color: #f1f5f9; line-height: 1.5; text-align: center; width: 100%; font-weight: bold;">
+                {quote_text}
             </div>
         </div>
     </div>
