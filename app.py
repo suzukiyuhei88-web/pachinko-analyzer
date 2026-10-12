@@ -63,11 +63,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ゾーンごとのステータス・心理コメント定義（心理・状況ブロック用） ---
+# --- 2. ゾーンごとのステータス・キャラクターコメント定義 ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "平穏域 (NORMAL)",
-        "comment": "まだ確率の収束を語るには早すぎる回転数です。財布のライフはまだ満タンです。",
+        "comment": "「まだ投資も浅いし、気楽なもんですわ。ここから地獄が始まるとも知らずにね」",
         "footer_cynic": "※台の機嫌はあなたとは無関係に一定の確率で抽選し続けています。",
         "hp_percent": 100,
         "hp_status": "STABLE",
@@ -76,7 +76,7 @@ ZONE_MESSAGES = {
     },
     "caution": {
         "title": "警戒域 (CAUTION)",
-        "comment": "投資がかさみ、「そろそろ当たるはず」という正常性バイアスが顔を出す頃合いです。",
+        "comment": "「『そろそろ当たるはず』？ いいえ、確率の抽選は毎回リセットですよ。都合よく解釈しないことですね」",
         "footer_cynic": "※確率に「そろそろ」という概念は存在しません。",
         "hp_percent": 60,
         "hp_status": "CAUTION",
@@ -85,7 +85,7 @@ ZONE_MESSAGES = {
     },
     "yutime_ghost": {
         "title": "警告域 / 遊タイム非搭載 (WARNING)",
-        "comment": "かつての基準であれば約 {yutime_rot}回転で救済されていましたが、現代の荒波スペックに慈悲はありません。",
+        "comment": "「昔の台ならここで遊タイムの救済があったんですけどねえ……現代の荒波スペックじゃただの養分ロードですわ」",
         "footer_cynic": "※冷徹な液晶演出だけが、あなたの財布のHPを削っていきます。",
         "hp_percent": 30,
         "hp_status": "WARNING",
@@ -94,7 +94,7 @@ ZONE_MESSAGES = {
     },
     "deep": {
         "title": "深海トラウマ領域 (DEEP)",
-        "comment": "RUSH即抜けの絶望に比べれば可愛いもの……と言い聞かせなければ正気を保てない深度です。",
+        "comment": "「ここまで来ると、もはや引き際が見えなくなってパチンコ屋のATMとトモダチ状態ですね。お疲れ様です」",
         "footer_cynic": "※ハンドルを固定したところで、数学的確率は1ミリも変動しません。",
         "hp_percent": 10,
         "hp_status": "DANGER",
@@ -103,7 +103,7 @@ ZONE_MESSAGES = {
     },
     "god": {
         "title": "確率特異点 / 神の領域 (SINGULARITY)",
-        "comment": "数学的・統計的観点から言えば、レア事象を引き当てる才能の無駄遣いが発生しています。",
+        "comment": "「いやあ、見事な下振れ芸ですね！ 凡人には真似できない領域の数字を叩き出してますよ、ある意味で誇っていいいんじゃないですか？」",
         "footer_cynic": "※周囲の視線は同情か、あるいは反面教師を見るような冷ややかなものです。",
         "hp_percent": 1,
         "hp_status": "CRITICAL",
@@ -160,17 +160,17 @@ if zone_key == "yutime_ghost":
     yutime_rot = int(p_denom * 3)
     comment_text = comment_text.format(yutime_rot=yutime_rot)
 
-# --- 7. CSVネタマッチング（客観データブロック用） ---
+# --- 7. CSVネタマッチング（無機質アナライザー用） ---
 if df_master is not None and len(df_master) > 0:
     df_master['diff'] = (df_master['prob_val'] - prob_ハマり).abs()
     closest_row = df_master.loc[df_master['diff'].idxmin()]
     approx_rate = str(closest_row.get('確率・数値', ''))
     comparison_text = str(closest_row.get('事象', '')) + "：" + str(closest_row.get('コメント', ''))
 else:
-    approx_rate = f"約 {prob_ハマり:.1f}%"
+    approx_rate = f"约 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 8. 2軸構造化カードの構築 ---
+# --- 8. 2軸構造化カードの構築（無機質データ vs キャラクターセリフ） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 hp_percent = zone_data['hp_percent']
@@ -184,32 +184,43 @@ card_html = f"""
 </style>
 <div style="border: 2px solid {border_color}; background-color: #111827; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; box-sizing: border-box;">
     
-    <!-- 【軸1】データコア ＆ 客観データブロック -->
-    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 12px;">
-        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">
+    <!-- 【ベース】データコア -->
+    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 4px;">
             <span>スペック: <b>1/{p_denom}</b></span>
             <span>現在回転数: <b style="color: #fff;">{current_rotation}回転</b></span>
         </div>
-        <div style="text-align: center; background-color: rgba(0,0,0,0.4); padding: 10px; border-radius: 6px; margin-bottom: 8px;">
-            <div style="font-size: 36px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 2px 0;">{prob_ハマり:.2f}%</div>
+        <div style="text-align: center; background-color: rgba(0,0,0,0.4); padding: 8px; border-radius: 6px;">
+            <div style="font-size: 34px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 2px 0;">{prob_ハマり:.2f}%</div>
             <div style="font-size: 10px; color: #94a3b8;">（この回転数まで一度も当らない数学的確率）</div>
-        </div>
-        <div style="background-color: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.15); padding: 8px 10px; border-radius: 6px;">
-            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #38bdf8; margin-bottom: 2px;">
-                <span>科学的スケール比較</span>
-                <span>{approx_rate}</span>
-            </div>
-            <div style="font-size: 11px; color: #f1f5f9; line-height: 1.3;">
-                • {comparison_text}
-            </div>
         </div>
     </div>
 
-    <!-- 【軸2】心理・状況ブロック ＆ フッター -->
+    <!-- 【軸1】無機質アナライザー（科学的スケール比較） -->
+    <div style="background-color: #030712; border: 1px solid #1e293b; padding: 10px; border-radius: 6px; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748b; letter-spacing: 1px; margin-bottom: 4px;">
+            <span>[ SYSTEM: OBJECTIVE_ANALYSIS ]</span>
+            <span style="color: #38bdf8;">{approx_rate}</span>
+        </div>
+        <div style="font-size: 11px; color: #94a3b8; line-height: 1.3;">
+            <span style="color: #38bdf8;">>></span> {comparison_text}
+        </div>
+    </div>
+
+    <!-- 【軸2】キャラクターセリフ枠（裏研修風キャラクターのコメント） -->
     <div style="margin-bottom: 12px;">
-        <div style="font-size: 10px; color: {accent_color}; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;">■ 状態判定: {zone_data['title']}</div>
-        <div style="font-size: 12px; color: #cbd5e1; line-height: 1.4; background: rgba(255,255,255,0.02); padding: 8px 10px; border-radius: 6px; border-left: 3px solid {accent_color};">
-            {comment_text}
+        <div style="font-size: 10px; color: {accent_color}; letter-spacing: 1px; margin-bottom: 4px;">■ 状態判定: {zone_data['title']}</div>
+        
+        <!-- キャラクター発言ボックス（アイコン仮置き ＋ 吹き出し風） -->
+        <div style="display: flex; align-items: flex-start; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 6px;">
+            <!-- 仮置きキャラクターアイコン -->
+            <div style="min-width: 40px; height: 40px; background-color: #1e293b; border: 1px dashed {accent_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #94a3b8; margin-right: 10px; text-align: center;">
+                [ICON]
+            </div>
+            <!-- セリフ本文 -->
+            <div style="font-size: 12px; color: #e2e8f0; line-height: 1.4;">
+                {comment_text}
+            </div>
         </div>
     </div>
 
@@ -232,4 +243,4 @@ card_html = f"""
 </div>
 """
 
-components.html(card_html, height=520, scrolling=False)
+components.html(card_html, height=560, scrolling=False)
