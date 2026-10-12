@@ -62,6 +62,11 @@ st.markdown(
         padding-top: 1rem;
         padding-bottom: 2rem;
     }
+    /* ラジオボタンをコンパクトに横並びさせる調整 */
+    .stRadio > div {
+        flex-direction: row !important;
+        gap: 10px;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -136,33 +141,30 @@ if 'rotation_input' not in st.session_state or st.session_state.get('last_spec')
     st.session_state['rotation_input'] = min(300, int(p_denom * 6))
     st.session_state['last_spec'] = p_denom
 
-# クイックジャンプ用パラメータの受け取り（GETクエリパラメータの代替として、セッション操作用トリガー）
-# Streamlitのボタンの縦長問題を完全に回避するため、コンパクトな横並びグリッドを2段で配置
-st.markdown("<p style='font-size: 10px; color: #94a3b8; margin: 4px 0 2px 0;'>▼ 主要倍率へジャンプ</p>", unsafe_allow_html=True)
+# ★ 縦長解消：複数ボタンの代わりにコンパクトな横並び選択肢（ラジオ）を採用
+st.markdown("<p style='font-size: 11px; color: #94a3b8; margin: 4px 0 0 0;'>▼ クイックジャンプ（倍率選択）</p>", unsafe_allow_html=True)
+jump_option = st.radio(
+    "クイックジャンプ",
+    ["微調整", "0.5倍", "1倍(分母)", "1.5倍", "2倍", "2.5倍", "3倍"],
+    horizontal=True,
+    label_visibility="collapsed"
+)
 
-b1, b2, b3 = st.columns(3)
-with b1:
-    if st.button("0.5倍", use_container_width=True):
-        st.session_state['rotation_input'] = int(p_denom * 0.5)
-with b2:
-    if st.button("1倍 (分母)", use_container_width=True):
-        st.session_state['rotation_input'] = int(p_denom * 1.0)
-with b3:
-    if st.button("1.5倍", use_container_width=True):
-        st.session_state['rotation_input'] = int(p_denom * 1.5)
+# 選択された倍率に応じて回転数を即座にセット
+if jump_option == "0.5倍":
+    st.session_state['rotation_input'] = int(p_denom * 0.5)
+elif jump_option == "1倍(分母)":
+    st.session_state['rotation_input'] = int(p_denom * 1.0)
+elif jump_option == "1.5倍":
+    st.session_state['rotation_input'] = int(p_denom * 1.5)
+elif jump_option == "2倍":
+    st.session_state['rotation_input'] = int(p_denom * 2.0)
+elif jump_option == "2.5倍":
+    st.session_state['rotation_input'] = int(p_denom * 2.5)
+elif jump_option == "3倍":
+    st.session_state['rotation_input'] = int(p_denom * 3.0)
 
-b4, b5, b6 = st.columns(3)
-with b4:
-    if st.button("2倍", use_container_width=True):
-        st.session_state['rotation_input'] = int(p_denom * 2.0)
-with b5:
-    if st.button("2.5倍", use_container_width=True):
-        st.session_state['rotation_input'] = int(p_denom * 2.5)
-with b6:
-    if st.button("3倍", use_container_width=True):
-        st.session_state['rotation_input'] = int(p_denom * 3.0)
-
-# number_input を配置
+# number_input 配置
 max_limit = int(p_denom * 6)
 current_rotation = st.number_input(
     "現在のハマり回転数（データカウンターの数字）",
@@ -240,7 +242,7 @@ elif zone_key == "yutime_ghost":
 elif zone_key == "deep":
     comments = [
         "「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪しくなってきましたねぇ……」",
-        "`ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
+        "「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
         "「じっと耐える時間帯です。隣の連チャンを横目に見ながらメンタルを保てるかが勝負ですよ」"
     ]
     footers = [
@@ -263,7 +265,7 @@ else:
 comment_text = comments[hash_seed % len(comments)]
 footer_cynic = footers[hash_seed % len(footers)]
 
-# --- 8. カード構築（ボタンの縦長感を解決するため、カード内にミニボタンをCSSグリッドで直接埋め込む設計に変更） ---
+# --- 8. カード構築 ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
