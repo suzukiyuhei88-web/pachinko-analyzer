@@ -58,7 +58,6 @@ st.markdown(
         color: #cbd5e1 !important;
         font-family: 'DotGothic16', sans-serif !important;
     }
-    /* タイトルが途切れないよう、上部の余白をしっかり確保する */
     .block-container {
         padding-top: 3rem;
         padding-bottom: 2rem;
@@ -205,8 +204,8 @@ hash_seed = int(prob_ハマり * 1000) % 3
 
 if zone_key == "peaceful":
     comments = [
-        "<span>「おっ、早めの当りですね！ まだ財布も心もノーダメージでウハウハな時間帯ですわ」</span>",
-        "<span>「このスピード感で当たってくれると助かるんですけどねぇ。まあ、油断大敵ですよ」</span>",
+        "「おっ、早めの当りですね！ まだ財布も心もノーダメージでウハウハな時間帯ですわ」",
+        "「このスピード感で当たってくれると助かるんですけどねぇ。まあ、油断大敵ですよ」",
         "<span>「サクッと初当りを引けてご機嫌なご様子。ここから連チャンを伸ばせるかが見せ所ですね」</span>"
     ]
     footers = [
@@ -262,7 +261,7 @@ else:
 comment_text = comments[hash_seed % len(comments)]
 footer_cynic = footers[hash_seed % len(footers)]
 
-# --- 8. カード構築 ---
+# --- 8. カード構築（状態判定を最上部に配置） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -277,6 +276,12 @@ card_html = f"""
 </style>
 <div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 5px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease;">
     
+    <!-- 【最上部】状態判定ヘッダー -->
+    <div style="background-color: rgba(0,0,0,0.4); border-left: 4px solid {accent_color}; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px;">
+        <div style="font-size: 9px; color: #94a3b8; letter-spacing: 1px;">■ 現在の状態判定</div>
+        <div style="font-size: 14px; color: {accent_color}; font-weight: bold; margin-top: 2px;">{zone_data['title']}</div>
+    </div>
+
     <!-- 【ベース】データコア -->
     <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 10px;">
         <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 4px;">
@@ -302,8 +307,6 @@ card_html = f"""
 
     <!-- 【軸2】キャラクターセリフ枠 -->
     <div style="margin-bottom: 10px;">
-        <div style="font-size: 10px; color: {accent_color}; letter-spacing: 1px; margin-bottom: 3px;">■ 状態判定: {zone_data['title']}</div>
-        
         <div style="display: flex; align-items: flex-start; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px;">
             <div style="min-width: 36px; height: 36px; background-color: rgba(0,0,0,0.3); border: 1px dashed {accent_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #94a3b8; margin-right: 8px; text-align: center;">
                 [ICON]
@@ -333,4 +336,4 @@ card_html = f"""
 </div>
 """
 
-components.html(card_html, height=520, scrolling=False)
+components.html(card_html, height=540, scrolling=False)
