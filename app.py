@@ -91,14 +91,15 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. 状態判定（倍率ベース）と名言フレーズ・コメントの定義 (白→青→黄→緑→赤 ＆ HPバーカラー制御) ---
+# --- 2. 状態判定（倍率ベース）と名言フレーズ・コメントの定義 (白→青→黄→緑→赤 ＆ テキストカラー制御) ---
 ZONE_DEFINITIONS = {
     "peaceful": {
         "title": "STAGE 1 : 慢心 / 平穏域 (WHITE)",
         "hp_percent": 100,
+        "hp_status": "STABLE",
         "border_color": "#f8fafc",  # 白
         "accent_color": "#f8fafc",
-        "hp_bar_color": "#ec4899",  # ピンク
+        "hp_text_color": "#22c55e",  # 緑
         "bg_color": "#111827",
         "quote": "狙い台…計画通り…！",
         "zawa_count": 0,
@@ -116,9 +117,10 @@ ZONE_DEFINITIONS = {
     "caution": {
         "title": "STAGE 2 : 強がり / 警戒域 (BLUE)",
         "hp_percent": 75,
+        "hp_status": "CAUTION",
         "border_color": "#38bdf8",  # 青
         "accent_color": "#38bdf8",
-        "hp_bar_color": "#ec4899",  # ピンク
+        "hp_text_color": "#38bdf8",  # 青（水色）
         "bg_color": "#082f49",
         "quote": "まだあわてるような投資じゃない",
         "zawa_count": 5,
@@ -136,9 +138,10 @@ ZONE_DEFINITIONS = {
     "yutime_ghost": {
         "title": "STAGE 3 : 屈辱 / 警告域 (YELLOW)",
         "hp_percent": 50,
+        "hp_status": "WARNING",
         "border_color": "#facc15",  # 黄
         "accent_color": "#facc15",
-        "hp_bar_color": "#eab308",  # 黄色
+        "hp_text_color": "#facc15",  # 黄
         "bg_color": "#422006",
         "quote": "その日 パチンカーは思い出した<br>確率の妙に囚われていた屈辱を……",
         "zawa_count": 18,
@@ -156,14 +159,15 @@ ZONE_DEFINITIONS = {
     "deep": {
         "title": "STAGE 4 : 執着 / 深海トラウマ領域 (GREEN)",
         "hp_percent": 25,
+        "hp_status": "DANGER",
         "border_color": "#22c55e",  # 緑
         "accent_color": "#22c55e",
-        "hp_bar_color": "#f97316",  # オレンジ
+        "hp_text_color": "#f97316",  # オレンジ
         "bg_color": "#052e16",
         "quote": "まだだ！まだ台が当たりたがっている！！",
         "zawa_count": 35,
         "comments": [
-            "「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪くなってきましたねぇ……」",
+            "<span>「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪くなってきましたねぇ……」</span>",
             "「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
             "「じっと耐える時間帯です。隣の連チャンを横目に見ながらメンタルを保てるかが勝負ですよ」"
         ],
@@ -176,9 +180,10 @@ ZONE_DEFINITIONS = {
     "god": {
         "title": "STAGE 5 : 狂気 / 確率特異点 (RED)",
         "hp_percent": 5,
+        "hp_status": "CRITICAL",
         "border_color": "#ef4444",  # 赤
         "accent_color": "#ef4444",
-        "hp_bar_color": "#ef4444",  # 赤
+        "hp_text_color": "#ef4444",  # 赤
         "bg_color": "#450a0a",
         "quote": "台が球を吐き出さない限り、止まるんじゃねぇぞ…",
         "zawa_count": 55,
@@ -301,12 +306,12 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 9. カード構築（パズドラ風HPバーを搭載したレイアウト） ---
+# --- 9. カード構築（パズドラ風HPバー：バー本体ピンク固定 ＋ 数値色変化仕様） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
 hp_percent = zone_data['hp_percent']
-hp_bar_color = zone_data['hp_bar_color']
+hp_text_color = zone_data['hp_text_color']
 
 card_html = f"""
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -360,12 +365,13 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- パズドラ風シンプルHPバー（ハートアイコン ＋ バー） -->
+    <!-- パズドラ風HPバー（ハートアイコン ＋ ピンクバー固定 ＋ 緑→黄→オレンジ→赤で変化する数値テキスト） -->
     <div style="background-color: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
         <span style="font-size: 14px; line-height: 1;">❤️</span>
         <div style="flex-grow: 1; background-color: rgba(0,0,0,0.6); height: 8px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15);">
-            <div style="width: {hp_percent}%; background-color: {hp_bar_color}; height: 100%; transition: width 0.4s ease, background-color 0.4s ease;"></div>
+            <div style="width: {hp_percent}%; background-color: #ec4899; height: 100%; transition: width 0.4s ease;"></div>
         </div>
+        <span style="font-size: 11px; font-weight: bold; color: {hp_text_color}; min-width: 65px; text-align: right;">{hp_percent}%</span>
     </div>
 
     <!-- サブリミナル・フッター -->
