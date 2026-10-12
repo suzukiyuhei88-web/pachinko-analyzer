@@ -58,9 +58,8 @@ st.markdown(
         color: #cbd5e1 !important;
         font-family: 'DotGothic16', sans-serif !important;
     }
-    /* Streamlitの余白を少し詰める調整 */
     .block-container {
-        padding-top: 1.5rem;
+        padding-top: 1rem;
         padding-bottom: 2rem;
     }
     </style>
@@ -112,9 +111,9 @@ ZONE_DEFINITIONS = {
     },
 }
 
-# --- 3. タイトルと入力エリア（コンパクト化） ---
+# --- 3. タイトルとコントロールエリア（コンパクト化＆正しい順序） ---
 st.markdown(
-    "<h3 style='color: #f8fafc; text-align: center; letter-spacing: 2px; margin-bottom: 10px;'>🎰 パチンコ確率診断コア</h3>",
+    "<h3 style='color: #f8fafc; text-align: center; letter-spacing: 2px; margin-bottom: 8px;'>🎰 パチンコ確率診断コア</h3>",
     unsafe_allow_html=True,
 )
 
@@ -126,33 +125,19 @@ spec_options = {
     "カスタム": 0.0,
 }
 
-# 横並びでスペック選択と数値をスリムに配置
-col_spec, col_input = st.columns([1.2, 1])
-
-with col_spec:
-    selected_spec_name = st.selectbox("機種スペック", list(spec_options.keys()), index=2)
-    if selected_spec_name == "カスタム":
-        p_denom = st.number_input("分母", min_value=1.1, value=319.6, step=0.1)
-    else:
-        p_denom = spec_options[selected_spec_name]
+selected_spec_name = st.selectbox("機種スペック", list(spec_options.keys()), index=2)
+if selected_spec_name == "カスタム":
+    p_denom = st.number_input("大当り確率の分母", min_value=1.1, value=319.6, step=0.1)
+else:
+    p_denom = spec_options[selected_spec_name]
 
 # セッションステートで回転数を管理
 if 'rotation_input' not in st.session_state or st.session_state.get('last_spec') != p_denom:
     st.session_state['rotation_input'] = min(300, int(p_denom * 6))
     st.session_state['last_spec'] = p_denom
 
-with col_input:
-    max_limit = int(p_denom * 6)
-    current_rotation = st.number_input(
-        "現在回転数",
-        min_value=0,
-        max_value=max_limit,
-        step=1,
-        key='rotation_input'
-    )
-
-# --- 4. 主要なハマり倍率のクイック選択ボタン（2段コンパクト配置） ---
-st.markdown("<p style='font-size: 10px; color: #94a3b8; margin: 2px 0;'>▼ ジャンプ: </p>", unsafe_allow_html=True)
+# ★【重要】必ず number_input よりも「上」にボタンを配置する
+st.markdown("<p style='font-size: 10px; color: #94a3b8; margin: 4px 0 2px 0;'>▼ 主要倍率へジャンプ</p>", unsafe_allow_html=True)
 b_col1, b_col2, b_col3, b_col4, b_col5, b_col6 = st.columns(6)
 with b_col1:
     if st.button("0.5倍", use_container_width=True):
@@ -173,12 +158,22 @@ with b_col6:
     if st.button("3倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 3.0)
 
-# --- 5. 計算ロジック ---
+# その後に number_input を配置
+max_limit = int(p_denom * 6)
+current_rotation = st.number_input(
+    "現在のハマり回転数（データカウンターの数字）",
+    min_value=0,
+    max_value=max_limit,
+    step=1,
+    key='rotation_input'
+)
+
+# --- 4. 計算ロジック ---
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 rotation_ratio = current_rotation / p_denom if p_denom > 0 else 0
 
-# --- 6. 状態判定の決定 ---
+# --- 5. 状態判定の決定 ---
 if rotation_ratio < 0.31:
     zone_key = "peaceful"
 elif rotation_ratio < 1.0:
@@ -192,7 +187,7 @@ else:
 
 zone_data = ZONE_DEFINITIONS[zone_key]
 
-# --- 7. CSVネタマッチング ---
+# --- 6. CSVネタマッチング ---
 if df_master is not None and len(df_master) > 0:
     df_master['diff'] = (df_master['prob_val'] - prob_ハマり).abs()
     closest_row = df_master.loc[df_master['diff'].idxmin()]
@@ -202,7 +197,7 @@ else:
     approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 8. セリフ＆フッター ---
+# --- 7. セリフ＆フッター ---
 hash_seed = int(prob_ハマり * 1000) % 3
 
 if zone_key == "peaceful":
@@ -264,7 +259,7 @@ else:
 comment_text = comments[hash_seed % len(comments)]
 footer_cynic = footers[hash_seed % len(footers)]
 
-# --- 9. カード構築 ---
+# --- 8. カード構築 ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -277,7 +272,7 @@ card_html = f"""
     font-family: 'DotGothic16', sans-serif !important;
 }}
 </style>
-<div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 10px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease;">
+<div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 5px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease;">
     
     <!-- 【ベース】データコア -->
     <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 10px;">
