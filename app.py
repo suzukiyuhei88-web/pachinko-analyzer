@@ -54,7 +54,7 @@ st.markdown(
         background-color: #0b0f19;
         color: #f8fafc;
     }
-    label, .stRadio p, .stSlider p {
+    label, .stRadio p, .stNumberInput p {
         color: #cbd5e1 !important;
         font-family: 'DotGothic16', sans-serif !important;
     }
@@ -128,9 +128,15 @@ if selected_spec_name == "カスタム":
 else:
     p_denom = spec_options[selected_spec_name]
 
-# --- 4. スライダーによる回転数調整 ---
-max_slider = int(p_denom * 6)
-current_rotation = st.slider("現在のハマり回転数", min_value=0, max_value=max_slider, value=min(300, max_slider), step=10)
+# --- 4. データカウンターの回転数を直接入力 ---
+max_limit = int(p_denom * 6)
+current_rotation = st.number_input(
+    "現在のハマり回転数（データカウンターの数字）",
+    min_value=0,
+    max_value=max_limit,
+    value=min(300, max_limit),
+    step=1
+)
 
 # --- 5. 計算ロジック ---
 p = 1.0 / p_denom if p_denom > 0 else 0
@@ -288,7 +294,7 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- サブリミナル・フッター -->
+    -- サブリミナル・フッター -->
     <div style="text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
         {footer_cynic}
     </div>
