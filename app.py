@@ -58,14 +58,19 @@ st.markdown(
         color: #cbd5e1 !important;
         font-family: 'DotGothic16', sans-serif !important;
     }
+    /* Streamlitの余白を少し詰める調整 */
+    .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 2rem;
+    }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# --- 2. 状態判定（倍率ベース：タイトル、HP、カラー、背景色）の定義 ---
+# --- 2. 状態判定（倍率ベース）の定義 ---
 ZONE_DEFINITIONS = {
-    "peaceful": { # 0.3倍未満（約100回転相当未満：早い！）
+    "peaceful": {
         "title": "平穏域 / 超初期 (NORMAL)",
         "hp_percent": 100,
         "hp_status": "STABLE",
@@ -73,7 +78,7 @@ ZONE_DEFINITIONS = {
         "accent_color": "#60a5fa",
         "bg_color": "#0d1b2a",
     },
-    "caution": { # 0.3倍 〜 1.0倍（確率分母以内：まぁまぁいい方）
+    "caution": {
         "title": "警戒域 / 分母以内 (CAUTION)",
         "hp_percent": 75,
         "hp_status": "CAUTION",
@@ -81,7 +86,7 @@ ZONE_DEFINITIONS = {
         "accent_color": "#34d399",
         "bg_color": "#062318",
     },
-    "yutime_ghost": { # 1.0倍 〜 2.0倍（2倍ハマり以内：こんな時もある普通）
+    "yutime_ghost": {
         "title": "警告域 / 2倍ハマり圏 (WARNING)",
         "hp_percent": 50,
         "hp_status": "WARNING",
@@ -89,7 +94,7 @@ ZONE_DEFINITIONS = {
         "accent_color": "#c084fc",
         "bg_color": "#1e102f",
     },
-    "deep": { # 2.0倍 〜 3.0倍（3倍ハマり以内：ちょっとハマった、RUSHで逆転）
+    "deep": {
         "title": "深海トラウマ領域 / 3倍ハマり圏 (DEEP)",
         "hp_percent": 25,
         "hp_status": "DANGER",
@@ -97,8 +102,8 @@ ZONE_DEFINITIONS = {
         "accent_color": "#fb923c",
         "bg_color": "#2c150b",
     },
-    "god": { # 3.0倍超（それ以上：虚無、ムキになって回す）
-        "title": "確率特異点 / 3倍超過・神の領域 (SINGULARITY)",
+    "god": {
+        "title": "確率特異点 / 神の領域 (SINGULARITY)",
         "hp_percent": 5,
         "hp_status": "CRITICAL",
         "border_color": "#ef4444",
@@ -107,9 +112,9 @@ ZONE_DEFINITIONS = {
     },
 }
 
-# --- 3. タイトルと選択エリア ---
+# --- 3. タイトルと入力エリア（コンパクト化） ---
 st.markdown(
-    "<h3 style='color: #f8fafc; text-align: center; letter-spacing: 2px;'>🎰 パチンコ確率診断コア</h3>",
+    "<h3 style='color: #f8fafc; text-align: center; letter-spacing: 2px; margin-bottom: 10px;'>🎰 パチンコ確率診断コア</h3>",
     unsafe_allow_html=True,
 )
 
@@ -121,59 +126,59 @@ spec_options = {
     "カスタム": 0.0,
 }
 
-selected_spec_name = st.selectbox("機種スペック", list(spec_options.keys()), index=2)
+# 横並びでスペック選択と数値をスリムに配置
+col_spec, col_input = st.columns([1.2, 1])
 
-if selected_spec_name == "カスタム":
-    p_denom = st.number_input("大当り確率の分母", min_value=1.1, value=319.6, step=0.1)
-else:
-    p_denom = spec_options[selected_spec_name]
+with col_spec:
+    selected_spec_name = st.selectbox("機種スペック", list(spec_options.keys()), index=2)
+    if selected_spec_name == "カスタム":
+        p_denom = st.number_input("分母", min_value=1.1, value=319.6, step=0.1)
+    else:
+        p_denom = spec_options[selected_spec_name]
 
-# セッションステートで回転数を管理（初期値の設定と、スペック変更時のリセット対応）
+# セッションステートで回転数を管理
 if 'rotation_input' not in st.session_state or st.session_state.get('last_spec') != p_denom:
     st.session_state['rotation_input'] = min(300, int(p_denom * 6))
     st.session_state['last_spec'] = p_denom
 
-# --- 4. 主要なハマり倍率のクイック選択ボタン ---
-st.markdown("<p style='font-size: 11px; color: #94a3b8; margin-bottom: 4px;'>▼ 主要なハマり回転数へジャンプ</p>", unsafe_allow_html=True)
+with col_input:
+    max_limit = int(p_denom * 6)
+    current_rotation = st.number_input(
+        "現在回転数",
+        min_value=0,
+        max_value=max_limit,
+        step=1,
+        key='rotation_input'
+    )
 
-col1, col2, col3, col4, col5, col6 = st.columns(6)
-with col1:
+# --- 4. 主要なハマり倍率のクイック選択ボタン（2段コンパクト配置） ---
+st.markdown("<p style='font-size: 10px; color: #94a3b8; margin: 2px 0;'>▼ ジャンプ: </p>", unsafe_allow_html=True)
+b_col1, b_col2, b_col3, b_col4, b_col5, b_col6 = st.columns(6)
+with b_col1:
     if st.button("0.5倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 0.5)
-with col2:
+with b_col2:
     if st.button("1倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 1.0)
-with col3:
+with b_col3:
     if st.button("1.5倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 1.5)
-with col4:
+with b_col4:
     if st.button("2倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 2.0)
-with col5:
+with b_col5:
     if st.button("2.5倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 2.5)
-with col6:
+with b_col6:
     if st.button("3倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 3.0)
 
-# --- 5. データカウンターの回転数入力 ---
-max_limit = int(p_denom * 6)
-current_rotation = st.number_input(
-    "現在のハマり回転数（データカウンターの数字）",
-    min_value=0,
-    max_value=max_limit,
-    step=1,
-    key='rotation_input'
-)
-
-# --- 6. 計算ロジック ---
+# --- 5. 計算ロジック ---
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
-
-# 確率分母に対する現在の倍率（ハマり度合い）を算出
 rotation_ratio = current_rotation / p_denom if p_denom > 0 else 0
 
-# --- 7. 状態判定の決定（スペック共通の倍率ベースで分岐） ---
+# --- 6. 状態判定の決定 ---
 if rotation_ratio < 0.31:
     zone_key = "peaceful"
 elif rotation_ratio < 1.0:
@@ -187,7 +192,7 @@ else:
 
 zone_data = ZONE_DEFINITIONS[zone_key]
 
-# --- 8. CSVネタマッチング（無機質アナライザー用） ---
+# --- 7. CSVネタマッチング ---
 if df_master is not None and len(df_master) > 0:
     df_master['diff'] = (df_master['prob_val'] - prob_ハマり).abs()
     closest_row = df_master.loc[df_master['diff'].idxmin()]
@@ -197,10 +202,10 @@ else:
     approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 9. プレイヤーの体感・感情に合わせたセリフ＆フッターのバリエーション ---
+# --- 8. セリフ＆フッター ---
 hash_seed = int(prob_ハマり * 1000) % 3
 
-if zone_key == "peaceful": # 0.3倍未満（早めの当り）
+if zone_key == "peaceful":
     comments = [
         "「おっ、早めの当りですね！ まだ財布も心もノーダメージでウハウハな時間帯ですわ」",
         "「このスピード感で当たってくれると助かるんですけどねぇ。まあ、油断大敵ですよ」",
@@ -211,7 +216,7 @@ if zone_key == "peaceful": # 0.3倍未満（早めの当り）
         "※この調子でプラス域をキープしてさっさと逃げたいところですね。",
         "※確率の恩恵を素直に受け取っておきましょう。"
     ]
-elif zone_key == "caution": # 0.3倍〜1.0倍（分母以内）
+elif zone_key == "caution":
     comments = [
         "「確率分母以内ですからね、まだまだ『まあまあ許容範囲内』ってところですわ」",
         "「『そろそろ当たるはず』……いやいや、分母以内ならまだ平常運転ですよ。気楽にいきましょう」",
@@ -222,7 +227,7 @@ elif zone_key == "caution": # 0.3倍〜1.0倍（分母以内）
         "※ここから先が本当の地獄の始まり……なんて冗談ですけど、油断は禁物です。",
         "※財布のHPはまだ満タンに近いです。"
     ]
-elif zone_key == "yutime_ghost": # 1.0倍〜2.0倍（2倍ハマり以内）
+elif zone_key == "yutime_ghost":
     comments = [
         "「うーん、分母を超えて2倍ハマりコースですか。まあ、パチンコ打ってりゃよくある日常風景ですね」",
         "「『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？」",
@@ -233,7 +238,7 @@ elif zone_key == "yutime_ghost": # 1.0倍〜2.0倍（2倍ハマり以内）
         "※「ここから取り返せばいいや」という甘い期待が泥沼の始まりです。",
         "※演出の派手さと裏腹に、財布の残高は着実に削られています。"
     ]
-elif zone_key == "deep": # 2.0倍〜3.0倍（3倍ハマり以内）
+elif zone_key == "deep":
     comments = [
         "「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪しくなってきましたねぇ……」",
         "「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
@@ -244,10 +249,10 @@ elif zone_key == "deep": # 2.0倍〜3.0倍（3倍ハマり以内）
         "※サンクコスト効果に支配されていませんか？ 冷静になりましょう。",
         "※ハンドルを固定したところで、確率はあなたに微笑みません。"
     ]
-else: # 3.0倍超（それ以上：虚無、ムキになって回す）
+else:
     comments = [
         "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
-        "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンライズしているのを感じませんか？」",
+        "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
         "「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」"
     ]
     footers = [
@@ -259,7 +264,7 @@ else: # 3.0倍超（それ以上：虚無、ムキになって回す）
 comment_text = comments[hash_seed % len(comments)]
 footer_cynic = footers[hash_seed % len(footers)]
 
-# --- 10. 2軸構造化カードの構築 ---
+# --- 9. カード構築 ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -272,23 +277,23 @@ card_html = f"""
     font-family: 'DotGothic16', sans-serif !important;
 }}
 </style>
-<div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease;">
+<div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 10px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease;">
     
     <!-- 【ベース】データコア -->
-    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 12px;">
+    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 10px;">
         <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 4px;">
-            <span>スペック: <b>1/{p_denom}</b> (現在 {rotation_ratio:.2f}倍ハマり)</span>
+            <span>スペック: <b>1/{p_denom}</b> (現在 {rotation_ratio:.2f}倍)</span>
             <span>現在回転数: <b style="color: #fff;">{current_rotation}回転</b></span>
         </div>
-        <div style="text-align: center; background-color: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px;">
-            <div style="font-size: 34px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 2px 0;">{prob_ハマり:.2f}%</div>
+        <div style="text-align: center; background-color: rgba(0,0,0,0.3); padding: 6px; border-radius: 6px;">
+            <div style="font-size: 30px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 2px 0;">{prob_ハマり:.2f}%</div>
             <div style="font-size: 10px; color: #94a3b8;">（この回転数まで一度も当らない数学的確率）</div>
         </div>
     </div>
 
-    <!-- 【軸1】無機質アナライザー（科学的スケール比較） -->
-    <div style="background-color: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; margin-bottom: 12px;">
-        <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748b; letter-spacing: 1px; margin-bottom: 4px;">
+    <!-- 【軸1】無機質アナライザー -->
+    <div style="background-color: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px; margin-bottom: 10px;">
+        <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748b; letter-spacing: 1px; margin-bottom: 3px;">
             <span>[ SYSTEM: OBJECTIVE_ANALYSIS ]</span>
             <span style="color: #38bdf8;">{approx_rate}</span>
         </div>
@@ -297,37 +302,37 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- 【軸2】キャラクターセリフ枠（感情のグラデーションに連動） -->
-    <div style="margin-bottom: 12px;">
-        <div style="font-size: 10px; color: {accent_color}; letter-spacing: 1px; margin-bottom: 4px;">■ 状態判定: {zone_data['title']}</div>
+    <!-- 【軸2】キャラクターセリフ枠 -->
+    <div style="margin-bottom: 10px;">
+        <div style="font-size: 10px; color: {accent_color}; letter-spacing: 1px; margin-bottom: 3px;">■ 状態判定: {zone_data['title']}</div>
         
-        <div style="display: flex; align-items: flex-start; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 6px;">
-            <div style="min-width: 40px; height: 40px; background-color: rgba(0,0,0,0.3); border: 1px dashed {accent_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #94a3b8; margin-right: 10px; text-align: center;">
+        <div style="display: flex; align-items: flex-start; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px;">
+            <div style="min-width: 36px; height: 36px; background-color: rgba(0,0,0,0.3); border: 1px dashed {accent_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #94a3b8; margin-right: 8px; text-align: center;">
                 [ICON]
             </div>
-            <div style="font-size: 12px; color: #f1f5f9; line-height: 1.4;">
+            <div style="font-size: 11px; color: #f1f5f9; line-height: 1.4;">
                 {comment_text}
             </div>
         </div>
     </div>
 
     <!-- 財布・メンタル HPゲージ -->
-    <div style="background-color: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; margin-bottom: 10px;">
-        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 3px;">
+    <div style="background-color: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; margin-bottom: 8px;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 2px;">
             <span>💳 財布 / メンタル残存値</span>
             <span>{zone_data['hp_status']} ({hp_percent}%)</span>
         </div>
-        <div style="width: 100%; background-color: rgba(0,0,0,0.5); height: 5px; border-radius: 3px; overflow: hidden;">
+        <div style="width: 100%; background-color: rgba(0,0,0,0.5); height: 4px; border-radius: 2px; overflow: hidden;">
             <div style="width: {hp_percent}%; background-color: {border_color}; height: 100%; transition: width 0.4s ease, background-color 0.4s ease;"></div>
         </div>
     </div>
 
     <!-- サブリミナル・フッター -->
-    <div style="text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
+    <div style="text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 5px;">
         {footer_cynic}
     </div>
 
 </div>
 """
 
-components.html(card_html, height=560, scrolling=False)
+components.html(card_html, height=520, scrolling=False)
