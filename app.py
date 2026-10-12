@@ -141,11 +141,11 @@ if 'rotation_input' not in st.session_state or st.session_state.get('last_spec')
     st.session_state['rotation_input'] = min(300, int(p_denom * 6))
     st.session_state['last_spec'] = p_denom
 
-# ★ 縦長解消：複数ボタンの代わりにコンパクトな横並び選択肢（ラジオ）を採用
+# クイックジャンプ（1.5倍・2.5倍を削除し、主要な4点に絞る）
 st.markdown("<p style='font-size: 11px; color: #94a3b8; margin: 4px 0 0 0;'>▼ クイックジャンプ（倍率選択）</p>", unsafe_allow_html=True)
 jump_option = st.radio(
     "クイックジャンプ",
-    ["微調整", "0.5倍", "1倍(分母)", "1.5倍", "2倍", "2.5倍", "3倍"],
+    ["微調整", "0.5倍", "1倍(分母)", "2倍", "3倍"],
     horizontal=True,
     label_visibility="collapsed"
 )
@@ -155,12 +155,8 @@ if jump_option == "0.5倍":
     st.session_state['rotation_input'] = int(p_denom * 0.5)
 elif jump_option == "1倍(分母)":
     st.session_state['rotation_input'] = int(p_denom * 1.0)
-elif jump_option == "1.5倍":
-    st.session_state['rotation_input'] = int(p_denom * 1.5)
 elif jump_option == "2倍":
     st.session_state['rotation_input'] = int(p_denom * 2.0)
-elif jump_option == "2.5倍":
-    st.session_state['rotation_input'] = int(p_denom * 2.5)
 elif jump_option == "3倍":
     st.session_state['rotation_input'] = int(p_denom * 3.0)
 
@@ -319,7 +315,7 @@ card_html = f"""
 
     <!-- 財布・メンタル HPゲージ -->
     <div style="background-color: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; margin-bottom: 8px;">
-        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 2px;">
+        <div style="display: flex; justify-content: space- ведь; font-size: 10px; color: #94a3b8; margin-bottom: 2px;">
             <span>💳 財布 / メンタル残存値</span>
             <span>{zone_data['hp_status']} ({hp_percent}%)</span>
         </div>
