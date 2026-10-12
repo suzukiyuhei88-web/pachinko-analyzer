@@ -91,7 +91,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. 状態判定（倍率ベース）と名言フレーズ・コメントの定義 (白→青→黄→緑→赤 ＆ 正確なHP数値色制御) ---
+# --- 2. 状態判定（倍率ベース）と名言フレーズ・コメントの定義 ---
 ZONE_DEFINITIONS = {
     "peaceful": {
         "title": "STAGE 1 : 慢心 / 平穏域 (WHITE)",
@@ -145,7 +145,7 @@ ZONE_DEFINITIONS = {
         "comments": [
             "「うーん、分母を超えて2倍ハマりコースですか。まあ、パチンコ打ってりゃよくある日常風景ですね」",
             "「『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？」",
-            "「ちょっと嫌な汗をかく頃合いですが、ここから一撃でまくる台も多いですからねえ」"
+            "<span>「ちょっと嫌な汗をかく頃合いですが、ここから一撃でまくる台も多いですからねえ」</span>"
         ],
         "footers": [
             "※2倍ハマりに到達する確率は約13.5%です。まだまだよくある日常です。",
@@ -184,7 +184,7 @@ ZONE_DEFINITIONS = {
         "zawa_count": 55,
         "comments": [
             "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
-            "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
+            "<span>「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」</span>",
             "「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」"
         ],
         "footers": [
@@ -301,12 +301,15 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 9. カード構築（パズドラ風HPバー：緑→黄→オレンジ→赤（ステージ4・5）） ---
+# --- 9. カード構築（SVGハートアイコン ＋ 落ち着いたピンクのバー本体 ＋ 数値色変化） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
 hp_percent = zone_data['hp_percent']
 hp_text_color = zone_data['hp_text_color']
+
+# バー本体のピンクを少し落ち着いた色（例：#db2777 や #be185d など）に変更可能
+hp_bar_color = "#db2777" 
 
 card_html = f"""
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -360,11 +363,14 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- パズドラ風HPバー（ハートアイコン ＋ ピンクバー固定 ＋ 緑→黄→オレンジ→赤（4,5）で変化する「○○/100」表記） -->
+    <!-- パズドラ風HPバー（SVGハートアイコン ＋ 落ち着いたピンクバー ＋ 「○○/100」表記） -->
     <div style="background-color: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 14px; line-height: 1;">❤️</span>
+        <!-- SVGハートアイコン（色コードを直接変更可能） -->
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="{hp_bar_color}" style="display: inline-block; vertical-align: middle; flex-shrink: 0;">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
         <div style="flex-grow: 1; background-color: rgba(0,0,0,0.6); height: 8px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15);">
-            <div style="width: {hp_percent}%; background-color: #ec4899; height: 100%; transition: width 0.4s ease;"></div>
+            <div style="width: {hp_percent}%; background-color: {hp_bar_color}; height: 100%; transition: width 0.4s ease;"></div>
         </div>
         <span style="font-size: 11px; font-weight: bold; color: {hp_text_color}; min-width: 65px; text-align: right;">{hp_percent}/100</span>
     </div>
