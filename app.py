@@ -163,7 +163,7 @@ ZONE_DEFINITIONS = {
         "quote": "まだだ！まだ台が当たりたがっている！！",
         "zawa_count": 35,
         "comments": [
-            "<span>「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪くなってきましたねぇ……」</span>",
+            "<span><span>「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪くなってきましたねぇ……」</span></span>",
             "「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
             "「じっと耐える時間帯です。隣の連チャンを横目に見ながらメンタルを保てるかが勝負ですよ」"
         ],
@@ -301,14 +301,13 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 9. カード構築（SVGハートアイコン ＋ 中間くすみローズのバー本体 ＋ 数値色変化） ---
+# --- 9. カード構築（「ハマり確率：〇〇%」横並び・下ぞろえレイアウト） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
 hp_percent = zone_data['hp_percent']
 hp_text_color = zone_data['hp_text_color']
 
-# 【中間くすみローズの指定】パステルと渋めの中間色（#c2527f）
 hp_bar_color = "#c2527f" 
 
 card_html = f"""
@@ -327,10 +326,12 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- 【メイン主役】ハマり確率（最重要：5） -->
+    <!-- 【メイン主役】ハマり確率（「ハマり確率：50%」形式、下ぞろえ） -->
     <div style="background-color: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); padding: 14px; border-radius: 6px; margin-bottom: 12px; text-align: center;">
-        <div style="font-size: 10px; color: #94a3b8; letter-spacing: 1px; margin-bottom: 2px;">[ ハマり確率（ここまで当らない確率） ]</div>
-        <div style="font-size: 38px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 4px 0;">{prob_ハマり:.2f}%</div>
+        <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px; margin: 4px 0; line-height: 1;">
+            <span style="font-size: 13px; color: #94a3b8; letter-spacing: 1px;">ハマり確率：</span>
+            <span style="font-size: 38px; color: {accent_color}; font-weight: bold;">{prob_ハマり:.2f}%</span>
+        </div>
         
         <!-- 【補助情報】大当り確率と回転数 -->
         <div style="border-top: 1px dashed rgba(255,255,255,0.15); margin-top: 10px; padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 16px; font-size: 11px; color: #94a3b8;">
