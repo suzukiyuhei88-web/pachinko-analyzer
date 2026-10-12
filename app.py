@@ -228,7 +228,7 @@ elif zone_key == "yutime_ghost":
     comments = [
         "「うーん、分母を超えて2倍ハマりコースですか。まあ、パチンコ打ってりゃよくある日常風景ですね」",
         "「『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？」",
-        "<span>「ちょっと嫌な汗をかく頃合いですが、ここから一撃でまくる台も多いですからねえ」</span>"
+        "「ちょっと嫌な汗をかく頃合いですが、ここから一撃でまくる台も多いですからねえ」"
     ]
     footers = [
         "※2倍ハマりに到達する確率は約13.5%です。まだまだよくある日常です。",
@@ -239,7 +239,7 @@ elif zone_key == "deep":
     comments = [
         "「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪しくなってきましたねぇ……」",
         "「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
-        "「じっと耐える時間帯です。隣の連チャンを横目に見ながらメンタルを保てるかが勝負ですよ」"
+        "<span>「じっと耐える時間帯です。隣の連チャンを横目に見ながらメンタルを保てるかが勝負ですよ」</span>"
     ]
     footers = [
         "※3倍ハマりに到達する確率は約5%未満。そろそろ不穏な領域です。",
@@ -250,7 +250,7 @@ else:
     comments = [
         "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
         "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
-        "「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」"
+        "<span>「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」</span>"
     ]
     footers = [
         "※ここから当たる確率はごくわずか。完全な虚無との戦いです。",
@@ -261,7 +261,7 @@ else:
 comment_text = comments[hash_seed % len(comments)]
 footer_cynic = footers[hash_seed % len(footers)]
 
-# --- 8. カード構築 ---
+# --- 8. カード構築（ハマり度を少数第一位までに整形） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -287,11 +287,11 @@ card_html = f"""
         <div style="font-size: 10px; color: #94a3b8; letter-spacing: 1px; margin-bottom: 2px;">[ ハマり確率（ここまで当らない確率） ]</div>
         <div style="font-size: 38px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 4px 0;">{prob_ハマり:.2f}%</div>
         
-        <!-- 【補助情報】大当り確率と回転数（回転数の脇に〇〇倍ハマりを添える） -->
+        <!-- 【補助情報】大当り確率と回転数（ハマり度は少数第一位まで） -->
         <div style="border-top: 1px dashed rgba(255,255,255,0.15); margin-top: 10px; padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 16px; font-size: 11px; color: #94a3b8;">
             <span>大当り確率: <b style="color: #f8fafc;">1/{p_denom}</b></span>
             <span style="color: rgba(255,255,255,0.2);">|</span>
-            <span>回転数: <b style="color: #f8fafc; font-size: 13px;">{current_rotation}</b> <span style="font-size: 10px; color: {accent_color};">({rotation_ratio:.2f}倍ハマり)</span></span>
+            <span>回転数: <b style="color: #f8fafc; font-size: 13px;">{current_rotation}</b> <span style="font-size: 10px; color: {accent_color};">({rotation_ratio:.1f}倍ハマり)</span></span>
         </div>
     </div>
 
