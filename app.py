@@ -5,7 +5,7 @@ import streamlit as st
 
 # ページの基本設定
 st.set_page_config(
-    page_title="パチンコ確率診断", page_icon="🎰", layout="centered"
+    page_title="パチンコ確率診断 - おみくじEdition", page_icon="🎰", layout="centered"
 )
 
 # --- 0. CSVデータの読み込みと数値化パース ---
@@ -41,7 +41,7 @@ def load_data():
 
 df_master = load_data()
 
-# --- 1. デザイン用のカスタムCSS（DotGothic16フォントの導入） ---
+# --- 1. デザイン用のカスタムCSS（DotGothic16フォント ＆ おみくじ風スタイル） ---
 st.markdown(
     """
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -50,11 +50,11 @@ st.markdown(
         font-family: 'DotGothic16', sans-serif !important;
     }
     .stApp {
-        background-color: #0f172a;
+        background-color: #0b0f19;
         color: #f8fafc;
     }
     label, .stRadio p, .stSlider p {
-        color: #e2e8f0 !important;
+        color: #cbd5e1 !important;
         font-family: 'DotGothic16', sans-serif !important;
     }
     </style>
@@ -62,95 +62,69 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ゾーンごとのメッセージ・演出定義（UIパラメータ用） ---
+# --- 2. ゾーンごとのメッセージ・演出定義（おみくじ風） ---
 ZONE_MESSAGES = {
     "peaceful": {
-        "title": "まだ慌てるような時間じゃない",
-        "neg_messages": [
-            "まだ慌てるような時間じゃない。ここからが本番です。",
-            "財布の紐はまだしっかり締まっています。平和な日常ですね。",
-        ],
-        "pos_messages": [
-            "素晴らしい立ち上がり。この調子で宇宙の真理へ近づきましょう。",
-            "穏やかな風が吹いています。今日のあなたは一味違います。",
-        ],
+        "title": "小吉（平穏の領域）",
+        "omikuji_luck": "平穏",
+        "comment": "まだ慌てるような時間じゃない。財布の紐はしっかり締まっています。",
+        "footer_cynic": "※台の機嫌はあなたとは無関係に変わりません。",
         "hp_percent": 100,
-        "hp_status": "NORMAL (元気)",
-        "card_bg": "#1e293b",
-        "border_color": "#475569",
-        "text_color": "#e2e8f0",
+        "hp_status": "NORMAL",
+        "card_bg": "#111827",
+        "border_color": "#3b82f6", # 青 (平和)
+        "accent_color": "#60a5fa",
     },
     "caution": {
-        "title": "ざわ… ざわ… ゾーン",
-        "neg_messages": [
-            "少し財布の紐がキュッとなる頃合い。深呼吸してコーヒーでもどうぞ。",
-            "「もしかして、今日もやられる日なのでは…？」という悪寒が走り始める頃。",
-        ],
-        "pos_messages": [
-            "ここからの巻き返しが一番ドラマチックなんです。期待値は上昇中。",
-            "運命の歯車があなたの方を向き始めています。焦る必要はありません。",
-        ],
+        "title": "中吉（ざわ… ざわ…）",
+        "omikuji_luck": "微悶絶",
+        "comment": "少し財布の紐がキュッとなる頃合い。深呼吸してコーヒーでもどうぞ。",
+        "footer_cynic": "※「もしかして当たるのでは？」という予感は大体外れます。",
         "hp_percent": 60,
-        "hp_status": "CAUTION (注意)",
-        "card_bg": "#1e293b",
-        "border_color": "#64748b",
-        "text_color": "#cbd5e1",
+        "hp_status": "CAUTION",
+        "card_bg": "#111827",
+        "border_color": "#10b981", # 緑
+        "accent_color": "#34d399",
     },
     "yutime_ghost": {
-        "title": "【幻の遊タイム】非搭載ゾーン",
-        "neg_messages": [
-            "昔の基準なら【約 {yutime_rot}回転】で助かってましたね……（遠い目）"
-        ],
-        "pos_messages": [
-            "あえて遊タイムに頼らない。自力での引き戻しが試される黄金期です。"
-        ],
+        "title": "吉のあやかし（幻の遊タイム）",
+        "omikuji_luck": "幻影",
+        "comment": "昔の基準なら【約 {yutime_rot}回転】で助かってましたね……（遠い目）",
+        "footer_cynic": "※現代の台に救済の幻影を求めてはいけません。",
         "hp_percent": 30,
-        "hp_status": "WARNING (警告)",
-        "card_bg": "#2e1065",
-        "border_color": "#a855f7",
-        "text_color": "#f3e8ff",
+        "hp_status": "WARNING",
+        "card_bg": "#1e1b4b",
+        "border_color": "#a855f7", # 紫
+        "accent_color": "#c084fc",
     },
     "deep": {
-        "title": "領域展開（深海トラウマ）",
-        "neg_messages": [
-            "RUSHに入った瞬間3秒で駆け抜けたあの日の虚しさに比べれば、このハマりなど微風です。"
-        ],
-        "pos_messages": [
-            "歴史に名を刻む大当りのための『溜め』が完了しつつあります。神様もそろそろ目を覚ます頃。"
-        ],
+        "title": "凶（深海トラウマ領域）",
+        "omikuji_luck": "深海",
+        "comment": "RUSH即抜けの虚しさに比べれば、このハマりなど微風……と言い聞かせる頃。",
+        "footer_cynic": "※ハンドルを固定しても運勢は固定されません。",
         "hp_percent": 10,
-        "hp_status": "DANGER (瀕死)",
+        "hp_status": "DANGER",
         "card_bg": "#431407",
-        "border_color": "#ea580c",
-        "text_color": "#ffedd5",
+        "border_color": "#f97316", # 赤
+        "accent_color": "#fb923c",
     },
     "god": {
-        "title": "歴史に名を刻むレベル",
-        "neg_messages": [
-            "もはや語るまい。歴史に名を刻むレベルのレア体験デス。"
-        ],
-        "pos_messages": [
-            "おめでとうございます。宇宙の確率変動を引き当てた『選ばれし者』の領域です。"
-        ],
+        "title": "大凶（歴史的絶望 / 神の領域）",
+        "omikuji_luck": "神域",
+        "comment": "もはや語るまい。300回転ハマりはホールのおばあちゃんにはアツくても、数学的にはただの38.8%デス（※もっとハマってます）。",
+        "footer_cynic": "※店員も静観するこの空間で、真実（数学）を伝える唯一のアプリです。",
         "hp_percent": 1,
-        "hp_status": "DEAD (精神崩壊)",
+        "hp_status": "DEAD",
         "card_bg": "#450a0a",
-        "border_color": "#ef4444",
-        "text_color": "#fee2e2",
+        "border_color": "#ef4444", # 金/赤
+        "accent_color": "#f87171",
     },
 }
 
 # --- 3. タイトルと選択エリア ---
 st.markdown(
-    "<h3 style='color: #f8fafc; text-align: center;'>🎰 パチンコ確率診断</h3>",
+    "<h3 style='color: #f8fafc; text-align: center; letter-spacing: 2px;'>🎰 パチンコおみくじ診断</h3>",
     unsafe_allow_html=True,
-)
-
-diag_mode = st.radio(
-    "表示モード",
-    ["両方味わう", "絶望に浸る", "狂気的に肯定される"],
-    index=0,
-    horizontal=True,
 )
 
 spec_options = {
@@ -161,48 +135,22 @@ spec_options = {
     "カスタム": 0.0,
 }
 
-selected_spec_name = st.radio(
-    "機種スペックを選択",
-    list(spec_options.keys()),
-    index=2,
-    horizontal=True,
-)
+selected_spec_name = st.selectbox("機種スペック", list(spec_options.keys()), index=2)
 
 if selected_spec_name == "カスタム":
-    p_denom = st.number_input(
-        "大当り確率の分母を入力 (例: 319.6)",
-        min_value=0.0,
-        max_value=10000.0,
-        value=319.6,
-        step=0.1,
-    )
-    if p_denom <= 1.0:
-        st.error(
-            "⚠️ エラー: 確率の分母は「1.0」より大きい数値を入力してください。"
-        )
-        st.stop()
+    p_denom = st.number_input("大当り確率の分母", min_value=1.1, value=319.6, step=0.1)
 else:
     p_denom = spec_options[selected_spec_name]
 
-# --- 4. スライダーによる直感的な回転数調整 ---
+# --- 4. スライダーによる回転数調整 ---
 max_slider = int(p_denom * 6)
-step_val = 5 if p_denom <= 100 else 10
-
-current_rotation = st.slider(
-    "現在の回転数",
-    min_value=0,
-    max_value=max_slider,
-    value=min(500, max_slider),
-    step=step_val,
-)
+current_rotation = st.slider("現在のハマり回転数", min_value=0, max_value=max_slider, value=min(300, max_slider), step=10)
 
 # --- 5. 計算ロジック ---
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
-# --- 6. 演出・ステータス分岐 ---
-st.markdown("---")
-
+# --- 6. ゾーン分岐 ---
 if prob_ハマり > 50:
     zone_key = "peaceful"
 elif prob_ハマり > 20:
@@ -216,142 +164,83 @@ else:
 
 zone_data = ZONE_MESSAGES[zone_key]
 
-status_title = zone_data["title"]
-card_bg = zone_data["card_bg"]
-border_color = zone_data["border_color"]
-text_color = zone_data["text_color"]
-hp_percent = zone_data["hp_percent"]
-hp_status = zone_data["hp_status"]
-image_url = (
-    "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzxQjD1GLGo16hp2YGk_2eKSbv5WdLfhy6O0c8SN7UrWMxB_AGKMfYDml7ESXhQWvy_RLGNnIHbrrjcnB0Fzt177ND7zvEnCbgsKa7gDsmDLwGHSldHP1jmV6n7XJL4e9N7R4ZEolfQVo/s400/pose_kuyashii_man.png"
-)
-
-# メッセージの取得
-neg_comment = random.choice(zone_data["neg_messages"])
-pos_comment = random.choice(zone_data["pos_messages"])
-
+# コメント内のプレースホルダー展開
+comment_text = zone_data["comment"]
 if zone_key == "yutime_ghost":
     yutime_rot = int(p_denom * 3)
-    neg_comment = neg_comment.format(yutime_rot=yutime_rot)
-    pos_comment = pos_comment.format(yutime_rot=yutime_rot)
+    comment_text = comment_text.format(yutime_rot=yutime_rot)
 
-# --- 7. ハマり確率に最も近いCSVネタを自動マッチング（ゾーン表記は除外） ---
+# --- 7. CSVネタマッチング ---
 if df_master is not None and len(df_master) > 0:
     df_master['diff'] = (df_master['prob_val'] - prob_ハマり).abs()
     closest_row = df_master.loc[df_master['diff'].idxmin()]
-    
     approx_rate = str(closest_row.get('確率・数値', ''))
     comparison_text = str(closest_row.get('事象', '')) + "：" + str(closest_row.get('コメント', ''))
 else:
     approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 8. ラベルを排除したシームレスなカード構築 ---
-content_html = ""
+# --- 8. おみくじ風カードのHTML構築 ---
+omikuji_html = f"""
+<div style="
+    border: 4px double {zone_data['border_color']}; 
+    background-color: {zone_data['card_bg']}; 
+    padding: 20px; 
+    border-radius: 12px; 
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    max-width: 500px;
+    margin: 0 auto;
+">
+    <!-- 【上段】おみくじヘッダー（運勢・ステータス） -->
+    <div style="text-align: center; border-bottom: 1px dashed {zone_data['border_color']}; padding-bottom: 12px; margin-bottom: 14px;">
+        <div style="font-size: 11px; color: #94a3b8; letter-spacing: 3px;">【 運 勢 判 定 】</div>
+        <div style="font-size: 22px; color: {zone_data['accent_color']}; font-weight: bold; margin: 4px 0;">
+            {zone_data['title']}
+        </div>
+        <div style="font-size: 11px; color: #cbd5e1;">
+            スペック: <b>1/{p_denom}</b> ｜ 現在: <b style="color: #fff;">{current_rotation}回転</b>
+        </div>
+    </div>
 
-if diag_mode == "両方味わう":
-    content_html += (
-        f'<p style="font-size: 13px; color: #f1f5f9; line-height: 1.4;'
-        f' margin-bottom: 6px; text-align: center;">{neg_comment}</p>'
-    )
-    content_html += (
-        f'<p style="font-size: 13px; color: #fce7f3; line-height: 1.4;'
-        f' margin-bottom: 10px; text-align: center; opacity: 0.9;">'
-        f"{pos_comment}</p>"
-    )
-    comparison_display = f'<div style="margin-bottom: 4px;">• {comparison_text}</div>'
-elif diag_mode == "絶望に浸る":
-    content_html += (
-        f'<p style="font-size: 13px; color: {text_color}; line-height: 1.4;'
-        f' margin-bottom: 10px; text-align: center;">{neg_comment}</p>'
-    )
-    comparison_display = f'• {comparison_text}'
-else:
-    content_html += (
-        f'<p style="font-size: 13px; color: {text_color}; line-height: 1.4;'
-        f' margin-bottom: 10px; text-align: center;">{pos_comment}</p>'
-    )
-    comparison_display = f'• {comparison_text}'
+    <!-- 【中段の核】 確率 ＆ 科学データ解説 -->
+    <div style="text-align: center; background-color: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 14px;">
+        <div style="font-size: 10px; color: #94a3b8; letter-spacing: 1px;">（この回転数まで当らない確率）</div>
+        <div style="font-size: 40px; color: {zone_data['accent_color']}; font-weight: bold; line-height: 1.1; margin: 6px 0;">
+            {prob_ハマり:.2f}%
+        </div>
+        
+        <div style="margin-top: 10px; text-align: left; border-top: 1px solid rgba(255,255,255,0.1); pt: 8px; padding-top: 8px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #38bdf8; margin-bottom: 2px;">
+                <span>科学的比較ファクト</span>
+                <span>{approx_rate}</span>
+            </div>
+            <div style="font-size: 12px; color: #f1f5f9; line-height: 1.4;">
+                • {comparison_text}
+            </div>
+        </div>
+    </div>
 
-card_html = (
-    '<div style="border: 3px double '
-    + border_color
-    + "; background-color: "
-    + card_bg
-    + '; padding: 14px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">'
-    '<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 10px; font-size: 12px; color: #94a3b8;">'
-    '<span>スペック: <b style="color: #f8fafc;">1 / '
-    + str(p_denom)
-    + "</b></span>"
-    '<span>現在: <b style="color: #f8fafc;">'
-    + str(current_rotation)
-    + "回転</b></span>"
-    "</div>"
-    '<div style="text-align: center; margin-bottom: 8px;">'
-    '<div style="font-size: 12px; color: '
-    + text_color
-    + '; text-transform: uppercase; letter-spacing: 2px;">'
-    + status_title
-    + "</div>"
-    "</div>"
-    '<div style="display: flex; align-items: center; justify-content: space-around; margin-bottom: 10px; background-color: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px;">'
-    '<div style="text-align: left;">'
-    '<h2 style="color: '
-    + text_color
-    + '; margin: 0; font-size: 36px; letter-spacing: 1px;">'
-    + f"{prob_ハマり:.1f}%"
-    + "</h2>"
-    '<div style="font-size: 10px; color: '
-    + text_color
-    + '; opacity: 0.8;">（この回転数まで当らない確率）</div>'
-    "</div>"
-    "<div>"
-    '<img src="'
-    + image_url
-    + '" style="width: 60px; height: 60px; object-fit: contain; border-radius: 50%; background-color: rgba(255,255,255,0.9); padding: 3px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);" />'
-    "</div>"
-    "</div>"
-    + content_html
-    + '<div style="background-color: rgba(0, 0, 0, 0.4); border: 1px dashed '
-    + border_color
-    + '; padding: 8px 10px; border-radius: 6px; text-align: left; margin-bottom: 10px;">'
-    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">'
-    '<span style="font-size: 10px; color: #38bdf8; font-weight: bold;">比較ファクト</span>'
-    '<span style="font-size: 10px; color: #38bdf8; font-weight: bold;">'
-    + approx_rate
-    + "</span>"
-    "</div>"
-    '<div style="font-size: 11px; color: '
-    + text_color
-    + '; line-height: 1.4;">'
-    + comparison_display
-    + "</div>"
-    "</div>"
-    '<!-- 💳 財布/メンタル HPゲージ演出 -->'
-    '<div style="background-color: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 6px;">'
-    '<div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 3px;">'
-    "<span>💳 財布/メンタル HP</span>"
-    "<span>"
-    + hp_status
-    + " "
-    + str(hp_percent)
-    + "%</span>"
-    "</div>"
-    '<div style="width: 100%; background-color: #334155; height: 6px; border-radius: 3px; overflow: hidden;">'
-    '<div style="width: '
-    + str(hp_percent)
-    + "%; background-color: "
-    + (
-        "#22c55e"
-        if hp_percent > 50
-        else "#eab308"
-        if hp_percent > 20
-        else "#ef4444"
-    )
-    + '; height: 100%; transition: width 0.3s ease;"></div>'
-    "</div>"
-    "</div>"
-    "</div>"
-)
+    <!-- 【解説・お告げ】 メインツッコミ -->
+    <div style="font-size: 13px; color: #e2e8f0; line-height: 1.5; margin-bottom: 14px; text-align: center; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 6px;">
+        「{comment_text}」
+    </div>
 
-st.markdown(card_html, unsafe_allow_html=True)
+    <!-- 💳 財布/メンタル HPゲージ -->
+    <div style="background-color: rgba(0,0,0,0.4); padding: 8px 10px; border-radius: 6px; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 4px;">
+            <span>💳 財布 / メンタル HP</span>
+            <span>{zone_data['hp_status']} ({zone_data['hp_percent']}%)</span>
+        </div>
+        <div style="width: 100%; background-color: #1e293b; height: 6px; border-radius: 3px; overflow: hidden;">
+            <div style="width: {zone_data['hp_percent']}%; background-color: {zone_data['border_color']}; height: 100%;"></div>
+        </div>
+    </div>
+
+    <!-- 【下段】サブリミナル・フッター（シュールな皮肉） -->
+    <div style="text-align: center; font-size: 10px; color: #64748b; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+        {zone_data['footer_cynic']}
+    </div>
+</div>
+"""
+
+st.markdown(omikuji_html, unsafe_allow_html=True)
