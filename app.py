@@ -166,81 +166,40 @@ if df_master is not None and len(df_master) > 0:
     approx_rate = str(closest_row.get('確率・数値', ''))
     comparison_text = str(closest_row.get('事象', '')) + "：" + str(closest_row.get('コメント', ''))
 else:
-    approx_rate = f"约 {prob_ハマり:.1f}%"
+    approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 8. おみくじ風カードの描画（安全なブロック分割方式） ---
+# --- 8. おみくじ風カードの構築（1つのHTML文字列に完全統合） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 hp_percent = zone_data['hp_percent']
 
-st.markdown(
-    f"""
-    <div style="
-        border: 4px double {border_color}; 
-        background-color: #111827; 
-        padding: 20px; 
-        border-radius: 12px; 
-        box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-        max-width: 500px;
-        margin: 0 auto;
-    ">
-    """,
-    unsafe_allow_html=True
-)
-
-# 【上段】おみくじヘッダー
-st.markdown(
-    f"""
+card_html = f"""
+<div style="border: 4px double {border_color}; background-color: #111827; padding: 20px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto;">
+    
     <div style="text-align: center; border-bottom: 1px dashed {border_color}; padding-bottom: 12px; margin-bottom: 14px;">
         <div style="font-size: 11px; color: #94a3b8; letter-spacing: 3px;">【 運 勢 判 定 】</div>
-        <div style="font-size: 22px; color: {accent_color}; font-weight: bold; margin: 4px 0;">
-            {zone_data['title']}
-        </div>
-        <div style="font-size: 11px; color: #cbd5e1;">
-            スペック: <b>1/{p_denom}</b> ｜ 現在: <b style="color: #fff;">{current_rotation}回転</b>
-        </div>
+        <div style="font-size: 22px; color: {accent_color}; font-weight: bold; margin: 4px 0;">{zone_data['title']}</div>
+        <div style="font-size: 11px; color: #cbd5e1;">スペック: <b>1/{p_denom}</b> ｜ 現在: <b style="color: #fff;">{current_rotation}回転</b></div>
     </div>
-    """,
-    unsafe_allow_html=True
-)
 
-# 【中段の核】 確率 ＆ 科学データ解説
-st.markdown(
-    f"""
     <div style="text-align: center; background-color: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 14px;">
         <div style="font-size: 10px; color: #94a3b8; letter-spacing: 1px;">（この回転数まで当らない確率）</div>
-        <div style="font-size: 40px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 6px 0;">
-            {prob_ハマり:.2f}%
-        </div>
+        <div style="font-size: 40px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 6px 0;">{prob_ハマり:.2f}%</div>
         
         <div style="margin-top: 10px; text-align: left; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
             <div style="display: flex; justify-content: space-between; font-size: 10px; color: #38bdf8; margin-bottom: 2px;">
                 <span>科学的比較ファクト</span>
                 <span>{approx_rate}</span>
             </div>
-            <div style="font-size: 12px; color: #f1f5f9; line-height: 1.4;">
-                • {comparison_text}
-            </div>
+            <div style="font-size: 12px; color: #f1f5f9; line-height: 1.4;">• {comparison_text}</div>
         </div>
     </div>
-    """,
-    unsafe_allow_html=True
-)
 
-# 【解説・お告げ】 メインツッコミ
-st.markdown(
-    f"""
     <div style="font-size: 13px; color: #e2e8f0; line-height: 1.5; margin-bottom: 14px; text-align: center; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 6px;">
         「{comment_text}」
     </div>
-    """,
-    unsafe_allow_html=True
-)
 
-# 💳 財布 / メンタル HPゲージ
-st.markdown(
-    f"""
     <div style="background-color: rgba(0,0,0,0.4); padding: 8px 10px; border-radius: 6px; margin-bottom: 12px;">
         <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 4px;">
             <span>💳 財布 / メンタル HP</span>
@@ -250,17 +209,12 @@ st.markdown(
             <div style="width: {hp_percent}%; background-color: {border_color}; height: 100%;"></div>
         </div>
     </div>
-    """,
-    unsafe_allow_html=True
-)
 
-# 【下段】サブリミナル・フッター（シュールな皮肉）＆カード閉じタグ
-st.markdown(
-    f"""
-        <div style="text-align: center; font-size: 10px; color: #64748b; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
-            {zone_data['footer_cynic']}
-        </div>
+    <div style="text-align: center; font-size: 10px; color: #64748b; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+        {zone_data['footer_cynic']}
     </div>
-    """,
-    unsafe_allow_html=True
-)
+
+</div>
+"""
+
+st.markdown(card_html, unsafe_allow_html=True)
