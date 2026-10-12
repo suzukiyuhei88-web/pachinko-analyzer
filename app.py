@@ -63,7 +63,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. 状態判定（1, 4, 5 と連動：タイトル、HP、カラー）の定義 ---
+# --- 2. 状態判定（1, 4, 5 と連動：タイトル、HP、カラー、背景色）の定義 ---
 ZONE_DEFINITIONS = {
     "peaceful": {
         "title": "平穏域 (NORMAL)",
@@ -71,6 +71,7 @@ ZONE_DEFINITIONS = {
         "hp_status": "STABLE",
         "border_color": "#3b82f6",
         "accent_color": "#60a5fa",
+        "bg_color": "#0d1b2a", # 青系統の薄いダーク
     },
     "caution": {
         "title": "警戒域 (CAUTION)",
@@ -78,6 +79,7 @@ ZONE_DEFINITIONS = {
         "hp_status": "CAUTION",
         "border_color": "#10b981",
         "accent_color": "#34d399",
+        "bg_color": "#062318", # 緑系統の薄いダーク
     },
     "yutime_ghost": {
         "title": "警告域 / 遊タイム非搭載 (WARNING)",
@@ -85,6 +87,7 @@ ZONE_DEFINITIONS = {
         "hp_status": "WARNING",
         "border_color": "#a855f7",
         "accent_color": "#c084fc",
+        "bg_color": "#1e102f", # 紫系統の薄いダーク
     },
     "deep": {
         "title": "深海トラウマ領域 (DEEP)",
@@ -92,6 +95,7 @@ ZONE_DEFINITIONS = {
         "hp_status": "DANGER",
         "border_color": "#f97316",
         "accent_color": "#fb923c",
+        "bg_color": "#2c150b", # オレンジ系統の薄いダーク
     },
     "god": {
         "title": "確率特異点 / 神の領域 (SINGULARITY)",
@@ -99,6 +103,7 @@ ZONE_DEFINITIONS = {
         "hp_status": "CRITICAL",
         "border_color": "#ef4444",
         "accent_color": "#f87171",
+        "bg_color": "#2d0f0f", # 赤系統の薄いダーク
     },
 }
 
@@ -156,7 +161,6 @@ else:
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
 # --- 8. ハマり確率に依存する要素（2. キャラクターセリフ ＆ 3. フッター）のバリエーション ---
-# ランダム性が固定化しないよう、確率の数値をシードにしたかたちで選択肢が切り替わるように設定
 hash_seed = int(prob_ハマり * 1000) % 3
 
 if prob_ハマり > 50:
@@ -200,7 +204,7 @@ elif prob_ハマり > 1.0:
         "「すげえ深くまで潜りましたねぇ。酸欠で脳の血管が一本切れそうな頃合いじゃありませんか？」"
     ]
     footers = [
-        "※ハンドル를 固定したところで、数学的確率は1ミリも変動しません。",
+        "※ハンドルを固定したところで、数学的確率は1ミリも変動しません。",
         "※負債の沼は深く、あなたの理性をも一緒に沈めていきます。",
         "※帰るに帰れないその足取り、完全にホールのカモのそれですよ。"
     ]
@@ -216,13 +220,13 @@ else:
         "※神様も呆れて見ていることでしょう。お疲れ様でした。"
     ]
 
-# ハッシュシードを使ってバリエーションから選択
 comment_text = comments[hash_seed % len(comments)]
 footer_cynic = footers[hash_seed % len(footers)]
 
 # --- 9. 2軸構造化カードの構築 ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
+bg_color = zone_data['bg_color']
 hp_percent = zone_data['hp_percent']
 
 card_html = f"""
@@ -232,7 +236,7 @@ card_html = f"""
     font-family: 'DotGothic16', sans-serif !important;
 }}
 </style>
-<div style="border: 2px solid {border_color}; background-color: #111827; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; box-sizing: border-box;">
+<div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; box-sizing: border-box; transition: background-color 0.3s ease, border-color 0.3s ease;">
     
     <!-- 【ベース】データコア -->
     <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 12px;">
@@ -240,19 +244,19 @@ card_html = f"""
             <span>スペック: <b>1/{p_denom}</b></span>
             <span>現在回転数: <b style="color: #fff;">{current_rotation}回転</b></span>
         </div>
-        <div style="text-align: center; background-color: rgba(0,0,0,0.4); padding: 8px; border-radius: 6px;">
+        <div style="text-align: center; background-color: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px;">
             <div style="font-size: 34px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 2px 0;">{prob_ハマり:.2f}%</div>
             <div style="font-size: 10px; color: #94a3b8;">（この回転数まで一度も当らない数学的確率）</div>
         </div>
     </div>
 
     <!-- 【軸1】無機質アナライザー（科学的スケール比較） -->
-    <div style="background-color: #030712; border: 1px solid #1e293b; padding: 10px; border-radius: 6px; margin-bottom: 12px;">
+    <div style="background-color: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; margin-bottom: 12px;">
         <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748b; letter-spacing: 1px; margin-bottom: 4px;">
             <span>[ SYSTEM: OBJECTIVE_ANALYSIS ]</span>
             <span style="color: #38bdf8;">{approx_rate}</span>
         </div>
-        <div style="font-size: 11px; color: #94a3b8; line-height: 1.3;">
+        <div style="font-size: 11px; color: #cbd5e1; line-height: 1.3;">
             <span style="color: #38bdf8;">>></span> {comparison_text}
         </div>
     </div>
@@ -261,29 +265,29 @@ card_html = f"""
     <div style="margin-bottom: 12px;">
         <div style="font-size: 10px; color: {accent_color}; letter-spacing: 1px; margin-bottom: 4px;">■ 状態判定: {zone_data['title']}</div>
         
-        <div style="display: flex; align-items: flex-start; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 6px;">
-            <div style="min-width: 40px; height: 40px; background-color: #1e293b; border: 1px dashed {accent_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #94a3b8; margin-right: 10px; text-align: center;">
+        <div style="display: flex; align-items: flex-start; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 6px;">
+            <div style="min-width: 40px; height: 40px; background-color: rgba(0,0,0,0.3); border: 1px dashed {accent_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #94a3b8; margin-right: 10px; text-align: center;">
                 [ICON]
             </div>
-            <div style="font-size: 12px; color: #e2e8f0; line-height: 1.4;">
+            <div style="font-size: 12px; color: #f1f5f9; line-height: 1.4;">
                 {comment_text}
             </div>
         </div>
     </div>
 
     <!-- 財布・メンタル HPゲージ（状態判定に連動） -->
-    <div style="background-color: rgba(0,0,0,0.4); padding: 6px 10px; border-radius: 6px; margin-bottom: 10px;">
+    <div style="background-color: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; margin-bottom: 10px;">
         <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 3px;">
             <span>💳 財布 / メンタル残存値</span>
             <span>{zone_data['hp_status']} ({hp_percent}%)</span>
         </div>
-        <div style="width: 100%; background-color: #1e293b; height: 5px; border-radius: 3px; overflow: hidden;">
+        <div style="width: 100%; background-color: rgba(0,0,0,0.5); height: 5px; border-radius: 3px; overflow: hidden;">
             <div style="width: {hp_percent}%; background-color: {border_color}; height: 100%;"></div>
         </div>
     </div>
 
     <!-- サブリミナル・フッター（ハマり確率に依存する皮肉） -->
-    <div style="text-align: center; font-size: 10px; color: #64748b; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
+    <div style="text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
         {footer_cynic}
     </div>
 
