@@ -42,7 +42,7 @@ def load_data():
 
 df_master = load_data()
 
-# --- 1. デザイン用のカスタムCSS ＆ レイヤー修正 ---
+# --- 1. デザイン用のカスタムCSS ＆ レイヤー設定 ---
 st.markdown(
     """
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -62,14 +62,13 @@ st.markdown(
         padding-top: 3rem;
         padding-bottom: 2rem;
         position: relative;
-        z-index: 10; /* メインコンテンツを確実に手前にする */
+        z-index: 10;
     }
-    /* ラジオボタンをコンパクトに横並びさせる調整 */
     .stRadio > div {
         flex-direction: row !important;
         gap: 10px;
     }
-    /* 背景「ざわ…」侵食レイヤー（最奥に固定、クリックを邪魔しない） */
+    /* 背景「ざわ…」侵食レイヤー（最奥に固定） */
     .zawa-container {
         position: fixed;
         top: 0;
@@ -77,7 +76,7 @@ st.markdown(
         width: 100vw;
         height: 100vh;
         pointer-events: none;
-        z-index: 0; /* メインより奥に配置 */
+        z-index: 0;
         overflow: hidden;
     }
     .zawa-item {
@@ -92,10 +91,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. 状態判定（倍率ベース）と決定版名言フレーズの定義 ---
+# --- 2. 状態判定（倍率ベース）と名言フレーズ・コメントの定義 ---
 ZONE_DEFINITIONS = {
     "peaceful": {
-        "title": "STAGE 1 : 慢心 (NORMAL)",
+        "title": "STAGE 1 : 慢心 / 平穏域 (NORMAL)",
         "hp_percent": 100,
         "hp_status": "STABLE",
         "border_color": "#00ffcc",
@@ -103,10 +102,19 @@ ZONE_DEFINITIONS = {
         "bg_color": "#0d1b2a",
         "quote": "狙い台…計画通り…！",
         "zawa_count": 0,
-        "footer": "※早い当りは嬉しいですが、持ち玉の維持こそが勝負の分かれ道です。"
+        "comments": [
+            "「おっ、早めの当りですね！ まだ財布も心もノーダメージでウハウハな時間帯ですわ」",
+            "「このスピード感で当たってくれると助かるんですけどねぇ。まあ、油断大敵ですよ」",
+            "「サクッと初当りを引けてご機嫌なご様子。ここから連チャンを伸ばせるかが見せ所ですね」"
+        ],
+        "footers": [
+            "※早い当りは嬉しいですが、持ち玉の維持こそが勝負の分かれ道です。",
+            "※この調子でプラス域をキープしてさっさと逃げたいところですね。",
+            "※確率の恩恵を素直に受け取っておきましょう。"
+        ]
     },
     "caution": {
-        "title": "STAGE 2 : 強がり (CAUTION)",
+        "title": "STAGE 2 : 強がり / 警戒域 (CAUTION)",
         "hp_percent": 75,
         "hp_status": "CAUTION",
         "border_color": "#ffcc00",
@@ -114,10 +122,19 @@ ZONE_DEFINITIONS = {
         "bg_color": "#062318",
         "quote": "まだあわてるような投資じゃない",
         "zawa_count": 5,
-        "footer": "※確率分母以内での当りは全体の約63%です。まだ普通の範囲内ですね。"
+        "comments": [
+            "「確率分母以内ですからね、まだまだ『まあまあ許容範囲内』ってところですわ」",
+            "「『そろそろ当たるはず』……いやいや、分母以内ならまだ平常運転ですよ。気楽にいきましょう」",
+            "「ここまでは想定内の挙動ですね。焦らず淡々とハンドルを握っていきましょうか」"
+        ],
+        "footers": [
+            "※確率分母以内での当りは全体の約63%です。まだ普通の範囲内ですね。",
+            "※ここから先が本当の地獄の始まり……なんて冗談ですけど、油断は禁物です。",
+            "※財布のHPはまだ満タンに近いです。"
+        ]
     },
     "yutime_ghost": {
-        "title": "STAGE 3 : 屈辱 (WARNING)",
+        "title": "STAGE 3 : 屈辱 / 警告域 (WARNING)",
         "hp_percent": 50,
         "hp_status": "WARNING",
         "border_color": "#ff9900",
@@ -125,10 +142,19 @@ ZONE_DEFINITIONS = {
         "bg_color": "#1e102f",
         "quote": "その日 パチンカーは思い出した<br>確率の妙に囚われていた屈辱を……",
         "zawa_count": 18,
-        "footer": "※「ここから取り返せばいいや」という甘い期待が泥沼の始まりです。"
+        "comments": [
+            "「うーん、分母を超えて2倍ハマりコースですか。まあ、パチンコ打ってりゃよくある日常風景ですね」",
+            "「『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？」",
+            "「ちょっと嫌な汗をかく頃合いですが、ここから一撃でまくる台も多いですからねえ」"
+        ],
+        "footers": [
+            "※2倍ハマりに到達する確率は約13.5%です。まだまだよくある日常です。",
+            "※「ここから取り返せばいいや」という甘い期待が泥沼の始まりです。",
+            "※演出の派手さと裏腹に、財布の残高は着実に削られています。"
+        ]
     },
     "deep": {
-        "title": "STAGE 4 : 執着 (DEEP)",
+        "title": "STAGE 4 : 執着 / 深海トラウマ領域 (DEEP)",
         "hp_percent": 25,
         "hp_status": "DANGER",
         "border_color": "#ff3333",
@@ -136,10 +162,19 @@ ZONE_DEFINITIONS = {
         "bg_color": "#2c150b",
         "quote": "まだだ！まだ台が当たりたがっている！！",
         "zawa_count": 35,
-        "footer": "※サンクコスト効果に支配されていませんか？ 冷静になりましょう。"
+        "comments": [
+            "<span>「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪くなってきましたねぇ……」</span>",
+            "<span>「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」</span>",
+            "<span>「じっと耐える時間帯です。隣の連チャンを横目に見ながらメンタルを保てるかが勝負ですよ」</span>"
+        ],
+        "footers": [
+            "※3倍ハマりに到達する確率は約5%未満。そろそろ不穏な領域です。",
+            "※サンクコスト効果に支配されていませんか？ 冷静になりましょう。",
+            "※ハンドルを固定したところで、確率はあなたに微笑みません。"
+        ]
     },
     "god": {
-        "title": "STAGE 5 : 狂気 (SINGULARITY)",
+        "title": "STAGE 5 : 狂気 / 確率特異点 (SINGULARITY)",
         "hp_percent": 5,
         "hp_status": "CRITICAL",
         "border_color": "#ff0055",
@@ -147,7 +182,16 @@ ZONE_DEFINITIONS = {
         "bg_color": "#2d0f0f",
         "quote": "台が球を吐き出さない限り、止まるんじゃねぇぞ…",
         "zawa_count": 55,
-        "footer": "※財布の命日へようこそ。撤退の二文字はすでに脳内から消えています。"
+        "comments": [
+            "<span>「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」</span>",
+            "<span><span>「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」</span></span>",
+            "<span>「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」</span>"
+        ],
+        "footers": [
+            "※ここから当たる確率はごくわずか。完全な虚無との戦いです。",
+            "※周囲の視線は同情、あるいは哀れみを含んだものに変わっています。",
+            "※財布の命日へようこそ。撤退の二文字はすでに脳内から消えています。"
+        ]
     },
 }
 
@@ -234,7 +278,13 @@ else:
     approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 7. 背景「ざわ…」演出の動的生成（最奥に描画） ---
+# --- 7. コメント・フッターのランダム選択（ハッシュシード利用） ---
+hash_seed = int(prob_ハマり * 1000) % 3
+comment_text = zone_data['comments'][hash_seed % len(zone_data['comments'])]
+footer_cynic = zone_data['footers'][hash_seed % len(zone_data['footers'])]
+quote_text = zone_data['quote']
+
+# --- 8. 背景「ざわ…」演出の動的生成 ---
 zawa_count = zone_data["zawa_count"]
 if zawa_count > 0:
     zawa_html_list = []
@@ -251,13 +301,11 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 8. カード構築 ---
+# --- 9. カード構築（アスキーアート完全準拠版） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
 hp_percent = zone_data['hp_percent']
-quote_text = zone_data['quote']
-footer_cynic = zone_data['footer']
 
 card_html = f"""
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -268,7 +316,7 @@ card_html = f"""
 </style>
 <div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.8); max-width: 500px; margin: 5px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease; position: relative;">
     
-    <!-- 【最上部】状態判定ヘッダー -->
+    <!-- 【最上部】状態判定ヘッダー（ステージ名） -->
     <div style="background-color: rgba(0,0,0,0.5); border-left: 4px solid {accent_color}; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px;">
         <div style="font-size: 9px; color: #94a3b8; letter-spacing: 1px;">■ 現在の状態判定</div>
         <div style="font-size: 14px; color: {accent_color}; font-weight: bold; margin-top: 2px;">{zone_data['title']}</div>
@@ -298,9 +346,21 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- 【軸2】名言置換フレーズ枠 -->
+    <!-- 【軸2】シニカルコメント枠 -->
     <div style="margin-bottom: 10px;">
-        <div style="display: flex; align-items: center; background: rgba(0,0,0,0.35); border: 1px solid {accent_color}; padding: 12px; border-radius: 6px;">
+        <div style="display: flex; align-items: flex-start; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px;">
+            <div style="min-width: 36px; height: 36px; background-color: rgba(0,0,0,0.3); border: 1px dashed {accent_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #94a3b8; margin-right: 8px; text-align: center;">
+                [ICON]
+            </div>
+            <div style="font-size: 11px; color: #f1f5f9; line-height: 1.4;">
+                {comment_text}
+            </div>
+        </div>
+    </div>
+
+    <!-- 【軸3】至高の名言置換フレーズ枠（中央の主役） -->
+    <div style="margin-bottom: 10px;">
+        <div style="display: flex; align-items: center; background: rgba(0,0,0,0.4); border: 2px solid {accent_color}; padding: 12px; border-radius: 6px;">
             <div style="font-size: 12px; color: #f1f5f9; line-height: 1.5; text-align: center; width: 100%; font-weight: bold;">
                 {quote_text}
             </div>
@@ -326,4 +386,4 @@ card_html = f"""
 </div>
 """
 
-components.html(card_html, height=580, scrolling=False)
+components.html(card_html, height=640, scrolling=False)
