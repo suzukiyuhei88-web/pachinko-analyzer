@@ -128,24 +128,52 @@ if selected_spec_name == "カスタム":
 else:
     p_denom = spec_options[selected_spec_name]
 
-# --- 4. データカウンターの回転数を直接入力 ---
+# セッションステートで回転数を管理（初期値の設定と、スペック変更時のリセット対応）
+if 'rotation_input' not in st.session_state or st.session_state.get('last_spec') != p_denom:
+    st.session_state['rotation_input'] = min(300, int(p_denom * 6))
+    st.session_state['last_spec'] = p_denom
+
+# --- 4. 主要なハマり倍率のクイック選択ボタン ---
+st.markdown("<p style='font-size: 11px; color: #94a3b8; margin-bottom: 4px;'>▼ 主要なハマり回転数へジャンプ</p>", unsafe_allow_html=True)
+
+col1, col2, col3, col4, col5, col6 = st.columns(6)
+with col1:
+    if st.button("0.5倍", use_container_width=True):
+        st.session_state['rotation_input'] = int(p_denom * 0.5)
+with col2:
+    if st.button("1倍", use_container_width=True):
+        st.session_state['rotation_input'] = int(p_denom * 1.0)
+with col3:
+    if st.button("1.5倍", use_container_width=True):
+        st.session_state['rotation_input'] = int(p_denom * 1.5)
+with col4:
+    if st.button("2倍", use_container_width=True):
+        st.session_state['rotation_input'] = int(p_denom * 2.0)
+with col5:
+    if st.button("2.5倍", use_container_width=True):
+        st.session_state['rotation_input'] = int(p_denom * 2.5)
+with col6:
+    if st.button("3倍", use_container_width=True):
+        st.session_state['rotation_input'] = int(p_denom * 3.0)
+
+# --- 5. データカウンターの回転数入力 ---
 max_limit = int(p_denom * 6)
 current_rotation = st.number_input(
     "現在のハマり回転数（データカウンターの数字）",
     min_value=0,
     max_value=max_limit,
-    value=min(300, max_limit),
-    step=1
+    step=1,
+    key='rotation_input'
 )
 
-# --- 5. 計算ロジック ---
+# --- 6. 計算ロジック ---
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
 # 確率分母に対する現在の倍率（ハマり度合い）を算出
 rotation_ratio = current_rotation / p_denom if p_denom > 0 else 0
 
-# --- 6. 状態判定の決定（スペック共通の倍率ベースで分岐） ---
+# --- 7. 状態判定の決定（スペック共通の倍率ベースで分岐） ---
 if rotation_ratio < 0.31:
     zone_key = "peaceful"
 elif rotation_ratio < 1.0:
@@ -159,7 +187,7 @@ else:
 
 zone_data = ZONE_DEFINITIONS[zone_key]
 
-# --- 7. CSVネタマッチング（無機質アナライザー用） ---
+# --- 8. CSVネタマッチング（無機質アナライザー用） ---
 if df_master is not None and len(df_master) > 0:
     df_master['diff'] = (df_master['prob_val'] - prob_ハマり).abs()
     closest_row = df_master.loc[df_master['diff'].idxmin()]
@@ -169,7 +197,7 @@ else:
     approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 8. プレイヤーの体感・感情に合わせたセリフ＆フッターのバリエーション ---
+# --- 9. プレイヤーの体感・感情に合わせたセリフ＆フッターのバリエーション ---
 hash_seed = int(prob_ハマり * 1000) % 3
 
 if zone_key == "peaceful": # 0.3倍未満（早めの当り）
@@ -219,7 +247,7 @@ elif zone_key == "deep": # 2.0倍〜3.0倍（3倍ハマり以内）
 else: # 3.0倍超（それ以上：虚無、ムキになって回す）
     comments = [
         "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
-        "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
+        "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンライズしているのを感じませんか？」",
         "「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」"
     ]
     footers = [
@@ -231,7 +259,7 @@ else: # 3.0倍超（それ以上：虚無、ムキになって回す）
 comment_text = comments[hash_seed % len(comments)]
 footer_cynic = footers[hash_seed % len(footers)]
 
-# --- 9. 2軸構造化カードの構築 ---
+# --- 10. 2軸構造化カードの構築 ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -294,7 +322,7 @@ card_html = f"""
         </div>
     </div>
 
-    -- サブリミナル・フッター -->
+    <!-- サブリミナル・フッター -->
     <div style="text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
         {footer_cynic}
     </div>
