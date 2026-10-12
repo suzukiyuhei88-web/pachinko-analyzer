@@ -42,7 +42,7 @@ def load_data():
 
 df_master = load_data()
 
-# --- 1. デザイン用のカスタムCSS ---
+# --- 1. デザイン用のカスタムCSS（カラムの強制横並び対応） ---
 st.markdown(
     """
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -61,6 +61,11 @@ st.markdown(
     .block-container {
         padding-top: 1rem;
         padding-bottom: 2rem;
+    }
+    /* Streamlitのカラムが狭い画面で縦積みになるのを強制的に横並びに固定する */
+    [data-testid="column"] {
+        flex: 1 !important;
+        min-width: 70px !important;
     }
     </style>
     """,
@@ -136,7 +141,7 @@ if 'rotation_input' not in st.session_state or st.session_state.get('last_spec')
     st.session_state['rotation_input'] = min(300, int(p_denom * 6))
     st.session_state['last_spec'] = p_denom
 
-# ★ ジャンプボタン（3列 × 2段でコンパクトに横並び固定）
+# ジャンプボタン（CSSで強制横並び化）
 st.markdown("<p style='font-size: 10px; color: #94a3b8; margin: 4px 0 2px 0;'>▼ 主要倍率へジャンプ</p>", unsafe_allow_html=True)
 
 r1_c1, r1_c2, r1_c3 = st.columns(3)
@@ -161,7 +166,7 @@ with r2_c3:
     if st.button("3倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 3.0)
 
-# その後に number_input を配置
+# number_input を配置
 max_limit = int(p_denom * 6)
 current_rotation = st.number_input(
     "現在のハマり回転数（データカウンターの数字）",
