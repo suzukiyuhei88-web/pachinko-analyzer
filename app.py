@@ -2,6 +2,7 @@ import math
 import random
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 # ページの基本設定
 st.set_page_config(
@@ -169,13 +170,19 @@ else:
     approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 8. おみくじ風カードの構築（1つのHTML文字列に完全統合） ---
+# --- 8. おみくじ風カードの構築（独立コンポーネント用HTML） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 hp_percent = zone_data['hp_percent']
 
 card_html = f"""
-<div style="border: 4px double {border_color}; background-color: #111827; padding: 20px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto;">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+* {{
+    font-family: 'DotGothic16', sans-serif !important;
+}}
+</style>
+<div style="border: 4px double {border_color}; background-color: #111827; color: #f8fafc; padding: 20px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; box-sizing: border-box;">
     
     <div style="text-align: center; border-bottom: 1px dashed {border_color}; padding-bottom: 12px; margin-bottom: 14px;">
         <div style="font-size: 11px; color: #94a3b8; letter-spacing: 3px;">【 運 勢 判 定 】</div>
@@ -217,4 +224,5 @@ card_html = f"""
 </div>
 """
 
-st.markdown(card_html, unsafe_allow_html=True)
+# 独立したHTMLコンポーネントとして描画（コードの露出を完全に防止）
+components.html(card_html, height=450, scrolling=False)
