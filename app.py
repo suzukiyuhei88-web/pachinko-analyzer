@@ -42,7 +42,7 @@ def load_data():
 
 df_master = load_data()
 
-# --- 1. デザイン用のカスタムCSS ＆ 「ざわ…」背景演出用スタイル ---
+# --- 1. デザイン用のカスタムCSS ＆ レイヤー修正 ---
 st.markdown(
     """
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -53,7 +53,6 @@ st.markdown(
     .stApp {
         background-color: #0b0f19;
         color: #f8fafc;
-        position: relative;
     }
     label, .stRadio p, .stNumberInput p {
         color: #cbd5e1 !important;
@@ -63,14 +62,14 @@ st.markdown(
         padding-top: 3rem;
         padding-bottom: 2rem;
         position: relative;
-        z-index: 2;
+        z-index: 10; /* メインコンテンツを確実に手前にする */
     }
     /* ラジオボタンをコンパクトに横並びさせる調整 */
     .stRadio > div {
         flex-direction: row !important;
         gap: 10px;
     }
-    /* 背景「ざわ…」侵食レイヤー */
+    /* 背景「ざわ…」侵食レイヤー（最奥に固定、クリックを邪魔しない） */
     .zawa-container {
         position: fixed;
         top: 0;
@@ -78,7 +77,7 @@ st.markdown(
         width: 100vw;
         height: 100vh;
         pointer-events: none;
-        z-index: 1;
+        z-index: 0; /* メインより奥に配置 */
         overflow: hidden;
     }
     .zawa-item {
@@ -235,11 +234,10 @@ else:
     approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 7. 背景「ざわ…」演出の動的生成 ---
+# --- 7. 背景「ざわ…」演出の動的生成（最奥に描画） ---
 zawa_count = zone_data["zawa_count"]
 if zawa_count > 0:
     zawa_html_list = []
-    # 再描画時も位置が安定するように現在の回転数と分母をシードに利用
     random.seed(int(current_rotation + p_denom))
     for i in range(zawa_count):
         top = random.randint(2, 95)
@@ -253,7 +251,7 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 8. カード構築（確定した名言置換フレーズを反映） ---
+# --- 8. カード構築 ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -268,7 +266,7 @@ card_html = f"""
     font-family: 'DotGothic16', sans-serif !important;
 }}
 </style>
-<div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.8); max-width: 500px; margin: 5px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease; position: relative; z-index: 3;">
+<div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.8); max-width: 500px; margin: 5px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease; position: relative;">
     
     <!-- 【最上部】状態判定ヘッダー -->
     <div style="background-color: rgba(0,0,0,0.5); border-left: 4px solid {accent_color}; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px;">
