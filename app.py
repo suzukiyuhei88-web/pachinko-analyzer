@@ -91,7 +91,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. 状態判定（倍率ベース）と名言フレーズ・コメント、および「ざわ…」頻度・いらすとや画像の定義 ---
+# --- 2. 状態判定（倍率ベース）と名言フレーズ・コメント、および「ざわ…」頻度・俯瞰的視点のイラスト定義 ---
 ZONE_DEFINITIONS = {
     "peaceful": {
         "title": "STAGE 1 : 慢心 / 平穏域 (WHITE)",
@@ -102,7 +102,7 @@ ZONE_DEFINITIONS = {
         "bg_color": "#111827",
         "quote": "狙い台…計画通り…！",
         "zawa_count": 0,
-        "icon_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqH9j4TRwsKU9Sy4dgqcd-zGDF20__9qnLHv4OnK5V09ylrmc&s",
+        "icon_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEimoEwatXcSCARvx85hXntxdmY_3DWuL9xNZMP2PhUktvHDOsA9bpJRhCIwGGvT8-4-s_PAnqklifNh87rQA57enOkkUmlQRzrHBvrrycQktL8bz2AvxWlNF8_WFOT4rGBZqKauJAb6Rq4/s400/seikou_syukufuku_man_solo.png",
         "comments": [
             "「おっ、早めの当りですね！ まだ財布も心もノーダメージでウハウハな時間帯ですわ」",
             "「このスピード感で当たってくれると助かるんですけどねぇ。まあ、油断大敵ですよ」",
@@ -123,7 +123,7 @@ ZONE_DEFINITIONS = {
         "bg_color": "#082f49",
         "quote": "まだあわてるような投資じゃない",
         "zawa_count": 0,
-        "icon_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgRvct2poMdd_7m7NjCBn4IIF9aLe9hJzCBoWFJeg-DA-ZyQWbeUHQHdm3_mXLN6lm91AyVzcITbHIyJ-cd00S-1UoEett-e82UEVmf1RRIrEZC1dMf2hcr3SCn0_SjMJ56cdRbdYZsy5xh/w1200-h630-p-k-no-nu/document_aseru_businesswoman.png",
+        "icon_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjzaEsBl1Jb92me9-BUlklCoZzzQmOKYOwDeBc5WJSLHpKllQKoG-LXTwEbQqJpkQCld12Hz7zM9Owr6jd1KIv_K6G29WaHomxNnkueM_HdFie478JfOlwnLQpBgUurYvgpxUAbVqrvyfT9/s800/undoukai_ouen_white_girl.png",
         "comments": [
             "「確率分母以内ですからね、まだまだ『まあまあ許容範囲内』ってところですわ」",
             "「『そろそろ当たるはず』……いやいや、分母以内ならまだ平常運転ですよ。気楽にいきましょう」",
@@ -144,7 +144,7 @@ ZONE_DEFINITIONS = {
         "bg_color": "#422006",
         "quote": "その日 パチンカーは思い出した<br>確率の妙に囚われていた屈辱を……",
         "zawa_count": 8,
-        "icon_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj8apXyyr-cp-0SKo6dt4-cYDlH_mYAXVf52F3heoV0OhIMVxWC3LBAUu1Me7F8Pz0TF6NbB_8pH-UF1V-bDxn8KUwHvuZfNynHtCYFai37KIg3Pa66VQcQNWHg4I8pIOHN9Ljhq2qyjUi3/s800/apron_man2-2shock.png",
+        "icon_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh6QxBXS34gdU8oOX3pJq-HZGbbi35ng8AYvlLgW8V2jwxtP1iWB0oaHUV4wIP0rL_pWtZnZS_hT80CKPdryMUPdIBAHBOxigbOhwqiF8rr-vxKLF8YDj-2IQNAb1yQZO8sQbAnW2tkjvC1/s800/shinpai_obasan.png",
         "comments": [
             "「うーん、分母を超えて2倍ハマりコースですか。まあ、パチンコ打ってりゃよくある日常風景ですね」",
             "<span>「『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？」</span>",
@@ -165,7 +165,7 @@ ZONE_DEFINITIONS = {
         "bg_color": "#052e16",
         "quote": "まだだ！まだ台が当たりたがっている！！",
         "zawa_count": 28,
-        "icon_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjbnfCz8gXpqn-GD2AEEt7IOAvxywZedTkb8i5rDcRK0TEOkM6EcpgHySVxruYeLIm7bHS1_4EbS9Q7ofLF-gEpMhu5tyVlPiTOeFOTrQs68LwryKXLY-L79WTJwjulkWKZzztdUw2Tf7U/w1200-h630-p-k-no-nu/pose_zasetsu.png",
+        "icon_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhfZx2n2WZxlTg_YD4jblhWDRBcy2WqNk6vTL61N6QEYP7DvekUdiibs5LHuMZK1HFpl3oub3IpbMVI73IjoooYZByCTdGM3q_cOwWTFoE7P1eQae2DV9STy6qlAfhWi_SsMCd8U5BFNRU/s400/pose_yareyare_man.png",
         "comments": [
             "<span><span>「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪くなってきましたねぇ……」</span></span>",
             "「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
@@ -186,7 +186,7 @@ ZONE_DEFINITIONS = {
         "bg_color": "#450a0a",
         "quote": "台が球を吐き出さない限り、止まるんじゃねぇぞ…",
         "zawa_count": 55,
-        "icon_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEip9-qXbpNeIgUGyxv5UjFR6WJPx9AFdwc1udlK1KNuYNqdk1bKjDqdT1QImlp48n7EuwvY6TrT05Gs9UkEFH0aCGhPOZsgIlwQkhu2M8GP2XwlykY1Pc3KA6dEFe6s186EgujV_HfLLFzt/s400/gamble_chuudoku_izonsyou.png",
+        "icon_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhVxiV_EughYHkfb0EzuP5N66kC2x0WeGSCPLJ8gpVaEChQnomwUzisIVGoyQE2J9VfY5vtX4KxRSJbU6rsyL67yZK3uBgESW-Bxv-bQcCr8ZxYm0Cp7buw5EFer2B1J0MvJfbvvfLSz_z9/s1600/mother_stop.png",
         "comments": [
             "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
             "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
@@ -301,7 +301,7 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 9. カード構築（いらすとや画像をコメント枠の左側に配置） ---
+# --- 9. カード構築（俯瞰的・冷徹な視点のキャラクター画像を配置） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -352,7 +352,7 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- 【シニカルコメント枠（いらすとや画像付き）】 -->
+    <!-- 【シニカルコメント枠（俯瞰的キャラクター画像付き）】 -->
     <div style="margin-bottom: 10px;">
         <div style="display: flex; align-items: center; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px;">
             <div style="min-width: 44px; width: 44px; height: 44px; background-color: rgba(255,255,255,0.9); border: 1px solid {accent_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; margin-right: 10px; overflow: hidden; flex-shrink: 0;">
