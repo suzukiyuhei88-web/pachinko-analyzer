@@ -163,9 +163,9 @@ ZONE_DEFINITIONS = {
         "quote": "まだだ！まだ台が当たりたがっている！！",
         "zawa_count": 35,
         "comments": [
-            "<span>「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪くなってきましたねぇ……」</span>",
-            "<span>「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」</span>",
-            "<span>「じっと耐える時間帯です。隣の連チャンを横目に見ながらメンタルを保てるかが勝負ですよ」</span>"
+            "「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪くなってきましたねぇ……」",
+            "「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
+            "「じっと耐える時間帯です。隣の連チャンを横目に見ながらメンタルを保てるかが勝負ですよ」"
         ],
         "footers": [
             "※3倍ハマりに到達する確率は約5%未満。そろそろ不穏な領域です。",
@@ -183,9 +183,9 @@ ZONE_DEFINITIONS = {
         "quote": "台が球を吐き出さない限り、止まるんじゃねぇぞ…",
         "zawa_count": 55,
         "comments": [
-            "<span>「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」</span>",
-            "<span><span>「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」</span></span>",
-            "<span>「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」</span>"
+            "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
+            "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
+            "「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」"
         ],
         "footers": [
             "※ここから当たる確率はごくわずか。完全な虚無との戦いです。",
@@ -301,7 +301,7 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 9. カード構築（アスキーアート完全準拠版） ---
+# --- 9. カード構築（アスキーアート完全準拠のレイアウト） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -316,10 +316,13 @@ card_html = f"""
 </style>
 <div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.8); max-width: 500px; margin: 5px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease; position: relative;">
     
-    <!-- 【最上部】状態判定ヘッダー（ステージ名） -->
-    <div style="background-color: rgba(0,0,0,0.5); border-left: 4px solid {accent_color}; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px;">
-        <div style="font-size: 9px; color: #94a3b8; letter-spacing: 1px;">■ 現在の状態判定</div>
-        <div style="font-size: 14px; color: {accent_color}; font-weight: bold; margin-top: 2px;">{zone_data['title']}</div>
+    <!-- 【最上部】至高の名言置換フレーズ枠（最大のアイキャッチ） -->
+    <div style="margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; background: rgba(0,0,0,0.5); border: 2px solid {accent_color}; padding: 14px; border-radius: 6px;">
+            <div style="font-size: 13px; color: {accent_color}; line-height: 1.5; text-align: center; width: 100%; font-weight: bold; letter-spacing: 1px;">
+                {quote_text}
+            </div>
+        </div>
     </div>
 
     <!-- 【メイン主役】ハマり確率 -->
@@ -354,15 +357,6 @@ card_html = f"""
             </div>
             <div style="font-size: 11px; color: #f1f5f9; line-height: 1.4;">
                 {comment_text}
-            </div>
-        </div>
-    </div>
-
-    <!-- 【軸3】至高の名言置換フレーズ枠（中央の主役） -->
-    <div style="margin-bottom: 10px;">
-        <div style="display: flex; align-items: center; background: rgba(0,0,0,0.4); border: 2px solid {accent_color}; padding: 12px; border-radius: 6px;">
-            <div style="font-size: 12px; color: #f1f5f9; line-height: 1.5; text-align: center; width: 100%; font-weight: bold;">
-                {quote_text}
             </div>
         </div>
     </div>
