@@ -63,7 +63,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ゾーンごとのデータ・シニカルコメント定義 ---
+# --- 2. ゾーンごとのステータス・心理コメント定義（心理・状況ブロック用） ---
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "平穏域 (NORMAL)",
@@ -160,7 +160,7 @@ if zone_key == "yutime_ghost":
     yutime_rot = int(p_denom * 3)
     comment_text = comment_text.format(yutime_rot=yutime_rot)
 
-# --- 7. CSVネタマッチング ---
+# --- 7. CSVネタマッチング（客観データブロック用） ---
 if df_master is not None and len(df_master) > 0:
     df_master['diff'] = (df_master['prob_val'] - prob_ハマり).abs()
     closest_row = df_master.loc[df_master['diff'].idxmin()]
@@ -170,7 +170,7 @@ else:
     approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 8. データ診断カードの構築（3段構成） ---
+# --- 8. 2軸構造化カードの構築 ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 hp_percent = zone_data['hp_percent']
@@ -184,48 +184,48 @@ card_html = f"""
 </style>
 <div style="border: 2px solid {border_color}; background-color: #111827; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; box-sizing: border-box;">
     
-    <!-- 第1段：データコア（スペック・回転数・確率） -->
-    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 14px;">
+    <!-- 【軸1】データコア ＆ 客観データブロック -->
+    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 12px;">
         <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">
             <span>スペック: <b>1/{p_denom}</b></span>
             <span>現在回転数: <b style="color: #fff;">{current_rotation}回転</b></span>
         </div>
-        <div style="text-align: center; background-color: rgba(0,0,0,0.4); padding: 12px; border-radius: 6px;">
-            <div style="font-size: 10px; color: {accent_color}; letter-spacing: 1px; text-transform: uppercase;">{zone_data['title']}</div>
-            <div style="font-size: 38px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 4px 0;">{prob_ハマり:.2f}%</div>
+        <div style="text-align: center; background-color: rgba(0,0,0,0.4); padding: 10px; border-radius: 6px; margin-bottom: 8px;">
+            <div style="font-size: 36px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 2px 0;">{prob_ハマり:.2f}%</div>
             <div style="font-size: 10px; color: #94a3b8;">（この回転数まで一度も当らない数学的確率）</div>
         </div>
-    </div>
-
-    <!-- 第2段：科学的・日常的比較ファクト -->
-    <div style="background-color: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.15); padding: 10px 12px; border-radius: 6px; margin-bottom: 14px;">
-        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #38bdf8; margin-bottom: 4px;">
-            <span>科学的スケール比較</span>
-            <span>{approx_rate}</span>
-        </div>
-        <div style="font-size: 12px; color: #f1f5f9; line-height: 1.4;">
-            • {comparison_text}
+        <div style="background-color: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.15); padding: 8px 10px; border-radius: 6px;">
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #38bdf8; margin-bottom: 2px;">
+                <span>科学的スケール比較</span>
+                <span>{approx_rate}</span>
+            </div>
+            <div style="font-size: 11px; color: #f1f5f9; line-height: 1.3;">
+                • {comparison_text}
+            </div>
         </div>
     </div>
 
-    <!-- 診断解説（ガローズユーモア） -->
-    <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 6px; border-left: 3px solid {accent_color};">
-        {comment_text}
+    <!-- 【軸2】心理・状況ブロック ＆ フッター -->
+    <div style="margin-bottom: 12px;">
+        <div style="font-size: 10px; color: {accent_color}; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;">■ 状態判定: {zone_data['title']}</div>
+        <div style="font-size: 12px; color: #cbd5e1; line-height: 1.4; background: rgba(255,255,255,0.02); padding: 8px 10px; border-radius: 6px; border-left: 3px solid {accent_color};">
+            {comment_text}
+        </div>
     </div>
 
     <!-- 財布・メンタル HPゲージ -->
-    <div style="background-color: rgba(0,0,0,0.4); padding: 8px 10px; border-radius: 6px; margin-bottom: 12px;">
-        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 4px;">
+    <div style="background-color: rgba(0,0,0,0.4); padding: 6px 10px; border-radius: 6px; margin-bottom: 10px;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 3px;">
             <span>💳 財布 / メンタル残存値</span>
             <span>{zone_data['hp_status']} ({hp_percent}%)</span>
         </div>
-        <div style="width: 100%; background-color: #1e293b; height: 6px; border-radius: 3px; overflow: hidden;">
+        <div style="width: 100%; background-color: #1e293b; height: 5px; border-radius: 3px; overflow: hidden;">
             <div style="width: {hp_percent}%; background-color: {border_color}; height: 100%;"></div>
         </div>
     </div>
 
-    <!-- 第3段：サブリミナル・フッター（冷徹な皮肉） -->
-    <div style="text-align: center; font-size: 10px; color: #64748b; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
+    <!-- サブリミナル・フッター -->
+    <div style="text-align: center; font-size: 10px; color: #64748b; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
         {zone_data['footer_cynic']}
     </div>
 
