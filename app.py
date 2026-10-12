@@ -91,15 +91,15 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. 状態判定（倍率ベース）と名言フレーズ・コメントの定義 ---
+# --- 2. 状態判定（倍率ベース）と名言フレーズ・コメントの定義 (白→青→黄→緑→赤 ルール適用) ---
 ZONE_DEFINITIONS = {
     "peaceful": {
-        "title": "STAGE 1 : 慢心 / 平穏域 (NORMAL)",
+        "title": "STAGE 1 : 慢心 / 平穏域 (WHITE)",
         "hp_percent": 100,
         "hp_status": "STABLE",
-        "border_color": "#00ffcc",
-        "accent_color": "#00ffcc",
-        "bg_color": "#0d1b2a",
+        "border_color": "#f8fafc",  # 白
+        "accent_color": "#f8fafc",
+        "bg_color": "#111827",
         "quote": "狙い台…計画通り…！",
         "zawa_count": 0,
         "comments": [
@@ -114,12 +114,12 @@ ZONE_DEFINITIONS = {
         ]
     },
     "caution": {
-        "title": "STAGE 2 : 強がり / 警戒域 (CAUTION)",
+        "title": "STAGE 2 : 強がり / 警戒域 (BLUE)",
         "hp_percent": 75,
         "hp_status": "CAUTION",
-        "border_color": "#ffcc00",
-        "accent_color": "#ffcc00",
-        "bg_color": "#062318",
+        "border_color": "#38bdf8",  # 青
+        "accent_color": "#38bdf8",
+        "bg_color": "#082f49",
         "quote": "まだあわてるような投資じゃない",
         "zawa_count": 5,
         "comments": [
@@ -134,18 +134,18 @@ ZONE_DEFINITIONS = {
         ]
     },
     "yutime_ghost": {
-        "title": "STAGE 3 : 屈辱 / 警告域 (WARNING)",
+        "title": "STAGE 3 : 屈辱 / 警告域 (YELLOW)",
         "hp_percent": 50,
         "hp_status": "WARNING",
-        "border_color": "#ff9900",
-        "accent_color": "#ff9900",
-        "bg_color": "#1e102f",
+        "border_color": "#facc15",  # 黄
+        "accent_color": "#facc15",
+        "bg_color": "#422006",
         "quote": "その日 パチンカーは思い出した<br>確率の妙に囚われていた屈辱を……",
         "zawa_count": 18,
         "comments": [
             "「うーん、分母を超えて2倍ハマりコースですか。まあ、パチンコ打ってりゃよくある日常風景ですね」",
             "「『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？」",
-            "「ちょっと嫌な汗をかく頃合いですが、ここから一撃でまくる台も多いですからねえ」"
+            "<span>「ちょっと嫌な汗をかく頃合いですが、ここから一撃でまくる台も多いですからねえ」</span>"
         ],
         "footers": [
             "※2倍ハマりに到達する確率は約13.5%です。まだまだよくある日常です。",
@@ -154,12 +154,12 @@ ZONE_DEFINITIONS = {
         ]
     },
     "deep": {
-        "title": "STAGE 4 : 執着 / 深海トラウマ領域 (DEEP)",
+        "title": "STAGE 4 : 執着 / 深海トラウマ領域 (GREEN)",
         "hp_percent": 25,
         "hp_status": "DANGER",
-        "border_color": "#ff3333",
-        "accent_color": "#ff3333",
-        "bg_color": "#2c150b",
+        "border_color": "#22c55e",  # 緑
+        "accent_color": "#22c55e",
+        "bg_color": "#052e16",
         "quote": "まだだ！まだ台が当たりたがっている！！",
         "zawa_count": 35,
         "comments": [
@@ -174,17 +174,17 @@ ZONE_DEFINITIONS = {
         ]
     },
     "god": {
-        "title": "STAGE 5 : 狂気 / 確率特異点 (SINGULARITY)",
+        "title": "STAGE 5 : 狂気 / 確率特異点 (RED)",
         "hp_percent": 5,
         "hp_status": "CRITICAL",
-        "border_color": "#ff0055",
-        "accent_color": "#ff0055",
-        "bg_color": "#2d0f0f",
+        "border_color": "#ef4444",  # 赤
+        "accent_color": "#ef4444",
+        "bg_color": "#450a0a",
         "quote": "台が球を吐き出さない限り、止まるんじゃねぇぞ…",
         "zawa_count": 55,
         "comments": [
             "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
-            "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
+            "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンgetRadiusを感じませんか？」",
             "「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」"
         ],
         "footers": [
@@ -301,7 +301,7 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 9. カード構築（レイアウト固定 ＆ 上部フレーズの主張を抑えたトーン） ---
+# --- 9. カード構築（固定レイアウト ＆ 白→青→黄→緑→赤 のカラールール適用） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -316,7 +316,7 @@ card_html = f"""
 </style>
 <div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.8); max-width: 500px; margin: 5px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease; position: relative;">
     
-    <!-- 【一番上】至高の名言置換フレーズ枠（主張を極限まで抑えた控えめなトーン） -->
+    <!-- 【一番上】至高の名言置換フレーズ枠（主張を抑えた控えめなトーン） -->
     <div style="margin-bottom: 12px; text-align: center; padding: 6px 10px; background: rgba(0,0,0,0.2); border-bottom: 1px dashed rgba(255,255,255,0.15); border-radius: 4px;">
         <div style="font-size: 11px; color: #94a3b8; line-height: 1.4; letter-spacing: 0.5px; opacity: 0.85;">
             {quote_text}
