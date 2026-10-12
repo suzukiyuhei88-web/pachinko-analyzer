@@ -54,7 +54,7 @@ st.markdown(
         background-color: #0b0f19;
         color: #f8fafc;
     }
-    label, .stRadio p, .stNumberInput p {
+    label, .stRadio p, .stNumberInput p, .stSelectbox p {
         color: #cbd5e1 !important;
         font-family: 'DotGothic16', sans-serif !important;
     }
@@ -160,7 +160,7 @@ ZONE_DEFINITIONS = {
         "accent_color": "#22c55e",
         "hp_text_color": "#ef4444",  # 赤（ステージ4）
         "bg_color": "#052e16",
-        "quote": "まだだ！まだ台が当たりたがっている！！",
+        "quote": "まだだ!まだ台が当たりたがっている!!",
         "zawa_count": 28,
         "comments": [
             "<span><span>「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪くなってきましたねぇ……」</span></span>",
@@ -215,39 +215,33 @@ if selected_spec_name == "カスタム":
 else:
     p_denom = spec_options[selected_spec_name]
 
-# セッションステートで回転数を管理
-if 'rotation_input' not in st.session_state or st.session_state.get('last_spec') != p_denom:
-    st.session_state['rotation_input'] = min(300, int(p_denom * 6))
-    st.session_state['last_spec'] = p_denom
+# --- 回転数の入力機構（倍率選択 ＋ 自由入力） ---
+rot_options = {
+    "0.5倍": 0.5,
+    "1倍 (分母)": 1.0,
+    "2倍": 2.0,
+    "3倍": 3.0,
+    "4倍": 4.0,
+    "5倍": 5.0,
+    "自由入力": 0.0,
+}
 
-# クイックジャンプ（0.5倍、1倍、2倍、3倍）
-st.markdown("<p style='font-size: 11px; color: #94a3b8; margin: 4px 0 0 0;'>▼ クイックジャンプ（倍率選択）</p>", unsafe_allow_html=True)
-jump_option = st.radio(
-    "クイックジャンプ",
-    ["微調整", "0.5倍", "1倍(分母)", "2倍", "3倍"],
-    horizontal=True,
-    label_visibility="collapsed"
-)
+selected_rot_name = st.selectbox("ハマり回転数（倍率選択）", list(rot_options.keys()), index=2)
 
-# 選択された倍率に応じて回転数を即座にセット
-if jump_option == "0.5倍":
-    st.session_state['rotation_input'] = int(p_denom * 0.5)
-elif jump_option == "1倍(分母)":
-    st.session_state['rotation_input'] = int(p_denom * 1.0)
-elif jump_option == "2倍":
-    st.session_state['rotation_input'] = int(p_denom * 2.0)
-elif jump_option == "3倍":
-    st.session_state['rotation_input'] = int(p_denom * 3.0)
-
-# number_input 配置
-max_limit = int(p_denom * 6)
-current_rotation = st.number_input(
-    "現在のハマり回転数（データカウンターの数字）",
-    min_value=0,
-    max_value=max_limit,
-    step=1,
-    key='rotation_input'
-)
+if selected_rot_name == "自由入力":
+    max_limit = int(p_denom * 8)
+    default_val = min(300, max_limit)
+    current_rotation = st.number_input(
+        "現在の回転数（自由入力）",
+        min_value=0,
+        max_value=max_limit,
+        value=default_val,
+        step=1
+    )
+else:
+    multiplier = rot_options[selected_rot_name]
+    current_rotation = int(p_denom * multiplier)
+    st.markdown(f"<p style='font-size: 12px; color: #94a3b8; margin: -10px 0 10px 0;'>設定回転数: <b>{current_rotation} 回転</b> ({selected_rot_name})</p>", unsafe_allow_html=True)
 
 # --- 4. 計算ロジック ---
 p = 1.0 / p_denom if p_denom > 0 else 0
@@ -255,18 +249,6 @@ prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 rotation_ratio = current_rotation / p_denom if p_denom > 0 else 0
 
 # --- 5. 状態判定の決定 ---
-if rotation_ratio < 0.31:
-    zone_key = "peaceful"
-elif rotation_ratio < 1.0:
-    zone_key = "caution"
-elif rotation_ratio < 2.0:
-    zone_key, zone_key = "yutime_ghost", "yutime_ghost" # 修正ミス防止用
-elif rotation_ratio < 3.0:
-    zone_key = "deep"
-else:
-    zone_key = "god"
-
-# 正しい判定ロジックに戻す
 if rotation_ratio < 0.31:
     zone_key = "peaceful"
 elif rotation_ratio < 1.0:
@@ -313,7 +295,7 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 9. カード構築（明確な日本語ラベル「同じ確率で起きる身近な出来事」への変更） ---
+# --- 9. カード構築 ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
