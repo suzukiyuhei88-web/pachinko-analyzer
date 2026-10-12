@@ -65,41 +65,41 @@ st.markdown(
 
 # --- 2. 状態判定（1, 4, 5 と連動：タイトル、HP、カラー、背景色）の定義 ---
 ZONE_DEFINITIONS = {
-    "peaceful": {
-        "title": "平穏域 (NORMAL)",
+    "peaceful": { # 100% - 80%
+        "title": "平穏域 (100-80%)",
         "hp_percent": 100,
         "hp_status": "STABLE",
         "border_color": "#3b82f6",
         "accent_color": "#60a5fa",
         "bg_color": "#0d1b2a",
     },
-    "caution": {
-        "title": "警戒域 (CAUTION)",
-        "hp_percent": 60,
+    "caution": { # 80% - 50%
+        "title": "警戒域 (80-50%)",
+        "hp_percent": 75,
         "hp_status": "CAUTION",
         "border_color": "#10b981",
         "accent_color": "#34d399",
         "bg_color": "#062318",
     },
-    "yutime_ghost": {
-        "title": "警告域 / 遊タイム非搭載 (WARNING)",
-        "hp_percent": 30,
+    "yutime_ghost": { # 50% - 30%
+        "title": "警告域 / 遊タイム非搭載 (50-30%)",
+        "hp_percent": 50,
         "hp_status": "WARNING",
         "border_color": "#a855f7",
         "accent_color": "#c084fc",
         "bg_color": "#1e102f",
     },
-    "deep": {
-        "title": "深海トラウマ領域 (DEEP)",
-        "hp_percent": 10,
+    "deep": { # 30% - 5%
+        "title": "深海トラウマ領域 (30-5%)",
+        "hp_percent": 25,
         "hp_status": "DANGER",
         "border_color": "#f97316",
         "accent_color": "#fb923c",
         "bg_color": "#2c150b",
     },
-    "god": {
-        "title": "確率特異点 / 神の領域 (SINGULARITY)",
-        "hp_percent": 1,
+    "god": { # 5% - 0%
+        "title": "確率特異点 / 神の領域 (5-0%)",
+        "hp_percent": 5,
         "hp_status": "CRITICAL",
         "border_color": "#ef4444",
         "accent_color": "#f87171",
@@ -136,14 +136,14 @@ current_rotation = st.slider("現在のハマり回転数", min_value=0, max_val
 p = 1.0 / p_denom if p_denom > 0 else 0
 prob_ハマり = ((1.0 - p) ** current_rotation) * 100
 
-# --- 6. 状態判定の決定（1, 4, 5用） ---
-if prob_ハマり > 50:
+# --- 6. 状態判定の決定（指定の5つの確率帯に分割） ---
+if prob_ハマり >= 80:
     zone_key = "peaceful"
-elif prob_ハマり > 20:
+elif prob_ハマり >= 50:
     zone_key = "caution"
-elif prob_ハマり > 10:
+elif prob_ハマり >= 30:
     zone_key = "yutime_ghost"
-elif prob_ハマり > 1.0:
+elif prob_ハマり >= 5:
     zone_key = "deep"
 else:
     zone_key = "god"
@@ -163,7 +163,7 @@ else:
 # --- 8. ハマり確率に依存する要素（2. キャラクターセリフ ＆ 3. フッター）のバリエーション ---
 hash_seed = int(prob_ハマり * 1000) % 3
 
-if prob_ハマり > 50:
+if prob_ハマり >= 80: # 100-80%
     comments = [
         "「まだ投資も浅いし、気楽なもんですわ。ここから地獄が始まるとも知らずにね」",
         "「おや、まだ財布に余裕がある顔をしていますね。今のうちに楽しんでおきなさいよ」",
@@ -174,7 +174,7 @@ if prob_ハマり > 50:
         "※まだ傷は浅いです。引き返すなら今のうちかもしれませんよ。",
         "※確率の収束を信じる者は、大抵財布をすり減らします。"
     ]
-elif prob_ハマり > 20:
+elif prob_ハマり >= 50: # 80-50%
     comments = [
         "「『そろそろ当たるはず』？ いいえ、確率の抽選は毎回リセットですよ。都合よく解釈しないことですね」",
         "「おや、嫌な汗かいてます？ まだまだ中ハマりの入口に立ったばかりですって」",
@@ -185,7 +185,7 @@ elif prob_ハマり > 20:
         "※「次で当たる気がする」その錯覚がホールの養分を生み出します。",
         "※過去の投資額は、次の当りの確率を1ミリも上げてくれません。"
     ]
-elif prob_ハマり > 10:
+elif prob_ハマり >= 30: # 50-30%
     yutime_rot = int(p_denom * 3)
     comments = [
         f"「昔の台ならここで遊タイムの救済があったんですけどねえ……現代の荒波スペックじゃただの養分ロードですわ（※目安約 {yutime_rot}回転）」",
@@ -197,7 +197,7 @@ elif prob_ハマり > 10:
         "※「ここまで入れたんだから」というサンクコスト効果に囚われていませんか？",
         "※台はあなたを覚えているわけではありません。ただ淡々と金を吸い込んでいます。"
     ]
-elif prob_ハマり > 1.0:
+elif prob_ハマり >= 5: # 30-5%
     comments = [
         "「ここまで来ると、もはや引き際が見えなくなってパチンコ屋のATMとトモダチ状態ですね。お疲れ様です」",
         "「もはや意地でも当てるまで帰れない雰囲気が漂っていますね。財布の命日も近そうです」",
@@ -208,7 +208,7 @@ elif prob_ハマり > 1.0:
         "※負債の沼は深く、あなたの理性をも一緒に沈めていきます。",
         "※帰るに帰れないその足取り、完全にホールのカモのそれですよ。"
     ]
-else:
+else: # 5-0%
     comments = [
         "「いやあ、見事な下振れ芸ですね！ 凡人には真似できない領域の数字を叩き出してますよ、ある意味で誇っていいんじゃないですか？」",
         "「おめでとうございます！ 確率のバグを踏み抜いた選ばれし者だけが見られる絶景がお待ちです」",
@@ -275,7 +275,7 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- 財布・メンタル HPゲージ（状態判定に連動 ＋ トランジションアニメーション追加） -->
+    <!-- 財布・メンタル HPゲージ（状態判定に連動） -->
     <div style="background-color: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; margin-bottom: 10px;">
         <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 3px;">
             <span>💳 財布 / メンタル残存値</span>
