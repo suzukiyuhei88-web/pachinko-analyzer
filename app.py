@@ -184,7 +184,7 @@ ZONE_DEFINITIONS = {
         "zawa_count": 55,
         "comments": [
             "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
-            "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
+            "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンライズが出ているのを感じませんか？」",
             "<span>「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」</span>"
         ],
         "footers": [
@@ -301,7 +301,7 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 9. カード構築（大当り確率・回転数ラベル/数値を13pxに統一） ---
+# --- 9. カード構築（補助情報を1行に最適化） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -333,11 +333,11 @@ card_html = f"""
             <span style="font-size: 38px; color: {accent_color}; font-weight: bold;">{prob_ハマり:.2f}%</span>
         </div>
         
-        <!-- 【補助情報】大当り確率と回転数（すべて13px統一） -->
-        <div style="border-top: 1px dashed rgba(255,255,255,0.15); margin-top: 10px; padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 16px; font-size: 13px; color: #94a3b8;">
-            <span>大当り確率: <b style="color: #f8fafc; font-size: 13px;">1/{p_denom}</b></span>
+        <!-- 【補助情報】大当り確率と回転数（13px維持のまま横幅とパディングを調整して1行化） -->
+        <div style="border-top: 1px dashed rgba(255,255,255,0.15); margin-top: 10px; padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 13px; color: #94a3b8; white-space: nowrap;">
+            <span>大当り: <b style="color: #f8fafc; font-size: 13px;">1/{p_denom}</b></span>
             <span style="color: rgba(255,255,255,0.2);">|</span>
-            <span>回転数: <b style="color: #f8fafc; font-size: 13px;">{current_rotation}</b> <span style="font-size: 11px; color: {accent_color};">({rotation_ratio:.1f}倍ハマり)</span></span>
+            <span>回転数: <b style="color: #f8fafc; font-size: 13px;">{current_rotation}</b> <span style="font-size: 11px; color: {accent_color};">({rotation_ratio:.1f}倍)</span></span>
         </div>
     </div>
 
