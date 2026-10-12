@@ -225,4 +225,4 @@ card_html = f"""
 """
 
 # 独立したHTMLコンポーネントとして描画（コードの露出を完全に防止）
-components.html(card_html, height=450, scrolling=False)
+components.html(card_html, height=520, scrolling=False)
