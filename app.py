@@ -66,57 +66,52 @@ st.markdown(
 ZONE_MESSAGES = {
     "peaceful": {
         "title": "小吉（平穏の領域）",
-        "omikuji_luck": "平穏",
         "comment": "まだ慌てるような時間じゃない。財布の紐はしっかり締まっています。",
         "footer_cynic": "※台の機嫌はあなたとは無関係に変わりません。",
         "hp_percent": 100,
         "hp_status": "NORMAL",
         "card_bg": "#111827",
-        "border_color": "#3b82f6", # 青 (平和)
+        "border_color": "#3b82f6",
         "accent_color": "#60a5fa",
     },
     "caution": {
         "title": "中吉（ざわ… ざわ…）",
-        "omikuji_luck": "微悶絶",
         "comment": "少し財布の紐がキュッとなる頃合い。深呼吸してコーヒーでもどうぞ。",
         "footer_cynic": "※「もしかして当たるのでは？」という予感は大体外れます。",
         "hp_percent": 60,
         "hp_status": "CAUTION",
         "card_bg": "#111827",
-        "border_color": "#10b981", # 緑
+        "border_color": "#10b981",
         "accent_color": "#34d399",
     },
     "yutime_ghost": {
         "title": "吉のあやかし（幻の遊タイム）",
-        "omikuji_luck": "幻影",
         "comment": "昔の基準なら【約 {yutime_rot}回転】で助かってましたね……（遠い目）",
         "footer_cynic": "※現代の台に救済の幻影を求めてはいけません。",
         "hp_percent": 30,
         "hp_status": "WARNING",
         "card_bg": "#1e1b4b",
-        "border_color": "#a855f7", # 紫
+        "border_color": "#a855f7",
         "accent_color": "#c084fc",
     },
     "deep": {
         "title": "凶（深海トラウマ領域）",
-        "omikuji_luck": "深海",
         "comment": "RUSH即抜けの虚しさに比べれば、このハマりなど微風……と言い聞かせる頃。",
         "footer_cynic": "※ハンドルを固定しても運勢は固定されません。",
         "hp_percent": 10,
         "hp_status": "DANGER",
         "card_bg": "#431407",
-        "border_color": "#f97316", # 赤
+        "border_color": "#f97316",
         "accent_color": "#fb923c",
     },
     "god": {
         "title": "大凶（歴史的絶望 / 神の領域）",
-        "omikuji_luck": "神域",
-        "comment": "もはや語るまい。300回転ハマりはホールのおばあちゃんにはアツくても、数学的にはただの38.8%デス（※もっとハマってます）。",
+        "comment": "300回転ハマりはホールのおばあちゃんにはアツくても、数学的にはただの38.8%デス（※もっとハマってます）。",
         "footer_cynic": "※店員も静観するこの空間で、真実（数学）を伝える唯一のアプリです。",
         "hp_percent": 1,
         "hp_status": "DEAD",
         "card_bg": "#450a0a",
-        "border_color": "#ef4444", # 金/赤
+        "border_color": "#ef4444",
         "accent_color": "#f87171",
     },
 }
@@ -164,7 +159,6 @@ else:
 
 zone_data = ZONE_MESSAGES[zone_key]
 
-# コメント内のプレースホルダー展開
 comment_text = zone_data["comment"]
 if zone_key == "yutime_ghost":
     yutime_rot = int(p_denom * 3)
@@ -191,7 +185,6 @@ omikuji_html = f"""
     max-width: 500px;
     margin: 0 auto;
 ">
-    <!-- 【上段】おみくじヘッダー（運勢・ステータス） -->
     <div style="text-align: center; border-bottom: 1px dashed {zone_data['border_color']}; padding-bottom: 12px; margin-bottom: 14px;">
         <div style="font-size: 11px; color: #94a3b8; letter-spacing: 3px;">【 運 勢 判 定 】</div>
         <div style="font-size: 22px; color: {zone_data['accent_color']}; font-weight: bold; margin: 4px 0;">
@@ -202,14 +195,13 @@ omikuji_html = f"""
         </div>
     </div>
 
-    <!-- 【中段の核】 確率 ＆ 科学データ解説 -->
     <div style="text-align: center; background-color: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 14px;">
         <div style="font-size: 10px; color: #94a3b8; letter-spacing: 1px;">（この回転数まで当らない確率）</div>
         <div style="font-size: 40px; color: {zone_data['accent_color']}; font-weight: bold; line-height: 1.1; margin: 6px 0;">
             {prob_ハマり:.2f}%
         </div>
         
-        <div style="margin-top: 10px; text-align: left; border-top: 1px solid rgba(255,255,255,0.1); pt: 8px; padding-top: 8px;">
+        <div style="margin-top: 10px; text-align: left; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
             <div style="display: flex; justify-content: space-between; font-size: 10px; color: #38bdf8; margin-bottom: 2px;">
                 <span>科学的比較ファクト</span>
                 <span>{approx_rate}</span>
@@ -220,12 +212,10 @@ omikuji_html = f"""
         </div>
     </div>
 
-    <!-- 【解説・お告げ】 メインツッコミ -->
     <div style="font-size: 13px; color: #e2e8f0; line-height: 1.5; margin-bottom: 14px; text-align: center; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 6px;">
         「{comment_text}」
     </div>
 
-    <!-- 💳 財布/メンタル HPゲージ -->
     <div style="background-color: rgba(0,0,0,0.4); padding: 8px 10px; border-radius: 6px; margin-bottom: 12px;">
         <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 4px;">
             <span>💳 財布 / メンタル HP</span>
@@ -236,7 +226,6 @@ omikuji_html = f"""
         </div>
     </div>
 
-    <!-- 【下段】サブリミナル・フッター（シュールな皮肉） -->
     <div style="text-align: center; font-size: 10px; color: #64748b; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
         {zone_data['footer_cynic']}
     </div>
