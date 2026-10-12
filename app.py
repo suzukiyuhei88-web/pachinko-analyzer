@@ -101,7 +101,7 @@ ZONE_DEFINITIONS = {
         "hp_text_color": "#22c55e",  # 緑（ステージ1）
         "bg_color": "#111827",
         "quote": "狙い台…計画通り…！",
-        "zawa_count": 0,  # ステージ1：出さない
+        "zawa_count": 0,
         "comments": [
             "「おっ、早めの当りですね！ まだ財布も心もノーダメージでウハウハな時間帯ですわ」",
             "「このスピード感で当たってくれると助かるんですけどねぇ。まあ、油断大敵ですよ」",
@@ -121,7 +121,7 @@ ZONE_DEFINITIONS = {
         "hp_text_color": "#facc15",  # 黄（ステージ2）
         "bg_color": "#082f49",
         "quote": "まだあわてるような投資じゃない",
-        "zawa_count": 0,  # ステージ2：出さない
+        "zawa_count": 0,
         "comments": [
             "「確率分母以内ですからね、まだまだ『まあまあ許容範囲内』ってところですわ」",
             "「『そろそろ当たるはず』……いやいや、分母以内ならまだ平常運転ですよ。気楽にいきましょう」",
@@ -141,7 +141,7 @@ ZONE_DEFINITIONS = {
         "hp_text_color": "#f97316",  # オレンジ（ステージ3）
         "bg_color": "#422006",
         "quote": "その日 パチンカーは思い出した<br>確率の妙に囚われていた屈辱を……",
-        "zawa_count": 8,  # ステージ3：ほんの少し
+        "zawa_count": 8,
         "comments": [
             "「うーん、分母を超えて2倍ハマりコースですか。まあ、パチンコ打ってりゃよくある日常風景ですね」",
             "<span>「『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？」</span>",
@@ -161,7 +161,7 @@ ZONE_DEFINITIONS = {
         "hp_text_color": "#ef4444",  # 赤（ステージ4）
         "bg_color": "#052e16",
         "quote": "まだだ！まだ台が当たりたがっている！！",
-        "zawa_count": 28,  # ステージ4：多め
+        "zawa_count": 28,
         "comments": [
             "<span><span>「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪くなってきましたねぇ……」</span></span>",
             "「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
@@ -181,7 +181,7 @@ ZONE_DEFINITIONS = {
         "hp_text_color": "#ef4444",  # 赤（ステージ5）
         "bg_color": "#450a0a",
         "quote": "台が球を吐き出さない限り、止まるんじゃねぇぞ…",
-        "zawa_count": 55,  # ステージ5：最大
+        "zawa_count": 55,
         "comments": [
             "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
             "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
@@ -260,6 +260,18 @@ if rotation_ratio < 0.31:
 elif rotation_ratio < 1.0:
     zone_key = "caution"
 elif rotation_ratio < 2.0:
+    zone_key, zone_key = "yutime_ghost", "yutime_ghost" # 修正ミス防止用
+elif rotation_ratio < 3.0:
+    zone_key = "deep"
+else:
+    zone_key = "god"
+
+# 正しい判定ロジックに戻す
+if rotation_ratio < 0.31:
+    zone_key = "peaceful"
+elif rotation_ratio < 1.0:
+    zone_key = "caution"
+elif rotation_ratio < 2.0:
     zone_key = "yutime_ghost"
 elif rotation_ratio < 3.0:
     zone_key = "deep"
@@ -284,7 +296,7 @@ comment_text = zone_data['comments'][hash_seed % len(zone_data['comments'])]
 footer_cynic = zone_data['footers'][hash_seed % len(zone_data['footers'])]
 quote_text = zone_data['quote']
 
-# --- 8. 背景「ざわ…」演出の動的生成（ステージ1・2はゼロ、3→4→5で段階増加） ---
+# --- 8. 背景「ざわ…」演出の動的生成 ---
 zawa_count = zone_data["zawa_count"]
 if zawa_count > 0:
     zawa_html_list = []
@@ -301,7 +313,7 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 9. カード構築（倍率表記「(〇.〇倍ハマり)」と1行補助情報・くすみローズのHPバー） ---
+# --- 9. カード構築（明確な日本語ラベル「同じ確率で起きる身近な出来事」への変更） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -319,21 +331,21 @@ card_html = f"""
 </style>
 <div style="border: 2px solid {border_color}; background-color: {bg_color}; color: #f8fafc; padding: 16px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.8); max-width: 500px; margin: 5px auto 0 auto; box-sizing: border-box; transition: background-color 0.4s ease, border-color 0.4s ease; position: relative;">
     
-    <!-- 【一番上】至高の名言置換フレーズ枠（主張を抑えた控えめなトーン） -->
+    <!-- 【一番上】至高の名言置換フレーズ枠 -->
     <div style="margin-bottom: 12px; text-align: center; padding: 6px 10px; background: rgba(0,0,0,0.2); border-bottom: 1px dashed rgba(255,255,255,0.15); border-radius: 4px;">
         <div style="font-size: 11px; color: #94a3b8; line-height: 1.4; letter-spacing: 0.5px; opacity: 0.85;">
             {quote_text}
         </div>
     </div>
 
-    <!-- 【メイン主役】ハマり確率（「ハマり確率：50%」形式、下ぞろえ） -->
+    <!-- 【メイン主役】ハマり確率 -->
     <div style="background-color: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); padding: 14px; border-radius: 6px; margin-bottom: 12px; text-align: center;">
         <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px; margin: 4px 0; line-height: 1;">
             <span style="font-size: 13px; color: #94a3b8; letter-spacing: 1px;">ハマり確率：</span>
             <span style="font-size: 38px; color: {accent_color}; font-weight: bold;">{prob_ハマり:.2f}%</span>
         </div>
         
-        <!-- 【補助情報】大当り確率と回転数（表記ルール「(〇.〇倍ハマり)」適用、1行化） -->
+        <!-- 【補助情報】大当り確率と回転数 -->
         <div style="border-top: 1px dashed rgba(255,255,255,0.15); margin-top: 10px; padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 13px; color: #94a3b8; white-space: nowrap;">
             <span>大当り: <b style="color: #f8fafc; font-size: 13px;">1/{p_denom}</b></span>
             <span style="color: rgba(255,255,255,0.2);">|</span>
@@ -341,10 +353,10 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- 【軸1】無機質アナライザー（次点：3.5） -->
+    <!-- 【客観分析】同じ確率で起きる身近な出来事 -->
     <div style="background-color: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px; margin-bottom: 10px;">
-        <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748b; letter-spacing: 1px; margin-bottom: 3px;">
-            <span>[ SYSTEM: OBJECTIVE_ANALYSIS ]</span>
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; letter-spacing: 0.5px; margin-bottom: 3px;">
+            <span>[ 同じ確率で起きる身近な出来事 ]</span>
             <span style="color: #38bdf8;">{approx_rate}</span>
         </div>
         <div style="font-size: 11px; color: #cbd5e1; line-height: 1.3;">
@@ -352,7 +364,7 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- 【軸2】シニカルコメント枠（サポート：3） -->
+    <!-- 【シニカルコメント枠】 -->
     <div style="margin-bottom: 10px;">
         <div style="display: flex; align-items: flex-start; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px;">
             <div style="min-width: 36px; height: 36px; background-color: rgba(0,0,0,0.3); border: 1px dashed {accent_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #94a3b8; margin-right: 8px; text-align: center;">
@@ -364,9 +376,8 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- パズドラ風HPバー（SVGくすみローズのハートアイコン ＋ バー ＋ 「○○/100」表記） -->
+    <!-- パズドラ風HPバー -->
     <div style="background-color: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
-        <!-- くすみローズのSVGハートアイコン -->
         <svg width="15" height="15" viewBox="0 0 24 24" fill="{hp_bar_color}" style="display: inline-block; vertical-align: middle; flex-shrink: 0;">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
         </svg>
