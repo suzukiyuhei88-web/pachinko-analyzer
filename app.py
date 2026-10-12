@@ -130,7 +130,7 @@ spec_options = {
     "カスタム": 0.0,
 }
 
-selected_spec_name = st.selectbox("機種スペック", list(spec_options.keys()), index=2)
+selected_spec_name = st.selectbox("大当り確率", list(spec_options.keys()), index=2)
 if selected_spec_name == "カスタム":
     p_denom = st.number_input("大当り確率の分母", min_value=1.1, value=319.6, step=0.1)
 else:
@@ -227,8 +227,8 @@ elif zone_key == "caution":
 elif zone_key == "yutime_ghost":
     comments = [
         "「うーん、分母を超えて2倍ハマりコースですか。まあ、パチンコ打ってりゃよくある日常風景ですね」",
-        "「<span>『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？</span>」",
-        "「ちょっと嫌な汗をかく頃合いですが、ここから一撃でまくる台も多いですからねえ」"
+        "「『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？」",
+        "<span>「ちょっと嫌な汗をかく頃合いですが、ここから一撃でまくる台も多いですからねえ」</span>"
     ]
     footers = [
         "※2倍ハマりに到達する確率は約13.5%です。まだまだよくある日常です。",
@@ -250,7 +250,7 @@ else:
     comments = [
         "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
         "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
-        "<span>「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」</span>"
+        "「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」"
     ]
     footers = [
         "※ここから当たる確率はごくわずか。完全な虚無との戦いです。",
@@ -261,7 +261,7 @@ else:
 comment_text = comments[hash_seed % len(comments)]
 footer_cynic = footers[hash_seed % len(footers)]
 
-# --- 8. カード構築（主役を「ハマり確率」にし、スペック・回転数・倍率を補助情報として整理） ---
+# --- 8. カード構築 ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -282,16 +282,16 @@ card_html = f"""
         <div style="font-size: 14px; color: {accent_color}; font-weight: bold; margin-top: 2px;">{zone_data['title']}</div>
     </div>
 
-    <!-- 【メイン主役】ハマり確率（非当選確率）を一番大きく、中央に配置 -->
+    <!-- 【メイン主役】ハマり確率 -->
     <div style="background-color: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.15); padding: 14px; border-radius: 6px; margin-bottom: 12px; text-align: center;">
-        <div style="font-size: 10px; color: #94a3b8; letter-spacing: 1px; margin-bottom: 2px;">[ 累計非当選確率（ここまで当らない確率） ]</div>
+        <div style="font-size: 10px; color: #94a3b8; letter-spacing: 1px; margin-bottom: 2px;">[ ハマり確率（ここまで当らない確率） ]</div>
         <div style="font-size: 38px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 4px 0;">{prob_ハマり:.2f}%</div>
         
-        <!-- 【補助情報】スペックと回転数（回転数の脇に少し小さめで倍率を添える） -->
+        <!-- 【補助情報】大当り確率と回転数（回転数の脇に〇〇倍ハマりを添える） -->
         <div style="border-top: 1px dashed rgba(255,255,255,0.15); margin-top: 10px; padding-top: 8px; display: flex; justify-content: center; align-items: center; gap: 16px; font-size: 11px; color: #94a3b8;">
-            <span>スペック: <b style="color: #f8fafc;">1/{p_denom}</b></span>
+            <span>大当り確率: <b style="color: #f8fafc;">1/{p_denom}</b></span>
             <span style="color: rgba(255,255,255,0.2);">|</span>
-            <span>現在回転数: <b style="color: #f8fafc; font-size: 13px;">{current_rotation}回転</b> <span style="font-size: 10px; color: {accent_color};">({rotation_ratio:.2f}倍)</span></span>
+            <span>回転数: <b style="color: #f8fafc; font-size: 13px;">{current_rotation}</b> <span style="font-size: 10px; color: {accent_color};">({rotation_ratio:.2f}倍ハマり)</span></span>
         </div>
     </div>
 
