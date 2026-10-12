@@ -144,7 +144,7 @@ ZONE_DEFINITIONS = {
         "zawa_count": 18,
         "comments": [
             "「うーん、分母を超えて2倍ハマりコースですか。まあ、パチンコ打ってりゃよくある日常風景ですね」",
-            "「<span>『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？</span>」",
+            "<span>「『こんな時もあるさ』と自分に言い聞かせるフェーズですね。まだメンタルは折れてません？」</span>",
             "「ちょっと嫌な汗をかく頃合いですが、ここから一撃でまくる台も多いですからねえ」"
         ],
         "footers": [
@@ -301,15 +301,15 @@ if zawa_count > 0:
     zawa_container = f'<div class="zawa-container">{"".join(zawa_html_list)}</div>'
     st.markdown(zawa_container, unsafe_allow_html=True)
 
-# --- 9. カード構築（SVGハートアイコン ＋ くすんだピンクのバー本体 ＋ 数値色変化） ---
+# --- 9. カード構築（SVGハートアイコン ＋ 中間くすみローズのバー本体 ＋ 数値色変化） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
 hp_percent = zone_data['hp_percent']
 hp_text_color = zone_data['hp_text_color']
 
-# 【くすみピンクの指定】少し渋みのあるダスティピンク（例: #9b5d73 や #8a5068 などに微調整可能）
-hp_bar_color = "#9b5d73" 
+# 【中間くすみローズの指定】パステルと渋めの中間色（#c2527f）
+hp_bar_color = "#c2527f" 
 
 card_html = f"""
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -363,9 +363,9 @@ card_html = f"""
         </div>
     </div>
 
-    <!-- パズドラ風HPバー（SVGくすみピンクのハートアイコン ＋ くすみピンクバー ＋ 「○○/100」表記） -->
+    <!-- パズドラ風HPバー（SVGくすみローズのハートアイコン ＋ バー ＋ 「○○/100」表記） -->
     <div style="background-color: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
-        <!-- くすみピンクのSVGハートアイコン -->
+        <!-- くすみローズのSVGハートアイコン -->
         <svg width="15" height="15" viewBox="0 0 24 24" fill="{hp_bar_color}" style="display: inline-block; vertical-align: middle; flex-shrink: 0;">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
         </svg>
