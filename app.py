@@ -111,7 +111,7 @@ ZONE_DEFINITIONS = {
     },
 }
 
-# --- 3. タイトルとコントロールエリア（コンパクト化＆正しい順序） ---
+# --- 3. タイトルとコントロールエリア ---
 st.markdown(
     "<h3 style='color: #f8fafc; text-align: center; letter-spacing: 2px; margin-bottom: 8px;'>🎰 パチンコ確率診断コア</h3>",
     unsafe_allow_html=True,
@@ -136,25 +136,28 @@ if 'rotation_input' not in st.session_state or st.session_state.get('last_spec')
     st.session_state['rotation_input'] = min(300, int(p_denom * 6))
     st.session_state['last_spec'] = p_denom
 
-# ★【重要】必ず number_input よりも「上」にボタンを配置する
+# ★ ジャンプボタン（3列 × 2段でコンパクトに横並び固定）
 st.markdown("<p style='font-size: 10px; color: #94a3b8; margin: 4px 0 2px 0;'>▼ 主要倍率へジャンプ</p>", unsafe_allow_html=True)
-b_col1, b_col2, b_col3, b_col4, b_col5, b_col6 = st.columns(6)
-with b_col1:
+
+r1_c1, r1_c2, r1_c3 = st.columns(3)
+with r1_c1:
     if st.button("0.5倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 0.5)
-with b_col2:
-    if st.button("1倍", use_container_width=True):
+with r1_c2:
+    if st.button("1倍 (分母)", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 1.0)
-with b_col3:
+with r1_c3:
     if st.button("1.5倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 1.5)
-with b_col4:
+
+r2_c1, r2_c2, r2_c3 = st.columns(3)
+with r2_c1:
     if st.button("2倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 2.0)
-with b_col5:
+with r2_c2:
     if st.button("2.5倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 2.5)
-with b_col6:
+with r2_c3:
     if st.button("3倍", use_container_width=True):
         st.session_state['rotation_input'] = int(p_denom * 3.0)
 
