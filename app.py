@@ -206,7 +206,7 @@ if zone_key == "peaceful":
     comments = [
         "「おっ、早めの当りですね！ まだ財布も心もノーダメージでウハウハな時間帯ですわ」",
         "「このスピード感で当たってくれると助かるんですけどねぇ。まあ、油断大敵ですよ」",
-        "<span>「サクッと初当りを引けてご機嫌なご様子。ここから連チャンを伸ばせるかが見せ所ですね」</span>"
+        "「サクッと初当りを引けてご機嫌なご様子。ここから連チャンを伸ばせるかが見せ所ですね」"
     ]
     footers = [
         "※早い当りは嬉しいですが、持ち玉の維持こそが勝負の分かれ道です。",
@@ -237,7 +237,7 @@ elif zone_key == "yutime_ghost":
     ]
 elif zone_key == "deep":
     comments = [
-        "「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪しくなってきましたねぇ……」",
+        "<span>「おや、3倍ハマり手前まで来ましたか。ちょっと雲行きが怪しくなってきましたねぇ……」</span>",
         "「ここまで来ると『ここまで入れたんだからRUSH入れて取り返さないと割に合わない』って思考になりがちですね」",
         "「じっと耐える時間帯です。隣の連チャンを横目に見ながらメンタルを保てるかが勝負ですよ」"
     ]
@@ -249,7 +249,7 @@ elif zone_key == "deep":
 else:
     comments = [
         "「出ました、3倍ハマり超の虚無ゾーン！ もはや当たろうが当たるまいが、ムキになってサンドに札を入れるだけの作業ですね」",
-        "「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」",
+        "<span>「ここまで来ると笑うしかありませんね！ 脳から変なアドレナリンが出ているのを感じませんか？」</span>",
         "「お疲れ様です。パチンコ屋のATMに多額の寄付をする尊いボランティア、見事な狂気っぷりですね！」"
     ]
     footers = [
@@ -261,7 +261,7 @@ else:
 comment_text = comments[hash_seed % len(comments)]
 footer_cynic = footers[hash_seed % len(footers)]
 
-# --- 8. カード構築（状態判定を最上部に配置） ---
+# --- 8. カード構築（ユーザー入力のスペックと現在回転数、倍率をより目立たせる改善） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 bg_color = zone_data['bg_color']
@@ -282,15 +282,23 @@ card_html = f"""
         <div style="font-size: 14px; color: {accent_color}; font-weight: bold; margin-top: 2px;">{zone_data['title']}</div>
     </div>
 
-    <!-- 【ベース】データコア -->
-    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 10px;">
-        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 4px;">
-            <span>スペック: <b>1/{p_denom}</b> (現在 {rotation_ratio:.2f}倍)</span>
-            <span>現在回転数: <b style="color: #fff;">{current_rotation}回転</b></span>
+    <!-- 【メイン強調】ユーザー入力値（スペック & 現在回転数 & 倍率） -->
+    <div style="background-color: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.15); padding: 12px; border-radius: 6px; margin-bottom: 12px; text-align: center;">
+        <div style="font-size: 10px; color: #94a3b8; margin-bottom: 4px; letter-spacing: 1px;">[ INPUT_STATUS : 1/{p_denom} ]</div>
+        <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 8px;">
+            <div>
+                <div style="font-size: 9px; color: #94a3b8;">現在回転数</div>
+                <div style="font-size: 26px; color: #ffffff; font-weight: bold;">{current_rotation} <span style="font-size: 12px; color: #94a3b8;">回転</span></div>
+            </div>
+            <div style="border-left: 1px solid rgba(255,255,255,0.15); height: 35px;"></div>
+            <div>
+                <div style="font-size: 9px; color: #94a3b8;">ハマり度合い</div>
+                <div style="font-size: 26px; color: {accent_color}; font-weight: bold;">{rotation_ratio:.2f} <span style="font-size: 12px; color: #94a3b8;">倍</span></div>
+            </div>
         </div>
-        <div style="text-align: center; background-color: rgba(0,0,0,0.3); padding: 6px; border-radius: 6px;">
-            <div style="font-size: 30px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 2px 0;">{prob_ハマり:.2f}%</div>
-            <div style="font-size: 10px; color: #94a3b8;">（この回転数まで一度も当らない数学的確率）</div>
+        <div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+            <div style="font-size: 11px; color: #94a3b8;">ここまでの累計非当選確率</div>
+            <div style="font-size: 28px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin-top: 2px;">{prob_ハマり:.2f}%</div>
         </div>
     </div>
 
@@ -336,4 +344,4 @@ card_html = f"""
 </div>
 """
 
-components.html(card_html, height=540, scrolling=False)
+components.html(card_html, height=600, scrolling=False)
