@@ -6,7 +6,7 @@ import streamlit.components.v1 as components
 
 # ページの基本設定
 st.set_page_config(
-    page_title="パチンコ確率診断 - おみくじEdition", page_icon="🎰", layout="centered"
+    page_title="パチンコ確率診断 - Statistical & Cynical", page_icon="🎰", layout="centered"
 )
 
 # --- 0. CSVデータの読み込みと数値化パース ---
@@ -42,7 +42,7 @@ def load_data():
 
 df_master = load_data()
 
-# --- 1. デザイン用のカスタムCSS（DotGothic16フォント ＆ おみくじ風スタイル） ---
+# --- 1. デザイン用のカスタムCSS（DotGothic16フォント ＆ ダークテーマ） ---
 st.markdown(
     """
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
@@ -63,50 +63,50 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 2. ゾーンごとのメッセージ・演出定義（おみくじ風） ---
+# --- 2. ゾーンごとのデータ・シニカルコメント定義 ---
 ZONE_MESSAGES = {
     "peaceful": {
-        "title": "小吉（平穏の領域）",
-        "comment": "まだ慌てるような時間じゃない。財布の紐はしっかり締まっています。",
-        "footer_cynic": "※台の機嫌はあなたとは無関係に変わりません。",
+        "title": "平穏域 (NORMAL)",
+        "comment": "まだ確率の収束を語るには早すぎる回転数です。財布のライフはまだ満タンです。",
+        "footer_cynic": "※台の機嫌はあなたとは無関係に一定の確率で抽選し続けています。",
         "hp_percent": 100,
-        "hp_status": "NORMAL",
+        "hp_status": "STABLE",
         "border_color": "#3b82f6",
         "accent_color": "#60a5fa",
     },
     "caution": {
-        "title": "中吉（ざわ… ざわ…）",
-        "comment": "少し財布の紐がキュッとなる頃合い。深呼吸してコーヒーでもどうぞ。",
-        "footer_cynic": "※「もしかして当たるのでは？」という予感は大体外れます。",
+        "title": "警戒域 (CAUTION)",
+        "comment": "投資がかさみ、「そろそろ当たるはず」という正常性バイアスが顔を出す頃合いです。",
+        "footer_cynic": "※確率に「そろそろ」という概念は存在しません。",
         "hp_percent": 60,
         "hp_status": "CAUTION",
         "border_color": "#10b981",
         "accent_color": "#34d399",
     },
     "yutime_ghost": {
-        "title": "吉のあやかし（幻の遊タイム）",
-        "comment": "昔の基準なら【約 {yutime_rot}回転】で助かってましたね……（遠い目）",
-        "footer_cynic": "※現代の台に救済の幻影を求めてはいけません。",
+        "title": "警告域 / 遊タイム非搭載 (WARNING)",
+        "comment": "かつての基準であれば約 {yutime_rot}回転で救済されていましたが、現代の荒波スペックに慈悲はありません。",
+        "footer_cynic": "※冷徹な液晶演出だけが、あなたの財布のHPを削っていきます。",
         "hp_percent": 30,
         "hp_status": "WARNING",
         "border_color": "#a855f7",
         "accent_color": "#c084fc",
     },
     "deep": {
-        "title": "凶（深海トラウマ領域）",
-        "comment": "RUSH即抜けの虚しさに比べれば、このハマりなど微風……と言い聞かせる頃。",
-        "footer_cynic": "※ハンドルを固定しても運勢は固定されません。",
+        "title": "深海トラウマ領域 (DEEP)",
+        "comment": "RUSH即抜けの絶望に比べれば可愛いもの……と言い聞かせなければ正気を保てない深度です。",
+        "footer_cynic": "※ハンドルを固定したところで、数学的確率は1ミリも変動しません。",
         "hp_percent": 10,
         "hp_status": "DANGER",
         "border_color": "#f97316",
         "accent_color": "#fb923c",
     },
     "god": {
-        "title": "大凶（歴史的絶望 / 神の領域）",
-        "comment": "300回転ハマりはホールのおばあちゃんにはアツくても、数学的にはただの38.8%デス（※もっとハマってます）。",
-        "footer_cynic": "※店員も静観するこの空間で、真実（数学）を伝える唯一のアプリです。",
+        "title": "確率特異点 / 神の領域 (SINGULARITY)",
+        "comment": "数学的・統計的観点から言えば、レア事象を引き当てる才能の無駄遣いが発生しています。",
+        "footer_cynic": "※周囲の視線は同情か、あるいは反面教師を見るような冷ややかなものです。",
         "hp_percent": 1,
-        "hp_status": "DEAD",
+        "hp_status": "CRITICAL",
         "border_color": "#ef4444",
         "accent_color": "#f87171",
     },
@@ -114,7 +114,7 @@ ZONE_MESSAGES = {
 
 # --- 3. タイトルと選択エリア ---
 st.markdown(
-    "<h3 style='color: #f8fafc; text-align: center; letter-spacing: 2px;'>🎰 パチンコおみくじ診断</h3>",
+    "<h3 style='color: #f8fafc; text-align: center; letter-spacing: 2px;'>🎰 パチンコ確率診断コア</h3>",
     unsafe_allow_html=True,
 )
 
@@ -170,7 +170,7 @@ else:
     approx_rate = f"約 {prob_ハマり:.1f}%"
     comparison_text = "計算されたハマり確率に合致する日常の事象"
 
-# --- 8. おみくじ風カードの構築（独立コンポーネント用HTML） ---
+# --- 8. データ診断カードの構築（3段構成） ---
 border_color = zone_data['border_color']
 accent_color = zone_data['accent_color']
 hp_percent = zone_data['hp_percent']
@@ -182,34 +182,41 @@ card_html = f"""
     font-family: 'DotGothic16', sans-serif !important;
 }}
 </style>
-<div style="border: 4px double {border_color}; background-color: #111827; color: #f8fafc; padding: 20px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; box-sizing: border-box;">
+<div style="border: 2px solid {border_color}; background-color: #111827; color: #f8fafc; padding: 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); max-width: 500px; margin: 0 auto; box-sizing: border-box;">
     
-    <div style="text-align: center; border-bottom: 1px dashed {border_color}; padding-bottom: 12px; margin-bottom: 14px;">
-        <div style="font-size: 11px; color: #94a3b8; letter-spacing: 3px;">【 運 勢 判 定 】</div>
-        <div style="font-size: 22px; color: {accent_color}; font-weight: bold; margin: 4px 0;">{zone_data['title']}</div>
-        <div style="font-size: 11px; color: #cbd5e1;">スペック: <b>1/{p_denom}</b> ｜ 現在: <b style="color: #fff;">{current_rotation}回転</b></div>
-    </div>
-
-    <div style="text-align: center; background-color: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 14px;">
-        <div style="font-size: 10px; color: #94a3b8; letter-spacing: 1px;">（この回転数まで当らない確率）</div>
-        <div style="font-size: 40px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 6px 0;">{prob_ハマり:.2f}%</div>
-        
-        <div style="margin-top: 10px; text-align: left; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
-            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #38bdf8; margin-bottom: 2px;">
-                <span>科学的比較ファクト</span>
-                <span>{approx_rate}</span>
-            </div>
-            <div style="font-size: 12px; color: #f1f5f9; line-height: 1.4;">• {comparison_text}</div>
+    <!-- 第1段：データコア（スペック・回転数・確率） -->
+    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">
+            <span>スペック: <b>1/{p_denom}</b></span>
+            <span>現在回転数: <b style="color: #fff;">{current_rotation}回転</b></span>
+        </div>
+        <div style="text-align: center; background-color: rgba(0,0,0,0.4); padding: 12px; border-radius: 6px;">
+            <div style="font-size: 10px; color: {accent_color}; letter-spacing: 1px; text-transform: uppercase;">{zone_data['title']}</div>
+            <div style="font-size: 38px; color: {accent_color}; font-weight: bold; line-height: 1.1; margin: 4px 0;">{prob_ハマり:.2f}%</div>
+            <div style="font-size: 10px; color: #94a3b8;">（この回転数まで一度も当らない数学的確率）</div>
         </div>
     </div>
 
-    <div style="font-size: 13px; color: #e2e8f0; line-height: 1.5; margin-bottom: 14px; text-align: center; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 6px;">
-        「{comment_text}」
+    <!-- 第2段：科学的・日常的比較ファクト -->
+    <div style="background-color: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.15); padding: 10px 12px; border-radius: 6px; margin-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #38bdf8; margin-bottom: 4px;">
+            <span>科学的スケール比較</span>
+            <span>{approx_rate}</span>
+        </div>
+        <div style="font-size: 12px; color: #f1f5f9; line-height: 1.4;">
+            • {comparison_text}
+        </div>
     </div>
 
+    <!-- 診断解説（ガローズユーモア） -->
+    <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 6px; border-left: 3px solid {accent_color};">
+        {comment_text}
+    </div>
+
+    <!-- 財布・メンタル HPゲージ -->
     <div style="background-color: rgba(0,0,0,0.4); padding: 8px 10px; border-radius: 6px; margin-bottom: 12px;">
         <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-bottom: 4px;">
-            <span>💳 財布 / メンタル HP</span>
+            <span>💳 財布 / メンタル残存値</span>
             <span>{zone_data['hp_status']} ({hp_percent}%)</span>
         </div>
         <div style="width: 100%; background-color: #1e293b; height: 6px; border-radius: 3px; overflow: hidden;">
@@ -217,12 +224,12 @@ card_html = f"""
         </div>
     </div>
 
-    <div style="text-align: center; font-size: 10px; color: #64748b; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+    <!-- 第3段：サブリミナル・フッター（冷徹な皮肉） -->
+    <div style="text-align: center; font-size: 10px; color: #64748b; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
         {zone_data['footer_cynic']}
     </div>
 
 </div>
 """
 
-# 独立したHTMLコンポーネントとして描画（コードの露出を完全に防止）
 components.html(card_html, height=520, scrolling=False)
